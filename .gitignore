@@ -37,7 +37,7 @@
 *.suo
 
 #ignore files
-.licenseheader
+*.licenseheader
 
 #Debugger files
 *.pdb
