@@ -1,0 +1,2 @@
+﻿  deftask.cpp
+c:\work\github\ratel\ratel\src\kernel\kernelpublic.h(18): fatal error C1083: 无法打开包括文件: “basicpublic.h”: No such file or directory
