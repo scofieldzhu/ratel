@@ -24,5 +24,19 @@
     <ClInclude Include="..\..\..\..\src\basic\ratelnsp.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\src\basic\basetypes.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\basic\rstring.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\basic\basic.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\src\basic\rstring.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

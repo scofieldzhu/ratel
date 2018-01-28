@@ -7,6 +7,10 @@
 *.o
 *.obj
 *.ilk
+*.exp
+*.tlog
+*.idb
+*.log
 
 # Precompiled Headers
 *.gch
@@ -33,6 +37,7 @@
 *.app
 
 #Temp files
+*.VC.opendb
 *.VC.db
 *.suo
 

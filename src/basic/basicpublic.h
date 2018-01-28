@@ -15,8 +15,6 @@ Module: basicpublic.h
     #define RATEL_BASIC_API __declspec(dllimport)
 #endif
 
-#include "ratelnsp.h"
-
-
+#include "basetypes.h"
 
 #endif
