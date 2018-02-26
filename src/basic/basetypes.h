@@ -23,14 +23,14 @@ using ::uint32_t;
 using ::int64_t;
 using ::uint64_t;
 
-using Int8 = int8_t;
-using uInt8 = uint8_t;
-using Int16 = int16_t;
-using uInt16 = uint16_t;
-using Int32 = int32_t;
-using uInt32 = uint32_t;
-using Int64 = int64_t;
-using uInt64 = uint64_t;
+using int8 = int8_t;
+using uint8 = uint8_t;
+using int16 = int16_t;
+using uint16 = uint16_t;
+using int32 = int32_t;
+using uint32 = uint32_t;
+using int64 = int64_t;
+using uint64 = uint64_t;
 
 using ::int_least8_t;
 using ::uint_least8_t;
@@ -41,14 +41,15 @@ using ::uint_least32_t;
 using ::int_least64_t;
 using ::uint_least64_t;
 
-using Intl8 = int_least8_t;
-using uIntl8 = uint_least8_t;
-using Intl16 = int_least16_t;
-using uIntl16 = uint_least16_t;
-using Intl32 = int_least32_t;
-using uIntl32 = uint_least32_t;
-using Intl64 = int_least64_t;
-using uIntl64 = uint_least64_t;
+using intl8 = int_least8_t;
+using uintl8 = uint_least8_t;
+using intl16 = int_least16_t;
+using uintl16 = uint_least16_t;
+using intl32 = int_least32_t;
+using uintl32 = uint_least32_t;
+using intl64 = int_least64_t;
+using uintl64 = uint_least64_t;
 
 RATEL_NAMESPACE_END
+
 #endif

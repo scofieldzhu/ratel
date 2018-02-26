@@ -4,18 +4,23 @@ for for those c++ developers pursuing fast-developement.
 Copyright (c) scofieldzhu. All rights reserved.	
 
 Project: ratel.basic 
-Module: ratelnsp.h 
+Module: pair.hpp 
 =========================================================================*/
-#ifndef __ratelnsp_h__
-#define __ratelnsp_h__
+#ifndef __pair_hpp__
+#define __pair_hpp__
 
-#define NAMESPACE_BEGIN(name) namespace name{
-#define NAMESPACE_END }
-#define USING_NAMESPACE(name) using namespace name;
+#include "basetypes.h"
 
-#define RATEL ratel
-#define RATEL_NAMESPACE_BEGIN NAMESPACE_BEGIN(RATEL)
-#define RATEL_NAMESPACE_END NAMESPACE_END
-#define USING_RATEL USING_NAMESPACE(RATEL)
+RATEL_NAMESPACE_BEGIN
+
+template <class K, class V>
+struct Pair
+{
+    K key;
+    V value;
+};
+
+
+RATEL_NAMESPACE_END
 
 #endif

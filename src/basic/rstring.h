@@ -2,8 +2,9 @@
 #define __rstring_hpp__
 
 #include <string>
-//#include <iterator>
 #include "basicpublic.h"
+
+#pragma warning(disable:4251)
 
 RATEL_NAMESPACE_BEGIN
 
@@ -197,17 +198,17 @@ public:
     RString substr(size_type off = 0, size_type cnt = npos) const;
 
     // compare [0, size()) with rhs
-    Int32 compare(const RString& rhs) const;
+    size_type compare(const RString& rhs) const;
     // compare [off, off + cnt) with rhs
-    Int32 compare(size_type off, size_type cnt, const RString& rhs) const;
+    size_type compare(size_type off, size_type cnt, const RString& rhs) const;
     // compare [off, off + cnt) with rhs [roff, roff + rcnt)
-    Int32 compare(size_type off, size_type cnt, const RString& rhs, size_type roff, size_type rcnt = npos) const;
+    size_type compare(size_type off, size_type cnt, const RString& rhs, size_type roff, size_type rcnt = npos) const;
     // compare [0, size()) with [strptr, <null>)
-    Int32 compare(const char* strptr) const;
+    size_type compare(const char* strptr) const;
     // compare [off, off + cnt) with [strptr, <null>)
-    Int32 compare(size_type off, size_type cnt, const char* strptr) const;
+    size_type compare(size_type off, size_type cnt, const char* strptr) const;
     // compare [off, off + cnt) with [lhs, lhs + rcnt)
-    Int32 compare(size_type off, size_type cnt, const char* strptr, size_type rcnt) const;
+    size_type compare(size_type off, size_type cnt, const char* strptr, size_type rcnt) const;
 
     // insert rhs at off
     RString& insert(size_type off, const RString& rhs);
@@ -353,7 +354,7 @@ private:
     void assignMove(RString&& rhs);
 
     // compare [lhs, lhs + lsize) to [rhs, rhs + rsize) using traits
-    Int32 traitsCompare(const char* const lhs, const size_type lsize, const char* const rhs, const size_type rsize)const;
+    size_type traitsCompare(const char* const lhs, const size_type lsize, const char* const rhs, const size_type rsize)const;
 
     char* dataptr();
     const char* dataptr()const;

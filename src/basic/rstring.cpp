@@ -625,38 +625,38 @@ RString RString::substr(size_type off /*= 0*/, size_type cnt /*= npos*/) const
     return RString(*this, off, cnt, allocator_);
 }
 
-Int32 RString::compare(const char* strptr) const
+RString::size_type RString::compare(const char* strptr) const
 {
     assert_pointer(strptr);
     return traitsCompare(dataptr(), size(), strptr, traits_type::length(strptr));
 }
 
-Int32 RString::compare(size_type off, size_type cnt, const char* strptr) const
+RString::size_type RString::compare(size_type off, size_type cnt, const char* strptr) const
 {
     assert_pointer(strptr);
     checkOffset(off);
     return traitsCompare(dataptr() + off, getSuffixSize(off, cnt), strptr, traits_type::length(strptr));
 }
 
-Int32 RString::compare(size_type off, size_type cnt, const char* lhs, size_type rcnt) const
+RString::size_type RString::compare(size_type off, size_type cnt, const char* lhs, size_type rcnt) const
 {
     assert_cond_pointer(cnt != 0, lhs);
     checkOffset(off);
     return traitsCompare(dataptr() + off, getSuffixSize(off, cnt), lhs, rcnt);
 }
 
-Int32 RString::compare(const RString& rhs) const
+RString::size_type RString::compare(const RString& rhs) const
 {
     return traitsCompare(dataptr(), size(), rhs.dataptr(), rhs.size());
 }
 
-Int32 RString::compare(size_type off, size_type cnt, const RString& rhs) const
+RString::size_type RString::compare(size_type off, size_type cnt, const RString& rhs) const
 {
     checkOffset(off);
     return traitsCompare(dataptr() + off, getSuffixSize(off, cnt), rhs.dataptr(), rhs.size());
 }
 
-Int32 RString::compare(size_type off, size_type cnt, const RString& rhs, size_type roff, size_type rcnt /*= npos*/) const
+RString::size_type RString::compare(size_type off, size_type cnt, const RString& rhs, size_type roff, size_type rcnt /*= npos*/) const
 {
     checkOffset(off);
     rhs.checkOffset(roff);
@@ -958,7 +958,7 @@ RString& RString::replace(const_iterator first, const_iterator last, iterator fi
 
 RString& RString::replace(const_iterator first, const_iterator last, const char* strptr, size_type cnt)
 {
-    return (replace(first - begin(), last - first, strptr, cnt));
+    return replace(first - begin(), last - first, strptr, cnt);
 }
 
 RString& RString::replace(const_iterator first, const_iterator last, const_iterator first2, const_iterator last2)
@@ -967,7 +967,7 @@ RString& RString::replace(const_iterator first, const_iterator last, const_itera
         erase(first - begin(), last - first);
     else
         replace(first - begin(), last - first, &*first2, last2 - first2);
-    return (*this);
+    return *this;
 }
 
 RString& RString::replace(const_iterator first, const_iterator last, const_pointer first2, const_pointer last2)
@@ -981,7 +981,7 @@ RString& RString::replace(const_iterator first, const_iterator last, const_point
 
 RString& RString::replace(size_type off, size_type cnt, const RString& rhs)
 {
-    return (replace(off, cnt, rhs, 0, npos));
+    return replace(off, cnt, rhs, 0, npos);
 }
 
 RString& RString::replace(size_type off, size_type cnt, const char* strptr, size_type rcnt)
@@ -1307,10 +1307,10 @@ void RString::assignMove(RString&& rhs)
     rhs.tidy();
 }
 
-Int32 RString::traitsCompare(const char* const lhs, const size_type lsize, const char* const rhs, const size_type rsize)const
+RString::size_type RString::traitsCompare(const char* const lhs, const size_type lsize, const char* const rhs, const size_type rsize)const
 {    
     const size_type kMinSize = lsize < rsize ? lsize : rsize;
-    const Int32 res = traits_type::compare(lhs, rhs, kMinSize);
+    const size_type res = traits_type::compare(lhs, rhs, kMinSize);
     if (res != 0)
         return res;
     if (lsize < rsize)
