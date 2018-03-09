@@ -5,7 +5,7 @@
 
 SFLOGGER_NAMESPACE_BEGIN
 
-SFLOGGER_API void StartTrack(Logger& logger, xCharT* file, const xCharT* function, int lineno);
+SFLOGGER_API void StartTrack(Logger* logger, xCharT* file, const xCharT* function, int lineno);
 SFLOGGER_API void StopTrack(const xCharT* file, const xCharT* function, int lineno);
 SFLOGGER_API void PlaceTrackSlot(const xCharT* file, const xCharT* function, int lineno);
 

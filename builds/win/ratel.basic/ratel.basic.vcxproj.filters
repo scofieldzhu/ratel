@@ -18,42 +18,48 @@
     <None Include="..\ratel.licenseheader" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\src\basic\basicpublic.h">
+    <ClInclude Include="..\..\..\src\basic\arrary2x.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\basic\ratelnsp.h">
+    <ClInclude Include="..\..\..\src\basic\arraryx.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\basic\basetypes.h">
+    <ClInclude Include="..\..\..\src\basic\basic.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\basic\rstring.h">
+    <ClInclude Include="..\..\..\src\basic\basicpublic.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\basic\basic.h">
+    <ClInclude Include="..\..\..\src\basic\basetypes.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\basic\arraryx.hpp">
+    <ClInclude Include="..\..\..\src\basic\pair.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\basic\xy.hpp">
+    <ClInclude Include="..\..\..\src\basic\ratelnsp.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\basic\xyz.hpp">
+    <ClInclude Include="..\..\..\src\basic\rstring.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\basic\arrary2x.hpp">
+    <ClInclude Include="..\..\..\src\basic\size.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\basic\pair.hpp">
+    <ClInclude Include="..\..\..\src\basic\xy.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\basic\size.h">
+    <ClInclude Include="..\..\..\src\basic\xyz.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\basic\basiclogger.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\src\basic\rstring.cpp">
+    <ClCompile Include="..\..\..\src\basic\basiclogger.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\basic\rstring.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

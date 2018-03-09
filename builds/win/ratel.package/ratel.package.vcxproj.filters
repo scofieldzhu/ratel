@@ -15,13 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\src\kernel\kernelpublic.h">
+    <ClInclude Include="..\..\..\src\package\packagepublic.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\kernel\task.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\src\kernel\deftask.h">
+    <ClInclude Include="..\..\..\src\package\packagelogger.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -29,7 +26,7 @@
     <None Include="..\ratel.licenseheader" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\src\kernel\deftask.cpp">
+    <ClCompile Include="..\..\..\src\package\packagelogger.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

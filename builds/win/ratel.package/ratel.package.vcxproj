@@ -19,9 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{1B5F67E6-5EB7-4628-96F1-FD98CF26318C}</ProjectGuid>
+    <ProjectGuid>{7DBF8B5E-94AC-4FA1-A5A6-2B0943CDD441}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>ratelbasic</RootNamespace>
+    <RootNamespace>ratelpackage</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -94,8 +94,8 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>BASIC_EXPORTS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../../../../src/basic;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;RATELPACKAGE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../../../3rd/sflogger/include;../../../src/basic;../../../src/package;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -108,8 +108,8 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>BASIC_EXPORTS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../../../../src/basic;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;RATELPACKAGE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../../../3rd/sflogger/include;../../../src/basic;../../../src/package;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -124,8 +124,8 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>BASIC_EXPORTS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../../../../src/basic;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;RATELPACKAGE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../../../3rd/sflogger/include;../../../src/basic;../../../src/package;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -142,8 +142,8 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>BASIC_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../../../../src/basic;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;RATELPACKAGE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../../../3rd/sflogger/include;../../../src/basic;../../../src/package;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -153,23 +153,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\src\package\packagepublic.h" />
+    <ClInclude Include="..\..\..\src\package\packagelogger.h" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="..\ratel.licenseheader" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\src\basic\arrary2x.hpp" />
-    <ClInclude Include="..\..\..\..\src\basic\arraryx.hpp" />
-    <ClInclude Include="..\..\..\..\src\basic\basic.h" />
-    <ClInclude Include="..\..\..\..\src\basic\basicpublic.h" />
-    <ClInclude Include="..\..\..\..\src\basic\basetypes.h" />
-    <ClInclude Include="..\..\..\..\src\basic\pair.hpp" />
-    <ClInclude Include="..\..\..\..\src\basic\ratelnsp.h" />
-    <ClInclude Include="..\..\..\..\src\basic\rstring.h" />
-    <ClInclude Include="..\..\..\..\src\basic\size.h" />
-    <ClInclude Include="..\..\..\..\src\basic\xy.hpp" />
-    <ClInclude Include="..\..\..\..\src\basic\xyz.hpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\..\..\src\basic\rstring.cpp" />
+    <ClCompile Include="..\..\..\src\package\packagelogger.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
