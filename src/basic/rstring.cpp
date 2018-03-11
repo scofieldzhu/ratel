@@ -272,6 +272,11 @@ bool RString::empty() const
     return size() == 0;
 }
 
+const char* RString::cstr() const
+{
+    return dataptr();
+}
+
 RString::iterator RString::begin()
 {
     // return iterator for beginning of mutable sequence        
@@ -558,6 +563,23 @@ RString::size_type RString::findLastNotOf(const char *strptr, size_type off /*= 
 RString::size_type RString::findLastNotOf(char ch, size_type off /*= npos*/) const
 {
     return findLastNotOf((const char *)&ch, off, 1);
+}
+
+RString::list_type RString::split(char splitchar) const
+{
+    list_type result_strings;
+    size_type start = 0;
+    size_type pos = 0;
+    while (pos < size()) {
+        pos = find(splitchar, start);
+        if (pos == npos) {
+            result_strings.push_back(substr(start));
+            break;
+        }else if(start != pos)
+            result_strings.push_back(substr(start, pos - start));
+        start = pos + 1;
+    }
+    return result_strings;
 }
 
 RString& RString::assign(const char* strptr, size_type cnt)
@@ -897,10 +919,12 @@ const char* RString::RStringVal::dataptr() const // determine current pointer to
 }
 
 RString::RStringVal::RStringVal()
-    :data(),
-    cur_size(0),
+    :cur_size(0),
     reserve_size(0)
-{}
+{
+    data.ptr = nullptr;
+    traits_type::assign(data.buffer, BUFFER_SIZE, 0);
+}
 
 RString& RString::replace(size_type lhs_off, size_type lhs_cnt, const RString& rhs, size_type rhs_off, size_type rhs_cnt /*= npos*/)
 {
@@ -1297,7 +1321,7 @@ void RString::assignMove(RString&& rhs)
 {
     // assign by moving rhs
     if (rhs.val_.reserve_size < RStringVal::BUFFER_SIZE)
-        traits_type::move(val_.data.buffer, val_.data.buffer, rhs.val_.cur_size + 1);
+        traits_type::move(val_.data.buffer, rhs.val_.data.buffer, rhs.val_.cur_size + 1);
     else{	// copy pointer
         allocator_.construct(std::addressof(val_.data.ptr), rhs.val_.data.ptr);
         rhs.val_.data.ptr = pointer();

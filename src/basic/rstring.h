@@ -1,6 +1,7 @@
 #ifndef __rstring_hpp__
 #define __rstring_hpp__
 
+#include <vector>
 #include <string>
 #include "basicpublic.h"
 
@@ -21,6 +22,7 @@ public:
     typedef typename allocator_type::const_pointer const_pointer;
     typedef typename allocator_type::reference reference;
     typedef typename allocator_type::const_reference const_reference;   
+    typedef std::vector<RString> list_type;
 
     class const_myiterator 
         : public std::iterator<std::random_access_iterator_tag,
@@ -109,6 +111,8 @@ public:
 
     bool empty() const;
 
+    const char* cstr()const;
+
     iterator begin();// return iterator for beginning of mutable sequence        
     const_iterator begin() const; // return iterator for beginning of nonmutable sequence
     iterator end(); // return iterator for end of mutable sequence
@@ -180,6 +184,8 @@ public:
     size_type findLastNotOf(const char *strptr, size_type off = npos) const;
     // look for non ch before off
     size_type findLastNotOf(char ch, size_type off = npos) const;
+
+    list_type split(char splitchar)const;
 
     RString& assign(const RString& rhs);
     RString& assign(const RString& rhs, size_type roff, size_type cnt = npos);
@@ -379,6 +385,8 @@ private:
     }val_;    
     allocator_type allocator_;
 };
+
+using RStrings = RString::list_type;
 
 inline RString operator+(const RString& lhs, const RString& rhs)
 {	// return string + string
