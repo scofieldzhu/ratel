@@ -8,23 +8,4 @@ Module: basiclogger.cpp
 =========================================================================*/
 #include "basiclogger.h"
 
-RATEL_NAMESPACE_BEGIN
-
-USING_SFLOGGER;
-
-Logger* st_LocalLogger = nullptr;
-
-namespace basic{
-    
-    Logger* LocalLogger()
-    {
-        return st_LocalLogger;
-    }
-
-    void SetLocalLogger(Logger& l)
-    {
-        st_LocalLogger = &l;
-    }
-}
-
-RATEL_NAMESPACE_END
+IMPL_LOGGER(basic)

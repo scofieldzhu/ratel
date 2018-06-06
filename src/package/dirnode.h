@@ -4,25 +4,27 @@ for for those c++ developers pursuing fast-developement.
 Copyright (c) scofieldzhu. All rights reserved.	
 
 Project: ratel.package 
-Module: packagepublic.h 
-CreateTime:2018-6-6 19:51
+Module: dirnode.h 
+CreateTime: 2018-6-6 20:37
 =========================================================================*/
-#ifndef __packagepublic_h__
-#define __packagepublic_h__
+#ifndef __dirnode_h__
+#define __dirnode_h__
 
-#include "basicpublic.h"
-
-#ifdef PACKAGE_EXPORTS
-    #define RATEL_PACKAGE_API __declspec(dllexport)
-#else
-    #define RATEL_PACKAGE_API __declspec(dllimport)
-#endif
+#include "filenode.h"
 
 RATEL_NAMESPACE_BEGIN
-struct DirNode;
-struct FileNode;
-#define PATH_SEPARATOR '/'
-#define ROOTDIR_NAME "root"
+
+struct DirNode
+{
+    RString dirname;
+    FileNodeList allfiles;
+    DirNode* parent = nullptr;
+    DirNode* next_sibling = nullptr;
+    DirNode* next_child = nullptr; 
+    DirNode(const RString& name)
+        :dirname(name){}
+};
+
 RATEL_NAMESPACE_END
 
 #endif

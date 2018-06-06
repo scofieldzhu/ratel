@@ -9,6 +9,7 @@ Module: basic.h
 #ifndef __basic_h__
 #define __basic_h__
 
+#include <vector>
 #include "rstring.h"
 
 #endif

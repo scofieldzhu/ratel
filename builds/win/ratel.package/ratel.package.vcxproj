@@ -94,7 +94,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;RATELPACKAGE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>PACKAGE_EXPORTS</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>../../../3rd/sflogger/include;../../../src/basic;../../../src/package;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -108,12 +108,14 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;RATELPACKAGE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>PACKAGE_EXPORTS</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>../../../3rd/sflogger/include;../../../src/basic;../../../src/package;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>../_bin;../../../3rd/sflogger/debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>ratel.basic-x64-d.lib;sflogger.core-v140-x64-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -124,7 +126,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;RATELPACKAGE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>PACKAGE_EXPORTS</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>../../../3rd/sflogger/include;../../../src/basic;../../../src/package;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -142,7 +144,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;RATELPACKAGE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>PACKAGE_EXPORTS</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>../../../3rd/sflogger/include;../../../src/basic;../../../src/package;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -153,6 +155,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\src\package\dirnode.h" />
+    <ClInclude Include="..\..\..\src\package\dirtree.h" />
+    <ClInclude Include="..\..\..\src\package\filenode.h" />
     <ClInclude Include="..\..\..\src\package\packagepublic.h" />
     <ClInclude Include="..\..\..\src\package\packagelogger.h" />
   </ItemGroup>
@@ -160,6 +165,7 @@
     <None Include="..\ratel.licenseheader" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\src\package\dirtree.cpp" />
     <ClCompile Include="..\..\..\src\package\packagelogger.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

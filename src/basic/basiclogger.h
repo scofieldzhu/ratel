@@ -9,14 +9,11 @@ Module: basiclogger.h
 #ifndef __basiclogger_h__
 #define __basiclogger_h__
 
-#include "utilmacro.h"
-#include "ratelnsp.h"
+#include "liblogger.h"
+#include "basicpublic.h"
 
-RATEL_NAMESPACE_BEGIN
-namespace basic {
-    SFLOGGER::Logger* LocalLogger();
-    void SetLocalLogger(SFLOGGER::Logger& l);
-}
-#define basiclogger RATEL::basic::LocalLogger()
-RATEL_NAMESPACE_END
+DECL_LOGGER(basic, RATEL_BASIC_API)
+
+#define basiclogger liblogger(basic)
+
 #endif

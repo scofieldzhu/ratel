@@ -10,14 +10,10 @@ Module: packagelogger.h
 #define __packagelogger_h__
 
 #include "packagepublic.h"
-#include "utilmacro.h"
-#include "ratelnsp.h"
+#include "liblogger.h"
 
-RATEL_NAMESPACE_BEGIN
-namespace package {
-    SFLOGGER::Logger* LocalLogger();
-    RATEL_PACKAGE_API void SetLocalLogger(SFLOGGER::Logger& l);
-}
-#define packagelogger RATEL::package::LocalLogger()
-RATEL_NAMESPACE_END
+DECL_LOGGER(package, RATEL_PACKAGE_API)
+
+#define packagelogger liblogger(package)
+
 #endif

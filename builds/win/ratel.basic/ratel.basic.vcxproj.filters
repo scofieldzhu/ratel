@@ -54,6 +54,9 @@
     <ClInclude Include="..\..\..\src\basic\basiclogger.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\basic\liblogger.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\basic\basiclogger.cpp">

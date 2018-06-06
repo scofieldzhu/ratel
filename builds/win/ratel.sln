@@ -14,6 +14,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ratel.filesys", "ratel.filesys\ratel.filesys.vcxproj", "{C15C9CD7-0418-42D7-A1C5-7EA3764FCB16}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "testbasic", "testbasic\testbasic.vcxproj", "{622E200A-C291-489D-9E25-9EF288E39152}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1B5F67E6-5EB7-4628-96F1-FD98CF26318C} = {1B5F67E6-5EB7-4628-96F1-FD98CF26318C}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

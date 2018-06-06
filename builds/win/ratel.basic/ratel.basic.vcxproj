@@ -168,6 +168,7 @@
     <ClInclude Include="..\..\..\src\basic\basiclogger.h" />
     <ClInclude Include="..\..\..\src\basic\basicpublic.h" />
     <ClInclude Include="..\..\..\src\basic\basetypes.h" />
+    <ClInclude Include="..\..\..\src\basic\liblogger.h" />
     <ClInclude Include="..\..\..\src\basic\pair.hpp" />
     <ClInclude Include="..\..\..\src\basic\ratelnsp.h" />
     <ClInclude Include="..\..\..\src\basic\rstring.h" />

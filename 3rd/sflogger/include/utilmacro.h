@@ -15,11 +15,11 @@
 #define log_fatal(plogger, fmt, ...) if(plogger) plogger->publish(SFLOGGER::fatallevel(), __XFILE__, __XFUNCTION__, __LINE__, fmt, __VA_ARGS__)
 
 #define slog(plogger, level) SFLOGGER::LogStream(plogger, level, __XFUNCTION__, __XFILE__, __LINE__)
-#define slog_debug(plogger) slog(plogger, debuglevel())
-#define slog_info(plogger) slog(plogger, infolevel())
-#define slog_warn(plogger) slog(plogger, warnlevel())
-#define slog_err(plogger) slog(plogger, errlevel())
-#define slog_fatal(plogger) slog(plogger, fatallevel())
+#define slog_debug(plogger) slog(plogger, SFLOGGER::debuglevel())
+#define slog_info(plogger) slog(plogger, SFLOGGER::infolevel())
+#define slog_warn(plogger) slog(plogger, SFLOGGER::warnlevel())
+#define slog_err(plogger) slog(plogger, SFLOGGER::errlevel())
+#define slog_fatal(plogger) slog(plogger, SFLOGGER::fatallevel())
 
 #define track_now(plogger) SFLOGGER::StartTrack(plogger, __XFILE__, __XFUNCTION__, __LINE__)
 #define stop_track() SFLOGGER::StopTrack(__XFILE__, __XFUNCTION__, __LINE__)
