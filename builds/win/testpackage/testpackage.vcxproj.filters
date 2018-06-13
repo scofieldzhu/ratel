@@ -15,18 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\src\filesys\filesyspublic.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\filesys\path.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\ratel.licenseheader" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\..\src\filesys\path.cpp">
+    <ClCompile Include="testmain.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

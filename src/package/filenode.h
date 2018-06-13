@@ -10,14 +10,14 @@ Module: filenode.h
 #define __filenode_h__
 
 #include "basic.h"
+#include "packagepublic.h"
 
 RATEL_NAMESPACE_BEGIN
 
 struct FileNode
 {
     RString filename;
-    int32 datafile_id;
-    DirNode* parent_dir = nullptr;
+    int32 datafile_id = 0;
 };
 using FileNodeList = std::vector<FileNode>;
 

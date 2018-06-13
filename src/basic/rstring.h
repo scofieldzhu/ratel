@@ -96,23 +96,15 @@ public:
     typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
     static const size_type npos;
-
-    size_t size()const;
-
-    // return maximum possible length of sequence
-    size_type maxsize() const;
-    
-    size_t capacity()const;
-    
+    size_t size()const;    
+    size_type maxsize() const;    // return maximum possible length of sequence
+    size_t capacity()const;    
     void resize(size_type newsize);
     void resize(size_type newsize, char ch);
-
     void reserve(size_type newcap = 0);
-
     bool empty() const;
-
+    bool null()const;
     const char* cstr()const;
-
     iterator begin();// return iterator for beginning of mutable sequence        
     const_iterator begin() const; // return iterator for beginning of nonmutable sequence
     iterator end(); // return iterator for end of mutable sequence

@@ -272,6 +272,11 @@ bool RString::empty() const
     return size() == 0;
 }
 
+bool RString::null() const
+{
+    return capacity() == 0 && size() == 0;
+}
+
 const char* RString::cstr() const
 {
     return dataptr();

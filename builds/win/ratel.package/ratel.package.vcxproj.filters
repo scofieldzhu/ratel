@@ -41,5 +41,8 @@
     <ClCompile Include="..\..\..\src\package\dirtree.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\package\dirnode.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

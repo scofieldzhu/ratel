@@ -4,17 +4,29 @@ for for those c++ developers pursuing fast-developement.
 Copyright (c) scofieldzhu. All rights reserved.	
 
 Project: ratel.filesys 
-Module: filesyspublic.h 
+Module: path.cpp 
+CreateTime: 2018-6-9 20:24
 =========================================================================*/
-#ifndef __filesyspublic_h__
-#define __filesyspublic_h__
+#include "path.h"
 
-#include "basic.h"
+RATEL_NAMESPACE_BEGIN
+const char Path::Separator = '/';
 
-#ifdef FILESYS_EXPORTS
-    #define RATEL_FILESYS_API __declspec(dllexport)
-#else
-    #define RATEL_FILESYS_API __declspec(dllimport)
-#endif
+Path::Path(const RString& str)
+    :pathstr_(str)
+{}
 
-#endif
+Path::~Path()
+{}
+
+Path Path::join(const RString& str) const
+{
+    return Path("");
+
+}
+
+Path Path::parentDir() const
+{
+    return Path("");
+}
+RATEL_NAMESPACE_END

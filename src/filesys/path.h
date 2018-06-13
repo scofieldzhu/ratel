@@ -3,26 +3,29 @@ Ratel is a application framework, which provides some convenient librarys
 for for those c++ developers pursuing fast-developement.
 Copyright (c) scofieldzhu. All rights reserved.	
 
-Project: ratel.package 
-Module: packagepublic.h 
-CreateTime:2018-6-6 19:51
+Project: ratel.filesys 
+Module: path.h 
+CreateTime: 2018-6-9 20:23
 =========================================================================*/
-#ifndef __packagepublic_h__
-#define __packagepublic_h__
+#ifndef __path_h__
+#define __path_h__
 
-#include "basicpublic.h"
-
-#ifdef PACKAGE_EXPORTS
-    #define RATEL_PACKAGE_API __declspec(dllexport)
-#else
-    #define RATEL_PACKAGE_API __declspec(dllimport)
-#endif
+#include "filesyspublic.h"
 
 RATEL_NAMESPACE_BEGIN
-struct DirNode;
-struct FileNode;
-#define PATH_SEPARATOR '/'
-#define ROOTDIR_NAME "*"
+
+class RATEL_FILESYS_API Path
+{
+public:
+    static const char Separator;
+    Path join(const RString& str)const;
+    Path parentDir()const;
+    Path(const RString& str);
+    ~Path();
+
+private:
+    RString pathstr_;
+};
 RATEL_NAMESPACE_END
 
 #endif

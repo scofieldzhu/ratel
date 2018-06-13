@@ -14,15 +14,20 @@ CreateTime: 2018-6-6 20:37
 
 RATEL_NAMESPACE_BEGIN
 
-struct DirNode
-{
+struct RATEL_PACKAGE_API DirNode
+{   
+    bool existFile(const RString& filename)const;
+    int32 findFile(const RString& filename)const;
+    const DirNode* findSiblingDir(const RString& siblingname);
+    const DirNode* findChildDir(const RString& dirname)const;
+    const RString& path()const;
+    DirNode(const RString& name);
+
     RString dirname;
     FileNodeList allfiles;
     DirNode* parent = nullptr;
     DirNode* next_sibling = nullptr;
-    DirNode* next_child = nullptr; 
-    DirNode(const RString& name)
-        :dirname(name){}
+    DirNode* next_child = nullptr;
 };
 
 RATEL_NAMESPACE_END

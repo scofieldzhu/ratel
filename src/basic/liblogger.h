@@ -33,5 +33,7 @@ RATEL_NAMESPACE_BEGIN
 
 #define liblogger(lib) RATEL::lib::LibLogger()
 
+using std::endl;
+
 RATEL_NAMESPACE_END
 #endif
