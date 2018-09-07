@@ -83,7 +83,7 @@ void TestCase_DeleteDir(DirTree& tree)
     TestCase_PrintTree(*tree.rootNode(), layer);
 }
 
-int main() 
+void TestCase_TestTreeOp() 
 {
     DirTree tree;
     TestCase_CreateDir(tree);
@@ -91,6 +91,16 @@ int main()
     TestCase_RenameFile(tree);
     TestCase_RenameDir(tree);
     TestCase_DeleteDir(tree);
+}
+
+int main() 
+{
+    
+    //DB* db = DB::OpenDB("test.db", SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
+
+
+
+   
     return 0;
 }
 

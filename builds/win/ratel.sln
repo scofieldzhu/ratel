@@ -9,6 +9,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ratel.kernel", "ratel.kerne
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ratel.package", "ratel.package\ratel.package.vcxproj", "{7DBF8B5E-94AC-4FA1-A5A6-2B0943CDD441}"
 	ProjectSection(ProjectDependencies) = postProject
+		{C15C9CD7-0418-42D7-A1C5-7EA3764FCB16} = {C15C9CD7-0418-42D7-A1C5-7EA3764FCB16}
 		{1B5F67E6-5EB7-4628-96F1-FD98CF26318C} = {1B5F67E6-5EB7-4628-96F1-FD98CF26318C}
 	EndProjectSection
 EndProject
@@ -24,6 +25,13 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "testpackage", "testpackage\testpackage.vcxproj", "{B0F31D11-D2A3-48C6-872A-B478E4769C58}"
 	ProjectSection(ProjectDependencies) = postProject
 		{7DBF8B5E-94AC-4FA1-A5A6-2B0943CDD441} = {7DBF8B5E-94AC-4FA1-A5A6-2B0943CDD441}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ratel.sqlite", "ratel.sqlite\ratel.sqlite.vcxproj", "{D7E2B7C5-717A-4031-B1AC-1AD406AAF83D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "testsqlite", "testsqlite\testsqlite.vcxproj", "{6D49EA19-8777-4592-9F42-5C703C4B841C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D7E2B7C5-717A-4031-B1AC-1AD406AAF83D} = {D7E2B7C5-717A-4031-B1AC-1AD406AAF83D}
 	EndProjectSection
 EndProject
 Global
@@ -90,6 +98,22 @@ Global
 		{B0F31D11-D2A3-48C6-872A-B478E4769C58}.Release|x64.Build.0 = Release|x64
 		{B0F31D11-D2A3-48C6-872A-B478E4769C58}.Release|x86.ActiveCfg = Release|Win32
 		{B0F31D11-D2A3-48C6-872A-B478E4769C58}.Release|x86.Build.0 = Release|Win32
+		{D7E2B7C5-717A-4031-B1AC-1AD406AAF83D}.Debug|x64.ActiveCfg = Debug|x64
+		{D7E2B7C5-717A-4031-B1AC-1AD406AAF83D}.Debug|x64.Build.0 = Debug|x64
+		{D7E2B7C5-717A-4031-B1AC-1AD406AAF83D}.Debug|x86.ActiveCfg = Debug|Win32
+		{D7E2B7C5-717A-4031-B1AC-1AD406AAF83D}.Debug|x86.Build.0 = Debug|Win32
+		{D7E2B7C5-717A-4031-B1AC-1AD406AAF83D}.Release|x64.ActiveCfg = Release|x64
+		{D7E2B7C5-717A-4031-B1AC-1AD406AAF83D}.Release|x64.Build.0 = Release|x64
+		{D7E2B7C5-717A-4031-B1AC-1AD406AAF83D}.Release|x86.ActiveCfg = Release|Win32
+		{D7E2B7C5-717A-4031-B1AC-1AD406AAF83D}.Release|x86.Build.0 = Release|Win32
+		{6D49EA19-8777-4592-9F42-5C703C4B841C}.Debug|x64.ActiveCfg = Debug|x64
+		{6D49EA19-8777-4592-9F42-5C703C4B841C}.Debug|x64.Build.0 = Debug|x64
+		{6D49EA19-8777-4592-9F42-5C703C4B841C}.Debug|x86.ActiveCfg = Debug|Win32
+		{6D49EA19-8777-4592-9F42-5C703C4B841C}.Debug|x86.Build.0 = Debug|Win32
+		{6D49EA19-8777-4592-9F42-5C703C4B841C}.Release|x64.ActiveCfg = Release|x64
+		{6D49EA19-8777-4592-9F42-5C703C4B841C}.Release|x64.Build.0 = Release|x64
+		{6D49EA19-8777-4592-9F42-5C703C4B841C}.Release|x86.ActiveCfg = Release|Win32
+		{6D49EA19-8777-4592-9F42-5C703C4B841C}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

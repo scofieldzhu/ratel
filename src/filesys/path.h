@@ -18,8 +18,12 @@ class RATEL_FILESYS_API Path
 {
 public:
     static const char Separator;
+    const RString& toRString()const { return pathstr_; }
+    bool exists()const;
+    bool isDirectory()const;
+    bool isRegularFile()const;
     Path join(const RString& str)const;
-    Path parentDir()const;
+    Path parentPath()const;
     Path(const RString& str);
     ~Path();
 

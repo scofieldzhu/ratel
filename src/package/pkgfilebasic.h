@@ -4,25 +4,25 @@ for for those c++ developers pursuing fast-developement.
 Copyright (c) scofieldzhu. All rights reserved.	
 
 Project: ratel.package 
-Module: packagepublic.h 
-CreateTime:2018-6-6 19:51
+Module: pkgfilebasic.h 
+CreateTime: 2018-9-2 21:01
 =========================================================================*/
-#ifndef __packagepublic_h__
-#define __packagepublic_h__
+#ifndef __pkgfilebasic_h__
+#define __pkgfilebasic_h__
 
-#include "basic.h"
-
-#ifdef PACKAGE_EXPORTS
-    #define RATEL_PACKAGE_API __declspec(dllexport)
-#else
-    #define RATEL_PACKAGE_API __declspec(dllimport)
-#endif
+#include "packagepublic.h"
 
 RATEL_NAMESPACE_BEGIN
-struct DirNode;
-struct FileNode;
-#define PATH_SEPARATOR '/'
-#define ROOTDIR_NAME "*"
+
+const uint32 kPkgTypeCharNum = 6;
+
+struct PkgInfo
+{
+    char pkgtype[kPkgTypeCharNum]; //rtlpkg
+    uint32 dbdatasize;
+    char dbdata[1]; //datasize
+};
+
 RATEL_NAMESPACE_END
 
 #endif

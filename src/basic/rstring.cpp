@@ -7,6 +7,7 @@ Project: ratel.basic
 Module: rstring.cpp 
 =========================================================================*/
 #include "rstring.h"
+#include <cstdarg>
 
 RATEL_NAMESPACE_BEGIN
 
@@ -19,6 +20,10 @@ RATEL_NAMESPACE_BEGIN
         throw std::invalid_argument("invalid null pointer!"); 
 
 const RString::size_type RString::npos = -1;
+
+namespace {
+    const int32 MAX_STR_BUFFER_SIZE = 250;
+}
 
 char* RString::dataptr()
 {
@@ -983,6 +988,26 @@ RString& RString::replace(const_iterator first, const_iterator last, iterator fi
     else
         replace(first - begin(), last - first, &*first2, last2 - first2);
     return *this;
+}
+
+RString RString::FormatString(const char * format, ...)
+{
+    va_list vl;
+    va_start(vl, format);
+    char buffer[MAX_STR_BUFFER_SIZE] = { '\0' };
+    vsprintf_s(buffer, MAX_STR_BUFFER_SIZE - 1, format, vl);
+    va_end(vl);
+    return buffer;
+}
+
+RString& RString::format(const char * format, ...)
+{
+    va_list vl;
+    va_start(vl, format);
+    char buffer[MAX_STR_BUFFER_SIZE] = { '\0' };
+    vsprintf_s(buffer, MAX_STR_BUFFER_SIZE - 1, format, vl);
+    va_end(vl);
+    return assign(buffer);
 }
 
 RString& RString::replace(const_iterator first, const_iterator last, const char* strptr, size_type cnt)

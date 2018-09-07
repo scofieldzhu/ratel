@@ -4,25 +4,20 @@ for for those c++ developers pursuing fast-developement.
 Copyright (c) scofieldzhu. All rights reserved.	
 
 Project: ratel.package 
-Module: packagepublic.h 
-CreateTime:2018-6-6 19:51
+Module: rtldirdata.h 
+CreateTime: 2018-7-7 21:13
 =========================================================================*/
-#ifndef __packagepublic_h__
-#define __packagepublic_h__
+#ifndef __rtldirdata_h__
+#define __rtldirdata_h__
 
-#include "basic.h"
-
-#ifdef PACKAGE_EXPORTS
-    #define RATEL_PACKAGE_API __declspec(dllexport)
-#else
-    #define RATEL_PACKAGE_API __declspec(dllimport)
-#endif
+#include "packagepublic.h"
 
 RATEL_NAMESPACE_BEGIN
-struct DirNode;
-struct FileNode;
-#define PATH_SEPARATOR '/'
-#define ROOTDIR_NAME "*"
-RATEL_NAMESPACE_END
 
+struct RtlDirData
+{
+    RString dirname;
+};
+
+RATEL_NAMESPACE_END
 #endif

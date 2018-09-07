@@ -41,6 +41,7 @@
 
 #ignore files
 *.licenseheader
+*.vcxproj.user
 
 #Debugger files
 
@@ -69,8 +70,17 @@ builds/win/testbasic/Debug/
 builds/win/testbasic/x64/Debug/
 builds/win/testbasic/Release/
 builds/win/testbasic/x64/Release/
+builds/win/testpackage/Debug/
+builds/win/testpackage/x64/Debug/
+builds/win/testpackage/Release/
+builds/win/testpackage/x64/Release/
+builds/win/testsqlite/Debug/
+builds/win/testsqlite/x64/Debug/
+builds/win/testsqlite/Release/
+builds/win/testsqlite/x64/Release/
 builds/win/_bin/
 builds/win/Debug/
 builds/win/Release/
 builds/win/x64/
 builds/win/.vs/
+*.user

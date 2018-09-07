@@ -3,22 +3,18 @@ Ratel is a application framework, which provides some convenient librarys
 for for those c++ developers pursuing fast-developement.
 Copyright (c) scofieldzhu. All rights reserved.	
 
-Project: ratel.filesys 
-Module: filesyspublic.h 
+Project: ratel.sqlite 
+Module: sqlitelogger.h 
+CreateTime: 2018-7-14 10:36
 =========================================================================*/
-#ifndef __filesyspublic_h__
-#define __filesyspublic_h__
+#ifndef __sqlitelogger_h__
+#define __sqlitelogger_h__
 
-#include "basic.h"
+#include "sqlitepublic.h"
+#include "liblogger.h"
 
-#ifdef FILESYS_EXPORTS
-    #define RATEL_FILESYS_API __declspec(dllexport)
-#else
-    #define RATEL_FILESYS_API __declspec(dllimport)
-#endif
+DECL_LOGGER(sqlite, RATEL_SQLITE_API)
 
-RATEL_NAMESPACE_BEGIN
-class Path;
-RATEL_NAMESPACE_END
+#define sqlitelogger liblogger(sqlite)
 
 #endif

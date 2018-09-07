@@ -282,6 +282,10 @@ public:
     RString& replace(const_iterator first, const_iterator last, const_iterator first2, const_iterator last2);
     // replace [first, last) with [first2, last2), const_iterators
     RString& replace(const_iterator first, const_iterator last, iterator first2, iterator last2);
+
+    static RString FormatString(const char* format, ...);
+
+    RString& format(const char* format, ...);
         
     // assign [strptr, <null>)
     RString& operator=(const char* strptr);

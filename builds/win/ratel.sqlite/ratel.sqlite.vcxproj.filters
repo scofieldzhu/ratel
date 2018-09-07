@@ -15,28 +15,22 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\src\package\packagepublic.h">
+    <ClInclude Include="..\..\..\src\sqlite\sqlitepublic.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\package\packagelogger.h">
+    <ClInclude Include="..\..\..\src\sqlite\sqlitelogger.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\package\dirtree.h">
+    <ClInclude Include="..\..\..\src\sqlite\tablerow.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\package\filenode.h">
+    <ClInclude Include="..\..\..\src\sqlite\db.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\package\dirnode.h">
+    <ClInclude Include="..\..\..\src\sqlite\table.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\package\rtldirdata.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\package\pkgfilereader.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\package\pkgfilebasic.h">
+    <ClInclude Include="..\..\..\src\sqlite\tablecol.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -44,16 +38,19 @@
     <None Include="..\ratel.licenseheader" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\package\packagelogger.cpp">
+    <ClCompile Include="..\..\..\src\sqlite\sqlitelogger.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\package\dirtree.cpp">
+    <ClCompile Include="..\..\..\src\sqlite\sqlitetable.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\package\dirnode.cpp">
+    <ClCompile Include="..\..\..\src\sqlite\tablerow.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\package\pkgfilereader.cpp">
+    <ClCompile Include="..\..\..\src\sqlite\db.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\sqlite\table.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

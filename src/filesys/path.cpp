@@ -25,8 +25,27 @@ Path Path::join(const RString& str) const
 
 }
 
-Path Path::parentDir() const
+Path Path::parentPath() const
 {
     return Path("");
 }
+
+bool Path::exists() const
+{
+    struct stat s;
+    return stat(pathstr_.cstr(), &s) == 0;
+}
+
+bool Path::isDirectory() const
+{
+    struct stat s;
+    return stat(pathstr_.cstr(), &s) == 0 && (s.st_mode & S_IFDIR);    
+}
+
+bool Path::isRegularFile() const
+{
+    struct stat s;
+    return stat(pathstr_.cstr(), &s) == 0 && (s.st_mode & S_IFREG);
+}
+
 RATEL_NAMESPACE_END

@@ -34,7 +34,9 @@ DirTree::DirTree()
 {}
 
 DirTree::~DirTree()
-{}
+{
+    deleteDirNode(rootnode_);
+}
 
 const DirNode* DirTree::createDir(const RString& dirname, const RString& parent_path)
 {
@@ -186,6 +188,10 @@ bool DirTree::findFile(const RString& filepath, FileNode& outfn)const
 
 void DirTree::deleteDir(const RString& dirpath)
 {
+    if(dirpath == ROOTDIR_NAME){
+        slog_warn(packagelogger) << "root dir[" << dirpath.cstr() << "] cannot be deleted!" << endl;
+        return;
+    }
     DirNode* thedirnode = findDir(dirpath);
     if(thedirnode == nullptr){
         slog_warn(packagelogger) << "dir[" << dirpath.cstr() << "] not exists" << endl;
