@@ -11,7 +11,7 @@
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LocalDebuggerEnvironment>../_bin;C:\work\github\ratel\ratel\3rd\sflogger\debug $(LocalDebuggerEnvironment)</LocalDebuggerEnvironment>
+    <LocalDebuggerEnvironment>PATH=$(PATH);$(PATH);../_bin;../../../3rd/sflogger/bin $(LocalDebuggerEnvironment)</LocalDebuggerEnvironment>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
