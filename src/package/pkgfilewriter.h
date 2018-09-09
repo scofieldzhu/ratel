@@ -4,19 +4,31 @@ for for those c++ developers pursuing fast-developement.
 Copyright (c) scofieldzhu. All rights reserved.	
 
 Project: ratel.package 
-Module: rtldirdata.h 
-CreateTime: 2018-7-7 21:13
+Module: pkgfilewriter.h 
+CreateTime: 2018-9-9 17:57
 =========================================================================*/
-#ifndef __rtldirdata_h__
-#define __rtldirdata_h__
+#ifndef __pkgfilewriter_h__
+#define __pkgfilewriter_h__
 
+#include <fstream>
 #include "packagepublic.h"
+#include "path.h"
 
 RATEL_NAMESPACE_BEGIN
 
-struct RtlDirData
+class RATEL_PACKAGE_API PkgFileWriter
 {
-    RString dirname;
+public:
+    bool beginWrite();
+    bool writeFileData(const Path& file);
+    void end();
+    bool inWritting()const;
+    PkgFileWriter(const Path& filepath);
+    ~PkgFileWriter();
+
+private:
+    std::ofstream ofs_;
+    const Path& filepath_;
 };
 
 RATEL_NAMESPACE_END

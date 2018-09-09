@@ -11,9 +11,6 @@ CreateTime: 2018-9-1 19:34
 #include "pkgfilebasic.h"
 #include "packagelogger.h"
 using namespace std;
-namespace {
-    const char* kPkgTypeCode = "rtlpkg";
-}
 
 RATEL_NAMESPACE_BEGIN
 
@@ -22,7 +19,9 @@ PkgFileReader::PkgFileReader(const Path& filepath)
 {}
 
 PkgFileReader::~PkgFileReader()
-{}
+{
+    close();
+}
 
 bool PkgFileReader::open() 
 {
@@ -83,7 +82,7 @@ bool PkgFileReader::readTypeId()
     fs_.read(typebuf, kPkgTypeCharNum);
     if(fs_){
         RString typestr(typebuf);
-        if(typestr == kPkgTypeCode) 
+        if(typestr == PKGTYPE_CODE) 
             return true;
     }
     return false;    

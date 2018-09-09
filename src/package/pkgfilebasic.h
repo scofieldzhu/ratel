@@ -18,10 +18,14 @@ const uint32 kPkgTypeCharNum = 6;
 
 struct PkgInfo
 {
-    char pkgtype[kPkgTypeCharNum]; //rtlpkg
+    char pkgtypecode[kPkgTypeCharNum]; //rtlpkg
+    int32 compressor; //
+    int32 compressrate;
     uint32 dbdatasize;
     char dbdata[1]; //datasize
 };
+
+#define PKGTYPE_CODE "rtlpkg"
 
 RATEL_NAMESPACE_END
 

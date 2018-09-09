@@ -160,12 +160,13 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\src\package\dirnode.h" />
     <ClInclude Include="..\..\..\src\package\dirtree.h" />
+    <ClInclude Include="..\..\..\src\package\package.h" />
     <ClInclude Include="..\..\..\src\package\pkgfilebasic.h" />
-    <ClInclude Include="..\..\..\src\package\rtldirdata.h" />
     <ClInclude Include="..\..\..\src\package\pkgfilereader.h" />
     <ClInclude Include="..\..\..\src\package\filenode.h" />
     <ClInclude Include="..\..\..\src\package\packagepublic.h" />
     <ClInclude Include="..\..\..\src\package\packagelogger.h" />
+    <ClInclude Include="..\..\..\src\package\pkgfilewriter.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\ratel.licenseheader" />
@@ -175,6 +176,7 @@
     <ClCompile Include="..\..\..\src\package\dirtree.cpp" />
     <ClCompile Include="..\..\..\src\package\pkgfilereader.cpp" />
     <ClCompile Include="..\..\..\src\package\packagelogger.cpp" />
+    <ClCompile Include="..\..\..\src\package\pkgfilewriter.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
