@@ -9,7 +9,7 @@ CreateTime: 2018-9-9 17:57
 =========================================================================*/
 #include "pkgfilewriter.h"
 #include "pkgfilebasic.h"
-#include "packagelogger.h"
+#include "pkglogger.h"
 using namespace std;
 
 RATEL_NAMESPACE_BEGIN
@@ -25,12 +25,12 @@ PkgFileWriter::~PkgFileWriter()
 bool PkgFileWriter::beginWrite()
 {
     if(!filepath_.exists() || !filepath_.isRegularFile()){
-        slog_err(packagelogger) << "invalid filepath(" << filepath_.toRString().cstr() << ")!" << endl;
+        slog_err(pkglogger) << "invalid filepath(" << filepath_.rstring().cstr() << ")!" << endl;
         return false;
     }
-    ofs_.open(filepath_.toRString().cstr(), ios_base::binary | ios_base::out);
+    ofs_.open(filepath_.rstring().cstr(), ios_base::binary | ios_base::out);
     if(!ofs_.is_open()){
-        slog_err(packagelogger) << "open filepath(" << filepath_.toRString().cstr() << ") failed for write!" << endl;
+        slog_err(pkglogger) << "open filepath(" << filepath_.rstring().cstr() << ") failed for write!" << endl;
         return false;
     }
     ofs_.write(PKGTYPE_CODE, strlen(PKGTYPE_CODE));
@@ -40,16 +40,16 @@ bool PkgFileWriter::beginWrite()
 bool PkgFileWriter::writeFileData(const Path& thefile)
 {
     if(inWritting()) {
-        slog_err(packagelogger) << "writer is not in writting mode at present!" << endl;
+        slog_err(pkglogger) << "writer is not in writting mode at present!" << endl;
         return false;
     }
     if(!thefile.exists() || !thefile.isRegularFile()) {
-        slog_err(packagelogger) << "invalid filepath(" << thefile.toRString().cstr() << ")!" << endl;
+        slog_err(pkglogger) << "invalid filepath(" << thefile.rstring().cstr() << ")!" << endl;
         return false;
     }
-    ifstream ifs_(thefile.toRString().cstr(), ios_base::in | ios_base::binary);
+    ifstream ifs_(thefile.rstring().cstr(), ios_base::in | ios_base::binary);
     if(!ifs_.is_open()){
-        slog_err(packagelogger) << "open dbfile(" << thefile.toRString().cstr() << ") failed for read!" << endl;
+        slog_err(pkglogger) << "open dbfile(" << thefile.rstring().cstr() << ") failed for read!" << endl;
         return false;
     }
     //write filesize field 

@@ -124,6 +124,10 @@ public:
     reference at(size_type off);
     // subscript nonmutable sequence with checking
     const_reference at(size_type off) const;
+    reference front() { return at(0); }
+    const_reference front()const { return at(0); }
+    reference back() { return at(size() - 1); }
+    const_reference back()const{ return at(size() - 1); }
 
     // copy [off, off + cnt) to [dest, dest + cnt)
     size_type copys(char* dest, size_type dsize, size_type cnt, size_type off = 0) const;
@@ -255,6 +259,8 @@ public:
     iterator erase(const_iterator w);
     // erase substring [first, last)
     iterator erase(const_iterator first, const_iterator last);
+    RString& eraseTail();
+    RString& eraseHeader();
 
     // replace [off, off + cnt) with _Right
     RString& replace(size_type off, size_type cnt, const RString& rhs);

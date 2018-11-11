@@ -3,24 +3,15 @@ Ratel is a application framework, which provides some convenient librarys
 for for those c++ developers pursuing fast-developement.
 Copyright (c) scofieldzhu. All rights reserved.	
 
-Project: ratel.package 
-Module: filenode.h 
+Project: testpackage 
+Module: testdirtree.h 
+CreateTime: 2018-9-26 21:09
 =========================================================================*/
-#ifndef __filenode_h__
-#define __filenode_h__
+#ifndef __testdirtree_h__
+#define __testdirtree_h__
 
-#include "basic.h"
 #include "packagepublic.h"
 
-RATEL_NAMESPACE_BEGIN
+void TestCase_TestTreeOp();
 
-struct FileNode
-{
-    RString filename;
-    int32 diskfileid = 0;
-    int32 dbid = -1;
-};
-using FileNodeList = std::vector<FileNode>;
-
-RATEL_NAMESPACE_END
 #endif

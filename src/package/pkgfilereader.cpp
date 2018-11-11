@@ -9,7 +9,7 @@ CreateTime: 2018-9-1 19:34
 =========================================================================*/
 #include "pkgfilereader.h"
 #include "pkgfilebasic.h"
-#include "packagelogger.h"
+#include "pkglogger.h"
 using namespace std;
 
 RATEL_NAMESPACE_BEGIN
@@ -27,10 +27,10 @@ bool PkgFileReader::open()
 {
     dbdatasize_ = -1;
     if(pkgpath_.isRegularFile()){
-        slog_err(packagelogger) << "pkgpath(" << pkgpath_.toRString().cstr() << ") is invalid!" << endl;
+        slog_err(pkglogger) << "pkgpath(" << pkgpath_.rstring().cstr() << ") is invalid!" << endl;
         return false;
     }
-    fs_.open(pkgpath_.toRString().cstr(), ios_base::in | ios_base::binary);        
+    fs_.open(pkgpath_.rstring().cstr(), ios_base::in | ios_base::binary);        
     if(fs_){
         if(!readTypeId())
             return false;

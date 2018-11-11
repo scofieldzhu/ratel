@@ -580,7 +580,7 @@ RString::list_type RString::split(char splitchar) const
     list_type result_strings;
     size_type start = 0;
     size_type pos = 0;
-    while (pos < size()) {
+    while(start < size()) {
         pos = find(splitchar, start);
         if (pos == npos) {
             result_strings.push_back(substr(start));
@@ -904,6 +904,24 @@ RString::iterator RString::erase(const_iterator first, const_iterator last)
     size_type cnt = first - begin();
     erase(cnt, last - first);
     return begin() + cnt;
+}
+
+RString& RString::eraseTail()
+{
+    if(!empty())
+        return erase(size() - 1);
+    return *this;
+}
+
+RString& RString::eraseHeader()
+{
+    if(!empty()){
+        char* s = dataptr();
+        size_t newsize = size() - 1;
+        traits_type::move(s, s + 1, newsize);
+        truncate(newsize);
+    }
+    return *this;
 }
 
 template<class ptr_type>
@@ -1307,7 +1325,7 @@ void RString::copy(size_type newsize, size_type oldsize)
 
 void RString::checkOffset(const size_type off) const
 {
-    if (val_.cur_size < off)
+    if(val_.cur_size < off)
         throw std::invalid_argument("subscript out of range");
 }
 
@@ -1319,7 +1337,7 @@ RString::size_type RString::getSuffixSize(const size_type off, const size_type s
 
 void RString::charAssign(size_type off, size_type cnt, char ch)
 {
-    if (cnt == 1)
+    if(cnt == 1)
         traits_type::assign(*(val_.dataptr() + off), ch);
     else
         traits_type::assign(val_.dataptr() + off, cnt, ch);
@@ -1327,7 +1345,7 @@ void RString::charAssign(size_type off, size_type cnt, char ch)
 
 void RString::tidy(bool built /*= false*/, size_type newsize /*= 0*/)
 {
-    if (!built)
+    if(!built)
         ;
     else if (val_.reserve_size > RStringVal::BUFFER_SIZE) {
         // copy any leftovers to small buffer and deallocate

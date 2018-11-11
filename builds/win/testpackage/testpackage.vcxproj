@@ -104,13 +104,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../../../src/package;../../../src/basic;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../src/package;../../../src/filesys;../../../src/sqlite;../../../src/basic;../../../3rd\sflogger\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>../_bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>ratel.basic-x64-d.lib;ratel.package-x64-d.lib;ratel.sqlite-x64-d.lib;../../../3rd/sqlite3.24/bin/sqlite3-x64-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../_bin;../../../3rd\sflogger\bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>ratel.basic-x64-d.lib;ratel.package-x64-d.lib;ratel.sqlite-x64-d.lib;ratel.filesys-x64-d.lib;sflogger.core-v140-x64-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -150,7 +150,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="testdirtree.cpp" />
     <ClCompile Include="testmain.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="testdirtree.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\ratel.licenseheader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

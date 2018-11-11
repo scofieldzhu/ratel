@@ -9,7 +9,8 @@ Module: dirtree.cpp
 #include "dirtree.h"
 #include <algorithm>
 #include "dirnode.h"
-#include "packagelogger.h"
+#include "pkglogger.h"
+#include "path.h"
 using namespace std;
 
 RATEL_NAMESPACE_BEGIN
@@ -38,77 +39,75 @@ DirTree::~DirTree()
     deleteDirNode(rootnode_);
 }
 
-const DirNode* DirTree::createDir(const RString& dirname, const RString& parent_path)
+DirNode* DirTree::createDir(const RString& name, const Path& parentpath)
 {
-    DirNode* parent = findDir(parent_path);
-    if(parent == nullptr){
-        slog_warn(packagelogger) << "parent path[" << parent_path.cstr() << "] is invalid!" << endl;
+    DirNode* parentnode = locateDir(parentpath);
+    if(parentnode == nullptr){
+        slog_warn(pkglogger) << "parent path[" << parentpath.cstr() << "] is invalid!" << endl;
         return nullptr;
     }
     //check if exists same dirname in children
-    if(parent->findChildDir(dirname)){
-        slog_warn(packagelogger) << "dir already exists with name[" << dirname.cstr() << "]!" << endl;
+    if(parentnode->findChild(name)){
+        slog_warn(pkglogger) << "dir already exists with name[" << name.cstr() << "]!" << endl;
         return nullptr;
     }
-    DirNode* newdir = new DirNode(dirname);
-    newdir->parent = parent;
+    DirNode* newdir = new DirNode(name);
+    newdir->parent = parentnode;
     //append child
-    DirNode* prechild = findLastChildDir(parent);
-    if (!prechild)
-        parent->next_child = newdir;
+    DirNode* prechild = findLastChildDir(parentnode);
+    if(!prechild)
+        parentnode->nextchild = newdir;
     else 
-        prechild->next_sibling = newdir;    
+        prechild->nextsibling = newdir;    
     return newdir;
 }
 
-const DirNode* DirTree::findDir(const RString& dirpath) const
+DirNode* DirTree::locateDir(const Path& dirpath)
 {
     if(dirpath.empty())
         return nullptr;
-    RStrings path_strs = dirpath.split(PATH_SEPARATOR);
+    RStrings splitdirstrs = dirpath.rstring().split(PATH_SEPARATOR);
     DirNode* targetnode = nullptr;
     DirNode* curnode = rootnode_;
-    for(int32 i = 0; i < path_strs.size(); ++i){
-        const RString curdir = path_strs[i];
-        bool matched = false;
+    for(int32 i = 0; i < splitdirstrs.size(); ++i){
+        const RString kCurDirName = splitdirstrs[i];
         while(curnode){
-            if(curnode->dirname == curdir){
-                matched = true;
+            if(curnode->name == kCurDirName)
                 break;
-            }
-            curnode = curnode->next_sibling;
+            curnode = curnode->nextsibling;
         }
-        if(!matched)
+        if(curnode == nullptr)
             return nullptr;
         targetnode = curnode;
-        curnode = curnode->next_child;
+        curnode = curnode->nextchild;
     }
     return targetnode;
 }
 
-DirNode* DirTree::findDir(const RString& dirpath)
-{
-    return const_cast<DirNode*>(const_cast<const DirTree*>(this)->findDir(dirpath));
-}
+// DirNode* DirTree::locateDir(const Path& dirpath) 
+// {
+//     const DirNode* thenode = const_cast<const DirTree*>(this)->locateDir(dirpath);
+//     return const_cast<DirNode*>(thenode);
+// }
 
 bool DirTree::renameDir(const RString& dirpath, const RString& newname)
 {
-    DirNode* dirnode = findDir(dirpath);
+    DirNode* dirnode = locateDir(dirpath);
     if(!dirnode){
-        slog_warn(packagelogger) << "dir[" << dirpath.cstr() << "] not exists" << endl;
+        slog_warn(pkglogger) << "dir[" << dirpath.cstr() << "] not exists" << endl;
         return false;
     }
     DirNode* parent_dirnode = dirnode->parent;
     if(!parent_dirnode){ //modify name directly
-        dirnode->dirname = newname;
+        dirnode->name = newname;
         return true;
     }
-    const DirNode* exists_node = parent_dirnode->findChildDir(newname);
+    const DirNode* exists_node = parent_dirnode->findChild(newname);
     if(exists_node && exists_node != dirnode){
-        slog_warn(packagelogger) << "sibling dir [" << newname.cstr() << "] already exists" << endl;
+        slog_warn(pkglogger) << "sibling dir [" << newname.cstr() << "] already exists" << endl;
         return false;
     }
-    dirnode->dirname = newname;
+    dirnode->name = newname;
     return true;    
 }
 
@@ -118,16 +117,16 @@ bool DirTree::createFile(const RString& filepath)
     SplitFilePath(filepath, dirpath, filename);
     if(dirpath.empty() || filename.empty())
         return false;
-    DirNode* dirnode = findDir(dirpath);
+    DirNode* dirnode = locateDir(dirpath);
     if(!dirnode){
-        slog_warn(packagelogger) << "dir[" << dirpath.cstr() << "] not exists" << endl;
+        slog_warn(pkglogger) << "dir[" << dirpath.cstr() << "] not exists" << endl;
         return false;
     }
     if(dirnode->findFile(filename) == -1){ //file not exists at present
-        FileNode new_filenode;
-        new_filenode.filename = filename;
-        new_filenode.datafile_id = 0;
-        dirnode->allfiles.push_back(new_filenode);
+        FileNode newnode;
+        newnode.filename = filename;
+        newnode.diskfileid = 0;
+        dirnode->allfiles.push_back(newnode);
         return true;
     }
     return false;    
@@ -139,13 +138,13 @@ bool DirTree::renameFile(const RString& filepath, const RString& newfilename)
     SplitFilePath(filepath, dirpath, filename);
     if(dirpath.empty() || filename.empty())
         return false;
-    DirNode* dirnode = findDir(dirpath);
+    DirNode* dirnode = locateDir(dirpath);
     if(!dirnode || !dirnode->existFile(filename)){
-        slog_warn(packagelogger) << "the file[" << filepath.cstr() << "] not exists" << endl;
+        slog_warn(pkglogger) << "the file[" << filepath.cstr() << "] not exists" << endl;
         return false;
     }
     if(dirnode->existFile(newfilename)){
-        slog_warn(packagelogger) << "cannot rename to newfilename[" << newfilename.cstr() << "] already existed!" << endl;
+        slog_warn(pkglogger) << "cannot rename to newfilename[" << newfilename.cstr() << "] already existed!" << endl;
         return false;
     }
     int32 fidx = dirnode->findFile(filename);
@@ -159,9 +158,9 @@ void DirTree::deleteFile(const RString& filepath)
     SplitFilePath(filepath, dirpath, filename);
     if(dirpath.empty())
         return;
-    DirNode* dirnode = findDir(dirpath);
+    DirNode* dirnode = locateDir(dirpath);
     if(!dirnode){
-        slog_warn(packagelogger) << "dir[" << dirpath.cstr() << "] not exists" << endl;
+        slog_warn(pkglogger) << "dir[" << dirpath.cstr() << "] not exists" << endl;
         return;
     }
     int32 fileidx = dirnode->findFile(filename);
@@ -169,13 +168,13 @@ void DirTree::deleteFile(const RString& filepath)
         dirnode->allfiles.erase(dirnode->allfiles.begin() + fileidx);
 }
 
-bool DirTree::findFile(const RString& filepath, FileNode& outfn)const
+bool DirTree::findFile(const RString& filepath, FileNode& outfn)
 {
     RString dirpath, filename;
     SplitFilePath(filepath, dirpath, filename);
     if(dirpath.empty() || filename.empty())
         return false;
-    const DirNode* dirnode = findDir(dirpath);
+    DirNode* dirnode = locateDir(dirpath);
     if(!dirnode)
         return false;
     int32 fileidx = dirnode->findFile(filename);
@@ -189,12 +188,12 @@ bool DirTree::findFile(const RString& filepath, FileNode& outfn)const
 void DirTree::deleteDir(const RString& dirpath)
 {
     if(dirpath == ROOTDIR_NAME){
-        slog_warn(packagelogger) << "root dir[" << dirpath.cstr() << "] cannot be deleted!" << endl;
+        slog_warn(pkglogger) << "root dir[" << dirpath.cstr() << "] cannot be deleted!" << endl;
         return;
     }
-    DirNode* thedirnode = findDir(dirpath);
+    DirNode* thedirnode = locateDir(dirpath);
     if(thedirnode == nullptr){
-        slog_warn(packagelogger) << "dir[" << dirpath.cstr() << "] not exists" << endl;
+        slog_warn(pkglogger) << "dir[" << dirpath.cstr() << "] not exists" << endl;
         return;
     }
     deleteDirNode(thedirnode);
@@ -202,34 +201,34 @@ void DirTree::deleteDir(const RString& dirpath)
 
 void DirTree::deleteDirNode(DirNode* dirnode)
 {
-    logverify(packagelogger, dirnode != nullptr);
-    detachChildNode(*dirnode->parent, dirnode->dirname);
-    if(!dirnode->next_child){
+    logverify(pkglogger, dirnode != nullptr);
+    detachChildNode(*dirnode->parent, dirnode->name);
+    if(!dirnode->nextchild){
         delete dirnode; // release this node's memory
         return;
     }
     DirNode* nextsibling = nullptr;
-    for(DirNode* curchild = dirnode->next_child; curchild != nullptr; curchild = nextsibling){
-        nextsibling = curchild->next_sibling;
+    for(DirNode* curchild = dirnode->nextchild; curchild != nullptr; curchild = nextsibling){
+        nextsibling = curchild->nextsibling;
         deleteDirNode(curchild);
     }        
 }
 
 void DirTree::detachChildNode(DirNode& parent, const RString& childname)
 {
-    DirNode* cur = parent.next_child;
+    DirNode* cur = parent.nextchild;
     DirNode* pre = nullptr;
     while(cur){
-        if(cur->dirname != childname){
+        if(cur->name != childname){
             pre = cur;
-            cur = cur->next_sibling;
+            cur = cur->nextsibling;
             continue;
         }
         if(pre) 
-            pre->next_sibling = cur->next_sibling;                
+            pre->nextsibling = cur->nextsibling;                
         else                
-            parent.next_child = cur->next_sibling;
-        cur->next_sibling = nullptr;
+            parent.nextchild = cur->nextsibling;
+        cur->nextsibling = nullptr;
         cur->parent = nullptr;
         break;
     }
@@ -237,13 +236,13 @@ void DirTree::detachChildNode(DirNode& parent, const RString& childname)
 
 DirNode* DirTree::findLastChildDir(DirNode* parent) const
 {
-    DirNode* curchild = parent->next_child;
+    DirNode* curchild = parent->nextchild;
     if(!curchild)
         return nullptr;
     DirNode* lastnode = nullptr;
     while(curchild){
         lastnode = curchild;
-        curchild = curchild->next_sibling;
+        curchild = curchild->nextsibling;
     }
     return lastnode;
 }

@@ -11,26 +11,23 @@ CreateTime: 2018-7-28 10:49
 #define __db_h__
 
 #include "sqlitepublic.h"
-#include "sqlite3.h"
 
 RATEL_NAMESPACE_BEGIN
-
-typedef int(*DBCallback)(void*, int, char**, char**);
 
 class RATEL_SQLITE_API DB
 {
 public:
-    static DB* OpenDB(const RString& dbfile, int32 flags, const char* zvfs = nullptr);
-    sqlite3_stmt* prepareStatement(const RString& sql, const char** pztail = nullptr);
-    void destroyStatement(sqlite3_stmt* stmt);
-    int32 stepExec(sqlite3_stmt* stmt);
-    int32 exec(sqlite3_stmt* stmt, const RString& sql, DBCallback func, void* firstpara);
-    sqlite3* handle() { return dbconn_; }    
+    static DB* OpenDB(const Path& dbfile, int32 flags, const char* zvfs = nullptr);
+    Statement* createStatement(const RString& sql, const char** pztail = nullptr);
+    RString errMsg();
     ~DB();
 
 private:
-    DB(sqlite3* conn);
-    sqlite3* dbconn_ = nullptr;
+    friend class Statement;
+    DB(void* conn);
+    DB(const DB&) = delete;
+    const DB& operator=(const DB&) = delete;
+    void* dbconn_;
 };
 
 RATEL_NAMESPACE_END

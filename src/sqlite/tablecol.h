@@ -46,9 +46,17 @@ public:
         primarykey_ = b; 
         return *this;
     }
+    TableCol& primaryKeyOn(){ 
+        primarykey_ = true; 
+        return *this; 
+    }
     bool notNull()const { return notnull_; }
     TableCol& setNotNull(bool b) {
         notnull_ = b; 
+        return *this;
+    }
+    TableCol& notNullOn() { 
+        notnull_ = true; 
         return *this;
     }
     bool unique()const { return unique_; }
@@ -56,11 +64,19 @@ public:
         unique_ = b;
         return *this;
     }
+    TableCol& uniqueOn(){
+        unique_ = true;
+        return *this;
+    }
     TableCol& setDefault(bool b) {
         default_ = b; 
         return *this;
     }
     bool default()const { return default_; }
+    TableCol& defaultOn() {
+        default_ = true;
+        return *this;
+    }
     DataType dataType()const { return datatype_; }
     const RString& name()const { return name_; }
     TableCol(const RString& name, DataType dt)

@@ -21,9 +21,6 @@
     <ClInclude Include="..\..\..\src\sqlite\sqlitelogger.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\sqlite\tablerow.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\sqlite\db.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -31,6 +28,15 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\sqlite\tablecol.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\sqlite\statement.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\sqlite\rescode.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\sqlite\openflag.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -44,13 +50,13 @@
     <ClCompile Include="..\..\..\src\sqlite\sqlitetable.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\sqlite\tablerow.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\sqlite\db.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\sqlite\table.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\sqlite\statement.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

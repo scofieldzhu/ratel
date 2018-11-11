@@ -11,6 +11,7 @@ CreateTime: 2018-7-14 10:36
 #define __sqlitepublic_h__
 
 #include "basic.h"
+#include "filesyspublic.h"
 
 #ifdef RATEL_SQLITE_EXPORTS
     #define RATEL_SQLITE_API __declspec(dllexport)
@@ -31,6 +32,7 @@ class TableRow;
 class TableCol;
 class Table;
 class DB;
+class Statement;
 
 #define PRIMARYKEY "PRIMARY KEY"
 #define UNIQUE "UNIQUE"

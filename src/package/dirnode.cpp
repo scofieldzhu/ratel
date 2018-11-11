@@ -12,8 +12,8 @@ using namespace std;
 
 RATEL_NAMESPACE_BEGIN
 
-DirNode::DirNode(const RString& name)
-    :dirname(name)
+DirNode::DirNode(const RString& namestr)
+    :name(namestr)
 {}
 
 bool DirNode::existFile(const RString& filename) const
@@ -29,39 +29,39 @@ int32 DirNode::findFile(const RString& filename)const
     return it - allfiles.begin();
 }
 
-const DirNode* DirNode::findSiblingDir(const RString& siblingname)
+const DirNode* DirNode::findSibling(const RString& siblingname)
 {
     if(parent == nullptr)
         return nullptr;
-    const DirNode* curchild = parent->next_child;
+    const DirNode* curchild = parent->nextchild;
     while(curchild){
         if(curchild == this)
             continue;
-        if (curchild->dirname == dirname)
+        if (curchild->name == name)
             return curchild;
-        curchild = curchild->next_sibling;
+        curchild = curchild->nextsibling;
     }
     return nullptr;
 
 }
 
-const DirNode* DirNode::findChildDir(const RString& dirname) const
+const DirNode* DirNode::findChild(const RString& dirname) const
 {
-    const DirNode* curchild = next_child;
+    const DirNode* curchild = nextchild;
     while(curchild){
-        if(curchild->dirname == dirname)
+        if(curchild->name == dirname)
             return curchild;
-        curchild = curchild->next_sibling;
+        curchild = curchild->nextsibling;
     }
     return nullptr;
 }
 
-const RString& DirNode::path() const
+RString DirNode::path() const
 {
     RString pathstr;
     const DirNode* p = this;
     while(p){
-        pathstr = p->dirname + PATH_SEPARATOR + pathstr;
+        pathstr = p->name + PATH_SEPARATOR + pathstr;
         p = p->parent;
     }
     return pathstr;

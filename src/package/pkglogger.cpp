@@ -6,6 +6,6 @@ Copyright (c) scofieldzhu. All rights reserved.
 Project: ratel.package 
 Module: packagelogger.cpp 
 =========================================================================*/
-#include "packagelogger.h"
+#include "pkglogger.h"
 
 IMPL_LOGGER(package)

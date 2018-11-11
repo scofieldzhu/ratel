@@ -172,6 +172,7 @@
     <ClInclude Include="..\..\..\src\basic\pair.hpp" />
     <ClInclude Include="..\..\..\src\basic\ratelnsp.h" />
     <ClInclude Include="..\..\..\src\basic\rstring.h" />
+    <ClInclude Include="..\..\..\src\basic\rstrutil.h" />
     <ClInclude Include="..\..\..\src\basic\size.h" />
     <ClInclude Include="..\..\..\src\basic\xy.hpp" />
     <ClInclude Include="..\..\..\src\basic\xyz.hpp" />
@@ -179,6 +180,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\src\basic\basiclogger.cpp" />
     <ClCompile Include="..\..\..\src\basic\rstring.cpp" />
+    <ClCompile Include="..\..\..\src\basic\rstrutil.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

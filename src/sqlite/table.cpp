@@ -52,25 +52,40 @@ TableCol * Table::getColumn(int32 colidx)
 
 RString Table::makeCreateSql(bool ifexists)
 {
-    RString sql = "create table " + name_ + "(";
-    for (const TableCol* col : columns_)
-        sql += (col->description() + ",");
-    sql.erase(sql.size() - 1);
+    RString sql = "create table ";
     if(ifexists)
-        sql += ") if exists;";
-    else sql += ");";
+        sql += "if not exists ";
+    sql += (name_ + "(");
+    for(const TableCol* col : columns_)
+        sql += (col->description() + ",");
+    sql.back() = ')';
     return sql;
 }
 
-RString Table::makeInsertSql(const char* format, ...)
+RString Table::makeInsertSql(const char* valfmt, ...)
 {
     static const int32 kMaxBufSize = 400;
     char buffer[kMaxBufSize] = { '\0' };
     va_list vl;
-    va_start(vl, format);
-    vsprintf_s(buffer, kMaxBufSize - 1, format, vl);
+    va_start(vl, valfmt);
+    vsprintf_s(buffer, kMaxBufSize - 1, valfmt, vl);
     va_end(vl);
     return "insert into " + name_ + " values(" + buffer + ");";
+}
+
+RString Table::makeInsertSql(std::initializer_list<const char*> fields, const char* valfmt, ...)
+{
+    RString ressql = "insert into " + name_ + "(";
+    for(auto f : fields)
+        ressql += (RString(f) + ",");
+    ressql.back() = ')';
+    static const int32 kMaxBufSize = 400;
+    char buffer[kMaxBufSize] = {'\0'};
+    va_list vl;
+    va_start(vl, valfmt);
+    vsprintf_s(buffer, kMaxBufSize - 1, valfmt, vl);
+    va_end(vl);
+    return ressql + " values(" + buffer + ");";
 }
 
 RString Table::makeDelRowWhenSql(const char* whenfmt, ...)
@@ -92,7 +107,7 @@ RString Table::makeQueryRowWhenSql(const char* whenfmt, ...)
     va_start(vl, whenfmt);
     vsprintf_s(buffer, kMaxBufSize - 1, whenfmt, vl);
     va_end(vl);
-    return "select * from " + name_ + " where " + whenfmt + ";";
+    return "select * from " + name_ + " where " + buffer + ";";
 }
 
 RString Table::makeDropSql()

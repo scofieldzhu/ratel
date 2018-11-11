@@ -4,23 +4,16 @@ for for those c++ developers pursuing fast-developement.
 Copyright (c) scofieldzhu. All rights reserved.	
 
 Project: ratel.package 
-Module: filenode.h 
+Module: packagelogger.h 
 =========================================================================*/
-#ifndef __filenode_h__
-#define __filenode_h__
+#ifndef __packagelogger_h__
+#define __packagelogger_h__
 
-#include "basic.h"
 #include "packagepublic.h"
+#include "liblogger.h"
 
-RATEL_NAMESPACE_BEGIN
+DECL_LOGGER(package, RATEL_PACKAGE_API)
 
-struct FileNode
-{
-    RString filename;
-    int32 diskfileid = 0;
-    int32 dbid = -1;
-};
-using FileNodeList = std::vector<FileNode>;
+#define pkglogger liblogger(package)
 
-RATEL_NAMESPACE_END
 #endif

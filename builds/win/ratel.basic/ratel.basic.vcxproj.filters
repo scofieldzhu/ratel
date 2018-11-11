@@ -57,12 +57,18 @@
     <ClInclude Include="..\..\..\src\basic\liblogger.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\basic\rstrutil.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\basic\basiclogger.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\basic\rstring.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\basic\rstrutil.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
