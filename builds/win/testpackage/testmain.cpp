@@ -42,8 +42,16 @@ void TestCase_TestPackage()
 {
     Package pkg;
     Path pkgpath("./temp/x.tcf");
-    pkg.createNew(pkgpath);
-    pkg.createDir("testdir1", "*/");
+    if (!pkg.createNew(pkgpath))
+        return;
+    if (!pkg.createDir("testdir1", "*/")) 
+        return;    
+    if (!pkg.createDir("testdir11", "*/testdir1"))
+        return;
+    if(!pkg.createDir("testdir2", "*/"))
+        return;
+    if(!pkg.importFile("*/testdir2", "C:\\work\\github\\ratel\\ratel\\builds\\win\\testpackage\\sqlite3-x64-d.dll")) 
+        return;
 }
 
 int main() 

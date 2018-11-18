@@ -62,7 +62,7 @@ DirNode* DirTree::createDir(const RString& name, const Path& parentpath)
     return newdir;
 }
 
-DirNode* DirTree::locateDir(const Path& dirpath)
+const DirNode* DirTree::locateDir(const Path& dirpath)const
 {
     if(dirpath.empty())
         return nullptr;
@@ -84,11 +84,11 @@ DirNode* DirTree::locateDir(const Path& dirpath)
     return targetnode;
 }
 
-// DirNode* DirTree::locateDir(const Path& dirpath) 
-// {
-//     const DirNode* thenode = const_cast<const DirTree*>(this)->locateDir(dirpath);
-//     return const_cast<DirNode*>(thenode);
-// }
+DirNode* DirTree::locateDir(const Path& dir)
+{
+    const DirNode* theconstnode = const_cast<const DirTree*>(this)->locateDir(dir);
+    return const_cast<DirNode*>(theconstnode);
+}
 
 bool DirTree::renameDir(const RString& dirpath, const RString& newname)
 {
@@ -111,25 +111,22 @@ bool DirTree::renameDir(const RString& dirpath, const RString& newname)
     return true;    
 }
 
-bool DirTree::createFile(const RString& filepath)
-{
-    RString dirpath, filename;
-    SplitFilePath(filepath, dirpath, filename);
-    if(dirpath.empty() || filename.empty())
-        return false;
-    DirNode* dirnode = locateDir(dirpath);
+FileNode* DirTree::createFile(const Path& dir, const RString& filename)
+{        
+    DirNode* dirnode = locateDir(dir);
     if(!dirnode){
-        slog_warn(pkglogger) << "dir[" << dirpath.cstr() << "] not exists" << endl;
-        return false;
+        slog_err(pkglogger) << "target location [" << dir.cstr() << "] not exists!" << endl;
+        return nullptr;
     }
     if(dirnode->findFile(filename) == -1){ //file not exists at present
         FileNode newnode;
         newnode.filename = filename;
-        newnode.diskfileid = 0;
+        newnode.datafileid = 0;
         dirnode->allfiles.push_back(newnode);
-        return true;
+        return &dirnode->allfiles[dirnode->allfiles.size() - 1];
     }
-    return false;    
+    slog_warn(pkglogger) << "filename[" << filename.cstr() << "] already exists!" << endl;
+    return nullptr;
 }
 
 bool DirTree::renameFile(const RString& filepath, const RString& newfilename)

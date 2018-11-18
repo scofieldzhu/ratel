@@ -16,9 +16,7 @@ RATEL_NAMESPACE_BEGIN
 
 class RATEL_SQLITE_API Statement
 {
-public:
-    typedef int(*StatCallback)(void*, int, char**, char**);
-    int32 exec(const RString& sql, StatCallback func, void* firstpara);
+public:    
     DB* db() { return dbinst_; }
     ResultCode stepExec();
     int32 fetchDataCount();

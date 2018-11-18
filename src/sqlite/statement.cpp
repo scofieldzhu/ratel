@@ -27,18 +27,6 @@ Statement::~Statement()
         slog_err(sqlitelogger) << "sqlite3_finalize failed!" << endl;    
 }
 
-int32 Statement::exec(const RString& sql, StatCallback func, void* firstpara)
-{
-    char* errmsg = nullptr;
-    sqlite3_exec((sqlite3*)(dbinst_->dbconn_), sql.cstr(), func, firstpara, &errmsg);
-    if(errmsg != nullptr){
-        slog_err(sqlitelogger) << "sqlite3_exec error:" << (const char*)errmsg << std::endl;
-        sqlite3_free(errmsg);
-        return 0;
-    }
-    return 1;
-}
-
 ResultCode Statement::stepExec()
 {
     return (ResultCode)(sqlite3_step((sqlite3_stmt*)stmthandle_));

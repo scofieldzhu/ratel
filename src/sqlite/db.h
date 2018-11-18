@@ -19,6 +19,8 @@ class RATEL_SQLITE_API DB
 public:
     static DB* OpenDB(const Path& dbfile, int32 flags, const char* zvfs = nullptr);
     Statement* createStatement(const RString& sql, const char** pztail = nullptr);
+    typedef int(*StatCallback)(void*, int, char**, char**);
+    bool exec(const RString& sql, StatCallback func, void* firstpara);
     RString errMsg();
     ~DB();
 

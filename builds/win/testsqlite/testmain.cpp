@@ -10,7 +10,7 @@ USING_RATEL
 
 int main()
 {    
-    DB* db = DB::OpenDB("test.db", RATEL_DB_OPEN_READWRITE);
+    DB* db = DB::OpenDB("test.db", RATEL_DB_OPEN_READWRITE | RATEL_DB_OPEN_CREATE);
     if (db == nullptr) {
         cout << "Open test.db failed!" << endl;
         return 0;
@@ -22,10 +22,9 @@ int main()
     t.addColumn(IntCol("fileid").setNotNull(true));
     t.addColumn(IntCol("childdirid").setNotNull(true));
 
-    RString cursql = t.makeDropSql(); 
-    cursql = t.makeCreateSql();
+    RString cursql = t.makeCreateSql();
     Statement* stat = db->createStatement(cursql);
-    int32 rescode = stat->stepExec();
+    ResultCode rescode = stat->stepExec();
     delete stat;
 
     Table files("File");
@@ -38,26 +37,38 @@ int main()
     rescode = stat->stepExec();
     delete stat;
 
-    RString testsql = "insert into Company(id, name, manager, age, factor) values(1, \"chenjj\", \"zhucg\", 31, 0.36);";
-    stat = db->createStatement(testsql);
+    cursql = t.makeInsertSql({ "name", "fileid", "childdirid"}, "'%s',%d,%d", "testdir", 1, 11);        
+    stat = db->createStatement(cursql);
+    rescode = stat->stepExec();
+    delete stat;
+    cursql = t.makeInsertSql({ "name", "fileid", "childdirid" }, "'%s',%d,%d", "testdir1", 2, 111);
+    stat = db->createStatement(cursql);
+    rescode = stat->stepExec();
+    delete stat;
+    cursql = t.makeInsertSql({ "name", "fileid", "childdirid" }, "'%s',%d,%d", "testdir2", 22, 1112);
+    stat = db->createStatement(cursql);
     rescode = stat->stepExec();
     delete stat;
 
-    testsql = "insert into Company(id, name, manager, age, factor) values(2, \"zhhb\", \"zhucg\", 31, 1.26);" \
-        "insert into Company(id, name, manager, age, factor) values(3, \"libing\", \"zhucg\", 32, 0.37);";
-    stat = db->createStatement(testsql);
-    rescode = stat->exec(testsql, nullptr, nullptr);
+    cursql = files.makeInsertSql({"name", "diskfileuid" }, "'%s','%s'", "chjj", "kkdkk-fdsf--sdf");
+    stat = db->createStatement(cursql);
+    rescode = stat->stepExec();
     delete stat;
-
-    testsql = "select * from Company;";
-    stat = db->createStatement(testsql);
+// 
+//     testsql = "insert into Company(id, name, manager, age, factor) values(2, \"zhhb\", \"zhucg\", 31, 1.26);" \
+//         "insert into Company(id, name, manager, age, factor) values(3, \"libing\", \"zhucg\", 32, 0.37);";
+//     stat = db->createStatement(testsql);
+//     int rsc = stat->exec(testsql, nullptr, nullptr);
+//     delete stat;
+// 
+    cursql = "select * from Directory;";
+    stat = db->createStatement(cursql);
     while((rescode = stat->stepExec()) == RESCODE_ROW) {
         int32 id = stat->fetchIntColumn(0);
         RString name = stat->fetchTextColumn(1);
-        RString manager = stat->fetchTextColumn(2);
-        int32 age = stat->fetchIntColumn(3);
-        double factor = stat->fetchDoubleColumn(4);
-        cout << "id:" << id << " name:" << name.cstr() << " manager:" << manager.cstr() << " age:" << age << " factor:" << factor << endl;
+        int32 fid = stat->fetchIntColumn(2);
+        int32 cfid = stat->fetchIntColumn(3);
+        cout << "id:" << id << " name:" << name.cstr() << " fid:" << fid << " cfid:" << cfid << endl;
     }
     delete stat;
 

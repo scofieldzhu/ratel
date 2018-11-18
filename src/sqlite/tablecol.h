@@ -27,15 +27,15 @@ public:
     virtual RString description()const
     {
         RString desp = name() + " " + dataTypeString();
-        if (primarykey_) {
+        if(primarykey_){
             desp += " ";
             desp += PRIMARYKEY;
         }
-        if (unique_) {
+        if(unique_){
             desp += " ";
             desp += UNIQUE;
         }
-        if (notnull_) {
+        if(notnull_){
             desp += " ";
             desp += NOTNULL;
         }
@@ -98,6 +98,13 @@ class IntCol : public TableCol
 {
     DECL_COLCLS(IntCol, INTEGER)
 public:
+    virtual RString description()const
+    {
+        RString desp = TableCol::description();
+        if(!default_)
+            return desp;
+        return RString::FormatString("%s %s %d", desp.cstr(), DEFAULT, defaultvalue_);
+    }
     void setValue(int32 val) { value_ = val; }
     int32 value()const { return value_; }
     IntCol& setDefaultValue(int32 val) { 
@@ -118,6 +125,13 @@ class DoubleCol : public TableCol
 {
     DECL_COLCLS(DoubleCol, REAL)
 public:    
+    virtual RString description()const
+    {
+        RString desp = TableCol::description();
+        if (!default_)
+            return desp;
+        return RString::FormatString("%s %s %f", desp.cstr(), DEFAULT, defaultvalue_);
+    }
     void setValue(double val) { value_ = val; }
     double value()const { return value_; }
     DoubleCol& setDefaultValue(double val) {
@@ -142,17 +156,21 @@ public:
     virtual RString description()const
     {
         RString desp = RString::FormatString("%s VARCHAR(%d)", name().cstr(), maxcharnum_);
-        if (primaryKey()) {
+        if(primaryKey()){
             desp += " ";
             desp += PRIMARYKEY;
         }
-        if (unique()) {
+        if(unique()){
             desp += " ";
             desp += UNIQUE;
         }
-        if (notNull()) {
+        if(notNull()){
             desp += " ";
             desp += NOTNULL;
+        }
+        if(default_){
+            desp += " ";
+            desp += RString::FormatString("%s '%s'", DEFAULT, defaultvalue_.cstr());
         }
         return desp;
     }
@@ -164,6 +182,8 @@ public:
 
     }
     int32 maxCharNum()const { return maxcharnum_; }
+    void setDefaultValue(const char* defval) { defaultvalue_ = defval; }
+    const RString& defaultValue()const { return defaultvalue_; }
     StrCol(const RString& name, int32 maxchars)
         :TableCol(name, STRING),
         maxcharnum_(maxchars){}
@@ -171,6 +191,7 @@ public:
 
 private:
     RString value_;
+    RString defaultvalue_;
     int32 maxcharnum_;
 };
 

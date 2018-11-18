@@ -41,6 +41,18 @@ Statement* DB::createStatement(const RString& sql, const char** pztail /*= nullp
     return new Statement(res_stmt, this);
 }
 
+bool DB::exec(const RString& sql, StatCallback func, void* firstpara)
+{
+    char* errmsg = nullptr;
+    sqlite3_exec((sqlite3*)dbconn_, sql.cstr(), func, firstpara, &errmsg);
+    if(errmsg != nullptr){
+        slog_err(sqlitelogger) << "sqlite3_exec error:" << (const char*)errmsg << std::endl;
+        sqlite3_free(errmsg);
+        return false;
+    }
+    return true;
+}
+
 RString DB::errMsg()
 {
     return sqlite3_errmsg((sqlite3*)dbconn_);

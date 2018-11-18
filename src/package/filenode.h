@@ -17,8 +17,9 @@ RATEL_NAMESPACE_BEGIN
 struct FileNode
 {
     RString filename;
-    int32 diskfileid = 0;
+    int32 datafileid = 0;
     int32 dbid = -1;
+    int32 init = 0;
 };
 using FileNodeList = std::vector<FileNode>;
 

@@ -37,6 +37,7 @@ class Statement;
 #define PRIMARYKEY "PRIMARY KEY"
 #define UNIQUE "UNIQUE"
 #define NOTNULL "NOT NULL"
+#define DEFAULT "DEFAULT"
 
 RATEL_NAMESPACE_END
 

@@ -21,10 +21,10 @@ public:
     bool createDir(const RString& name, const Path& location);
     bool importDir(const Path& targetdir, const Path& localdir);
     bool removeDir(const Path& dir);
-    bool exportDirTo(const Path& sourcedir, const Path& local_targetdir);
-    bool addFile(const Path& parentdir, const Path& local_sourcefilepath);
+    bool exportDir(const Path& sourcedir, const Path& local_targetdir);
+    bool importFile(const Path& dirlocation, const Path& sourcefile);
     bool removeFile(const Path& filepath);
-    bool exportFileTo(const Path& sourcefilepath, const Path& local_targetfilepath);
+    bool exportFile(const Path& sourcefilepath, const Path& local_targetfilepath);
     bool load(const Path& pkgpath);
     bool createNew(const Path& newpkgpath);
     bool opened()const;

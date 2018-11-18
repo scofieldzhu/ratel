@@ -49,11 +49,11 @@ void TestCase_CreateDir(DirTree& tree)
 //*/ratel/{dir1/[file10.ttf file11.txt] dir2 dir3/(dir31 file32.html) dir4(file41.py) file5.cpp}
 void TestCase_CreateFile(DirTree& tree)
 {
-    tree.createFile("*/ratel/file5.cpp");
-    tree.createFile("*/ratel/dir1/file10.ttf");
-    tree.createFile("*/ratel/dir1/file11.txt");
-    tree.createFile("*/ratel/dir3/file32.html");
-    tree.createFile("*/ratel/dir4/file41.py");
+    tree.createFile("*/ratel/", "file5.cpp");
+    tree.createFile("*/ratel/dir1/", "file10.ttf");
+    tree.createFile("*/ratel/dir1/", "file11.txt");
+    tree.createFile("*/ratel/dir3/", "file32.html");
+    tree.createFile("*/ratel/dir4/", "file41.py");
 
     cout << "________________________after TestCase_CreateFile:" << endl;
     int32 layer = 0;

@@ -64,9 +64,9 @@ Path Path::parentPath() const
 Path Path::filename() const
 {
     size_t pos = findLastSeparator();
-    if(pos == RString::npos)
+    if(pos == RString::npos || pos == pathstr_.size() - 1)
         return *this;
-    return pathstr_.substr(pos);
+    return pathstr_.substr(pos + 1);
 }
 
 bool Path::exists() const
