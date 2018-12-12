@@ -9,6 +9,9 @@
 
 RATEL_NAMESPACE_BEGIN
 
+/**************************
+* Default Encode: utf8
+**************************/
 class RATEL_BASIC_API RString
 {
 public:
@@ -291,6 +294,11 @@ public:
 
     static RString FormatString(const char* format, ...);
 
+    const RString& decodeToLocale(std::string& locale)const;
+    const RString& decodeToWString(std::wstring&)const;
+    RString& encodeFromLocale(const char* localestr);
+    RString& encodeFromWString(const std::wstring& srcstr);
+
     RString& format(const char* format, ...);
         
     // assign [strptr, <null>)
@@ -315,6 +323,8 @@ public:
         
     // construct empty string
     RString();
+    // construct from wstring
+    RString(const std::wstring& wstr);
     // construct by copying rhs
     RString(const RString& rhs); 
     // construct empty string with allocator                                                

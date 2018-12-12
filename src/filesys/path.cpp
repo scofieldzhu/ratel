@@ -23,6 +23,10 @@ Path::Path(const char* str)
     :pathstr_(str)
 {}
 
+Path::Path(const wchar_t* wstr)
+    :pathstr_(wstr)
+{}
+
 Path::~Path()
 {}
 

@@ -170,8 +170,17 @@ bool Package::createDir(const RString& name, const Path& location)
     return true;
 }
 
-bool Package::importDir(const Path& parentdir, const Path& localdir)
+bool Package::importDir(const Path& location, const Path& localdir)
 {
+    if(!opened()){
+        slog_err(pkglogger) << "package not opened yet!" << endl;
+        return false;
+    }
+    if(!localdir.exists() || !localdir.isDirectory()){
+        slog_err(pkglogger) << "local directory[" << localdir.cstr() << "] is invalid!" << endl;
+        return false;
+    }
+
     return false;
 }
 

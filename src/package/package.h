@@ -34,6 +34,7 @@ private:
     struct Impl;
     Impl* impl_;
 };
+
 RATEL_NAMESPACE_END
 
 #endif

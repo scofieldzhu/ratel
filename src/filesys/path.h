@@ -31,6 +31,7 @@ public:
     bool empty()const { return pathstr_.empty(); }
     Path();
     Path(const char* str);
+    Path(const wchar_t* wstr);
     Path(const RString& str);
     ~Path();
 

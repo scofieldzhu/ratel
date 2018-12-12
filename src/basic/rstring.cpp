@@ -8,6 +8,8 @@ Module: rstring.cpp
 =========================================================================*/
 #include "rstring.h"
 #include <cstdarg>
+#include <codecvt>
+#include <locale>
 
 RATEL_NAMESPACE_BEGIN
 
@@ -23,6 +25,7 @@ const RString::size_type RString::npos = -1;
 
 namespace {
     const int32 MAX_STR_BUFFER_SIZE = 250;
+    using LocaleCodecvt = std::codecvt_byname<wchar_t, char, mbstate_t>;
 }
 
 char* RString::dataptr()
@@ -429,11 +432,11 @@ RString::size_type RString::rfind(const char* strptr, size_type off, size_type c
         return off < size() ? off : size();	// null always matches
     if (cnt <= size()) {
         // room for match, look for it
-        const char* _Uptr = dataptr() + (off < size() - cnt ? off : size() - cnt);
-        for (; ; --_Uptr) {
-            if (traits_type::eq(*_Uptr, *strptr) && traits_type::compare(_Uptr, strptr, cnt) == 0)
-                return _Uptr - dataptr();	// found a match
-            else if (_Uptr == dataptr())
+        const char* uptr = dataptr() + (off < size() - cnt ? off : size() - cnt);
+        for (; ; --uptr) {
+            if (traits_type::eq(*uptr, *strptr) && traits_type::compare(uptr, strptr, cnt) == 0)
+                return uptr - dataptr();	// found a match
+            else if (uptr == dataptr())
                 break;	// at beginning, no more chance for match
         }
     }
@@ -521,10 +524,10 @@ RString::size_type RString::findFirstNotOf(const RString& rhs, size_type off /*=
 RString::size_type RString::findFirstNotOf(const char *strptr, size_type off, size_type cnt) const
 {
     assert_cond_pointer(cnt != 0, strptr);
-    if (size() > off){
+    if(size() > off){
         // room for match, look for it
         const char *const vptr = dataptr() + size();
-        for (const char* uptr = dataptr() + off; uptr < vptr; ++uptr) {
+        for(const char* uptr = dataptr() + off; uptr < vptr; ++uptr){
             if (traits_type::find(strptr, cnt, *uptr) == 0)
                 return uptr - dataptr();
         }
@@ -551,10 +554,10 @@ RString::size_type RString::findLastNotOf(const RString& rhs, size_type off /*= 
 RString::size_type RString::findLastNotOf(const char *strptr, size_type off, size_type cnt) const
 {    
     assert_cond_pointer(cnt != 0, strptr);
-    if (size() > 0){
+    if(size() > 0){
         // worth searching, do it
         const char* uptr = dataptr() + (off < size() ? off : size() - 1);
-        for (; ; --uptr) {
+        for(; ; --uptr){
             if (traits_type::find(strptr, cnt, *uptr) == 0)
                 return uptr - dataptr();
             else if (uptr == dataptr())
@@ -580,9 +583,9 @@ RString::list_type RString::split(char splitchar) const
     list_type result_strings;
     size_type start = 0;
     size_type pos = 0;
-    while(start < size()) {
+    while(start < size()){
         pos = find(splitchar, start);
-        if (pos == npos) {
+        if(pos == npos){
             result_strings.push_back(substr(start));
             break;
         }else if(start != pos)
@@ -595,9 +598,9 @@ RString::list_type RString::split(char splitchar) const
 RString& RString::assign(const char* strptr, size_type cnt)
 {
     assert_cond_pointer(cnt != 0, strptr);
-    if (inside(strptr))
+    if(inside(strptr))
         return assign(*this, strptr - dataptr(), cnt);	// substring
-    if (grow(cnt)){
+    if(grow(cnt)){
     	// make room and assign new stuff
         traits_type::copy(dataptr(), strptr, cnt);
         truncate(cnt);
@@ -607,9 +610,9 @@ RString& RString::assign(const char* strptr, size_type cnt)
 
 RString& RString::assign(size_type cnt, char ch)
 {	
-    if (cnt == npos)
+    if(cnt == npos)
         std::logic_error("result too long!");
-    if (grow(cnt)){
+    if(grow(cnt)){
     	// make room and assign new stuff
         charAssign(0, cnt, ch);
         truncate(cnt);
@@ -626,10 +629,10 @@ RString& RString::assign(const RString& rhs, size_type roff, size_type cnt /*= n
 {
     rhs.checkOffset(roff);
     cnt = rhs.getSuffixSize(roff, cnt);
-    if (this == &rhs) {
+    if(this == &rhs){
         erase((size_type)(roff + cnt));
         erase(0, roff);	// substring
-    }else if (grow(cnt)) {
+    }else if(grow(cnt)){
         traits_type::copy(val_.dataptr(), rhs.val_.dataptr() + roff, cnt);
         truncate(cnt);
     }
@@ -705,10 +708,10 @@ RString& RString::insert(size_type off, const RString& rhs, size_type roff, size
     checkOffset(off);
     rhs.checkOffset(roff);
     rcnt = rhs.getSuffixSize(roff, rcnt);
-    if (npos - size() <= rcnt)
+    if(npos - size() <= rcnt)
         throw std::logic_error("rcnt value is too big!");	// result too long
     const size_type kNewNum = size() + rcnt;
-    if (rcnt > 0 && grow(kNewNum)) {
+    if(rcnt > 0 && grow(kNewNum)){
         // make room and insert new stuff
         traits_type::move(dataptr() + off + rcnt, dataptr() + off, size() - off);	// empty out hole
         if (this == &rhs)
@@ -729,7 +732,7 @@ RString& RString::insert(size_type off, const char* strptr, size_type cnt)
     if (npos - size() <= cnt)
         throw std::logic_error("cnt value is too big!");	// result too long
     const size_type kNewNum = size() + cnt;
-    if (cnt > 0 && grow(kNewNum)) {
+    if(cnt > 0 && grow(kNewNum)){
         // make room and insert new stuff
         traits_type::move(dataptr() + off + cnt, dataptr() + off, size() - off);	// empty out hole
         traits_type::copy(dataptr() + off, strptr, cnt);	// fill hole
@@ -747,16 +750,16 @@ RString& RString::insert(size_type off, const char* strptr)
 RString& RString::insert(size_type off, size_type cnt, char ch)
 {
     checkOffset(off);
-    if (npos - size() <= cnt)
+    if(npos - size() <= cnt)
         throw std::invalid_argument("cnt is too big!");	// result too long
     const size_type kNewSize = size() + cnt;
-    if (cnt > 0 && grow(kNewSize)) {
+    if(cnt > 0 && grow(kNewSize)){
         // make room and insert new stuff
         traits_type::move(dataptr() + off + cnt, dataptr() + off, size() - off);	// empty out hole
         charAssign(off, cnt, ch);	// fill hole
         truncate(kNewSize);
     }
-    return (*this);
+    return *this;
 }
 
 RString::iterator RString::insert(const_iterator where)
@@ -1018,6 +1021,38 @@ RString RString::FormatString(const char * format, ...)
     return buffer;
 }
 
+const RString& RString::decodeToLocale(std::string& locale) const
+{
+    //convert utf8 to wstring
+    std::wstring tmpwstr;
+    decodeToWString(tmpwstr);
+    //convert wstring to locale string    
+    std::wstring_convert<LocaleCodecvt> cvt(new LocaleCodecvt(std::locale().name()));
+    locale = cvt.to_bytes(tmpwstr);
+    return *this;
+}
+
+const RString& RString::decodeToWString(std::wstring& reswstr) const
+{
+    std::wstring_convert<std::codecvt_utf8<wchar_t>> cvt;
+    reswstr = cvt.from_bytes(cstr());
+    return *this;
+}
+
+RString& RString::encodeFromLocale(const char* localestr)
+{
+    std::wstring_convert<LocaleCodecvt> cv(new LocaleCodecvt(std::locale().name()));
+    std::wstring tmpwstr = cv.from_bytes(localestr);
+    return encodeFromWString(tmpwstr);
+}
+
+RString& RString::encodeFromWString(const std::wstring& srcstr)
+{
+    std::wstring_convert<std::codecvt_utf8<wchar_t>> cvt;
+    std::string utf8str = cvt.to_bytes(srcstr);
+    return assign(utf8str.c_str());
+}
+
 RString& RString::format(const char * format, ...)
 {
     va_list vl;
@@ -1270,6 +1305,11 @@ RString::RString(RString&& rhs, const allocator_type& al)
         assign(rhs.begin(), rhs.end());
     else
         assignMove(std::forward<RString>(rhs));
+}
+
+RString::RString(const std::wstring& wstr)
+{
+    encodeFromWString(wstr);
 }
 
 RString::~RString()

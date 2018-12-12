@@ -34,6 +34,8 @@
 *.out
 *.app
 *.db
+*.user
+*.dat
 
 #Temp files
 *.VC.opendb
@@ -89,5 +91,3 @@ builds/win/Debug/
 builds/win/Release/
 builds/win/x64/
 builds/win/.vs/
-*.user
-*.pdb
