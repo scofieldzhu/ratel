@@ -91,3 +91,4 @@ builds/win/Debug/
 builds/win/Release/
 builds/win/x64/
 builds/win/.vs/
+*.pdb

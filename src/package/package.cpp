@@ -21,6 +21,7 @@ CreateTime: 2018-9-16 21:54
 #include "dirtree.h"
 #include "dirnode.h"
 #include "pkglogger.h"
+#include "filescanner.h"
 using namespace std;
 
 RATEL_NAMESPACE_BEGIN
@@ -180,6 +181,7 @@ bool Package::importDir(const Path& location, const Path& localdir)
         slog_err(pkglogger) << "local directory[" << localdir.cstr() << "] is invalid!" << endl;
         return false;
     }
+    //FileScanner::PathSet files
 
     return false;
 }

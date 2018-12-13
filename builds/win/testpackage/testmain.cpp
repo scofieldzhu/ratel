@@ -7,6 +7,7 @@
 #include "standardFormatter.h"
 #include "sqlitelogger.h"
 #include "pkglogger.h"
+#include "filescanner.h"
 using namespace std;
 USING_RATEL
 USING_SFLOGGER
@@ -58,7 +59,14 @@ int main()
 {    
     InitLogger();
     slog_info(g_AppLogger) << "enter main..." << endl;
-    TestCase_TestPackage();
+    //TestCase_TestPackage();
+
+    FileScanner fscanner;
+    FileScanner::PathSet pset = fscanner.scan("C:\\work", nullptr);
+    for (auto p : pset) {
+        slog_info(g_AppLogger) << p.cstr() << endl;
+    }
+
     return 0;
 }
 

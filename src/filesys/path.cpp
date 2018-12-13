@@ -36,25 +36,19 @@ size_t Path::findLastSeparator()const
     return pos != RString::npos ? pos : pathstr_.findLastOf('\\');
 }
 
-Path& Path::join(const Path& rhs)
-{
+Path Path::join(const Path& rhs) const
+{    
     const RString& rhsstr = rhs.rstring();
     if(rhsstr.empty())
         return *this;
-    if(pathstr_.back() != '\\' && pathstr_.back() != '/')
-        pathstr_.append(1, '/');
+    RString respathstr = pathstr_;
+    if(respathstr.back() != '\\' && respathstr.back() != '/')
+        respathstr.append(1, '/');
     if(rhsstr[0] == '\\' || rhsstr[0] == '/')
-        pathstr_.append(rhsstr, 1, RString::npos);
+        respathstr.append(rhsstr, 1, RString::npos);
     else
-        pathstr_.append(rhsstr);
-    return *this;
-}
-
-Path Path::join(const Path& rhs) const
-{
-    Path res(*this);
-    res = rhs;
-    return res;
+        respathstr.append(rhsstr);
+    return respathstr;
 }
 
 Path Path::parentPath() const

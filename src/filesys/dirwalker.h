@@ -19,13 +19,16 @@ class RATEL_FILESYS_API DirWalker
 public:
     typedef std::function<void(const Path& path)> MeetFunc;
     void walk(MeetFunc& func);
+    void setFilter(const PathFilter* f) { curfilter_ = f; }
+    const PathFilter* filter()const { return curfilter_; }
     void setDir(const Path& dir) { curdir_ = dir; }
     const Path& dir()const { return curdir_; }
-    DirWalker(const Path& dir);
+    DirWalker(const Path& dir, const PathFilter* f);
     ~DirWalker() = default;
 
 private:
     Path curdir_;
+    const PathFilter* curfilter_;
 };
 
 RATEL_NAMESPACE_END

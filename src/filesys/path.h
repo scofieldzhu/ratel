@@ -23,7 +23,6 @@ public:
     bool exists()const;
     bool isDirectory()const;
     bool isRegularFile()const;
-    Path& join(const Path& rhs);
     Path join(const Path& rhs)const;
     Path parentPath()const;
     Path filename()const;
