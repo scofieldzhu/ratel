@@ -181,9 +181,21 @@ bool Package::importDir(const Path& location, const Path& localdir)
         slog_err(pkglogger) << "local directory[" << localdir.cstr() << "] is invalid!" << endl;
         return false;
     }
-    //FileScanner::PathSet files
-
-    return false;
+    const RString dirname = localdir.filename().rstring();
+    if(!createDir(dirname, location)){
+        slog_err(pkglogger) << "create directory[" << dirname.cstr() << "] at location[" <<location.cstr() <<"] failed!" << endl;
+        return false;
+    }
+    Path rootdir = location.join(dirname);
+    FileScanner scanner;
+    const FileScanner::PathSet& files = scanner.scan(localdir, nullptr);
+    for(auto f : files){
+        if(!importFile(rootdir, f)){
+            slog_err(pkglogger) << "import file[" << f.cstr() << "] to location[" << rootdir.cstr() << "] failed!" << endl;
+            return false;
+        }
+    }
+    return true;
 }
 
 bool Package::removeDir(const Path& dir)
