@@ -9,16 +9,14 @@ CreateTime: 2018-12-9 20:18
 =========================================================================*/
 #include "dirwalker.h"
 #include <windows.h>
-#include "pathfilter.h"
 
 RATEL_NAMESPACE_BEGIN
 
-DirWalker::DirWalker(const Path& dir, const PathFilter* f)
-    :curdir_(dir),
-    curfilter_(f)
+DirWalker::DirWalker(const Path& dir)
+    :curdir_(dir)
 {}
 
-void DirWalker::walk(MeetFunc& func)
+void DirWalker::walk(MeetFunc func)
 {
     if(!curdir_.exists())
         return;
@@ -26,14 +24,19 @@ void DirWalker::walk(MeetFunc& func)
     std::wstring rootdir;
     sortpath.rstring().decodeToWString(rootdir);
     WIN32_FIND_DATA wfd;
+    memset(std::addressof(wfd.cFileName), 0, sizeof(wfd.cFileName[0]) * MAX_PATH);
     HANDLE fh = ::FindFirstFile(rootdir.c_str(), &wfd);
     if(fh == INVALID_HANDLE_VALUE)
         return;
     do{
-        Path newfile = wfd.cFileName;
-        Path newfilepath = curdir_.join(newfile);
-        if(curfilter_ == nullptr || curfilter_->filter(newfile))
-            func(newfilepath);
+        const std::wstring newfilename = wfd.cFileName;
+        if(newfilename == L"." || newfilename == L".."){
+            memset(std::addressof(wfd.cFileName), 0, sizeof(wfd.cFileName[0]) * MAX_PATH);
+            continue;
+        }
+        Path newfilepath = curdir_.join(newfilename.c_str());
+        func(newfilepath);
+        memset(std::addressof(wfd.cFileName), 0, sizeof(wfd.cFileName[0]) * MAX_PATH);
     }while(::FindNextFile(fh, &wfd));
     ::FindClose(fh);    
 }

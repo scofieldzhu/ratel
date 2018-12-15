@@ -19,7 +19,6 @@ Module: filesyspublic.h
 
 RATEL_NAMESPACE_BEGIN
 class Path;
-class PathFilter;
 class DirWalker;
 RATEL_NAMESPACE_END
 

@@ -156,17 +156,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\filesys\dirwalker.h" />
-    <ClInclude Include="..\..\..\src\filesys\filescanner.h" />
     <ClInclude Include="..\..\..\src\filesys\filesyspublic.h" />
     <ClInclude Include="..\..\..\src\filesys\path.h" />
-    <ClInclude Include="..\..\..\src\filesys\pathfilter.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\ratel.licenseheader" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\filesys\dirwalker.cpp" />
-    <ClCompile Include="..\..\..\src\filesys\filescanner.cpp" />
     <ClCompile Include="..\..\..\src\filesys\path.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

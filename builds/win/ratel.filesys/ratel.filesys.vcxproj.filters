@@ -24,12 +24,6 @@
     <ClInclude Include="..\..\..\src\filesys\dirwalker.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\filesys\filescanner.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\filesys\pathfilter.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\ratel.licenseheader" />
@@ -39,9 +33,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\filesys\dirwalker.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\filesys\filescanner.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

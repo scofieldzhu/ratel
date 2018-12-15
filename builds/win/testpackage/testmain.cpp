@@ -7,7 +7,6 @@
 #include "standardFormatter.h"
 #include "sqlitelogger.h"
 #include "pkglogger.h"
-#include "filescanner.h"
 using namespace std;
 USING_RATEL
 USING_SFLOGGER
@@ -53,7 +52,7 @@ void TestCase_TestPackage()
         return;
     if(!pkg.importFile("*/testdir2", "C:\\work\\github\\ratel\\ratel\\builds\\win\\testpackage\\sqlite3-x64-d.dll")) 
         return;
-    if(!pkg.importDir("*/testdir2", "C:\\work\\test"))
+    if(!pkg.importDir("*/testdir2", "C:\\work\\github\\ratel\\ratel\\src"))
         return; 
 
 }

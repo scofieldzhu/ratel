@@ -21,7 +21,7 @@ CreateTime: 2018-9-16 21:54
 #include "dirtree.h"
 #include "dirnode.h"
 #include "pkglogger.h"
-#include "filescanner.h"
+#include "dirwalker.h"
 using namespace std;
 
 RATEL_NAMESPACE_BEGIN
@@ -187,12 +187,20 @@ bool Package::importDir(const Path& location, const Path& localdir)
         return false;
     }
     Path rootdir = location.join(dirname);
-    FileScanner scanner;
-    const FileScanner::PathSet& files = scanner.scan(localdir, nullptr);
-    for(auto f : files){
+    std::vector<Path> subfiles, subdirs;
+    auto pathmeetfunc = [&subfiles, &subdirs](const Path& p) { p.isRegularFile() ? subfiles.push_back(p) : subdirs.push_back(p); };
+    DirWalker walker(localdir);
+    walker.walk(pathmeetfunc);
+    for(auto f : subfiles){
         if(!importFile(rootdir, f)){
             slog_err(pkglogger) << "import file[" << f.cstr() << "] to location[" << rootdir.cstr() << "] failed!" << endl;
             return false;
+        }
+    }
+    for(auto dir : subdirs){              
+        if(!importDir(rootdir, dir)) {
+            slog_err(pkglogger) << "import subdir[" << dir.cstr() << "] to location[" << rootdir.cstr() << "] failed!" << endl;
+            continue;
         }
     }
     return true;
