@@ -92,3 +92,6 @@ builds/win/Release/
 builds/win/x64/
 builds/win/.vs/
 *.pdb
+*.pdb
+builds/win/ratel.sqlite/x64/Debug/vc140.pdb
+*.pdb

@@ -50,8 +50,6 @@ void TestCase_TestPackage()
         return;
     if(!pkg.createDir("testdir2", "*/"))
         return;
-    if(!pkg.importFile("*/testdir2", "C:\\work\\github\\ratel\\ratel\\builds\\win\\testpackage\\sqlite3-x64-d.dll")) 
-        return;
     if(!pkg.importDir("*/testdir2", "C:\\work\\github\\ratel\\ratel\\src"))
         return; 
 
