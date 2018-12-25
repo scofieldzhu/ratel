@@ -27,9 +27,9 @@ Statement::~Statement()
         slog_err(sqlitelogger) << "sqlite3_finalize failed!" << endl;    
 }
 
-ResultCode Statement::stepExec()
+int32_t Statement::stepExec()
 {
-    return (ResultCode)(sqlite3_step((sqlite3_stmt*)stmthandle_));
+    return sqlite3_step((sqlite3_stmt*)stmthandle_);
 }
 
 int32 Statement::fetchDataCount()

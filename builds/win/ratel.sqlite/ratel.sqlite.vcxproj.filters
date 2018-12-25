@@ -33,12 +33,6 @@
     <ClInclude Include="..\..\..\src\sqlite\statement.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\sqlite\rescode.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\sqlite\openflag.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\sqlite\sqlite3.h">
       <Filter>头文件</Filter>
     </ClInclude>

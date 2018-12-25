@@ -33,7 +33,7 @@ DB * DB::OpenDB(const Path& dbfile, int32 flags, const char* zvfs)
 Statement* DB::createStatement(const RString& sql, const char** pztail /*= nullptr*/)
 {
     sqlite3_stmt* res_stmt = nullptr;
-    int32 err = sqlite3_prepare_v2((sqlite3*)dbconn_, sql.cstr(), sql.size(), &res_stmt, pztail);
+    int32 err = sqlite3_prepare_v2((sqlite3*)dbconn_, sql.cstr(), (int)sql.size(), &res_stmt, pztail);
     if(err != SQLITE_OK){
         slog_err(sqlitelogger) << "sqlite3_prepare_v2 error:" << sqlite3_errmsg((sqlite3*)dbconn_) << std::endl;
         return nullptr;

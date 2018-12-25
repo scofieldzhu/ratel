@@ -10,7 +10,7 @@ CreateTime: 2018-11-7 20:55
 #ifndef __statement_h__
 #define __statement_h__
 
-#include "rescode.h"
+#include "sqlitepublic.h"
 
 RATEL_NAMESPACE_BEGIN
 
@@ -18,7 +18,7 @@ class RATEL_SQLITE_API Statement
 {
 public:    
     DB* db() { return dbinst_; }
-    ResultCode stepExec();
+    int32_t stepExec();
     int32 fetchDataCount();
     int32 fetchIntColumn(int32 col);
     int64 fetchInt64Column(int32 col);

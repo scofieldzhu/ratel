@@ -108,7 +108,7 @@
     <ClCompile>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>RATEL_SQLITE_EXPORTS</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>../../../src/filesys;../../../src/basic;../../../3rd/sflogger/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -162,8 +162,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\sqlite\db.h" />
-    <ClInclude Include="..\..\..\src\sqlite\openflag.h" />
-    <ClInclude Include="..\..\..\src\sqlite\rescode.h" />
     <ClInclude Include="..\..\..\src\sqlite\sqlite3.h" />
     <ClInclude Include="..\..\..\src\sqlite\sqlite3ext.h" />
     <ClInclude Include="..\..\..\src\sqlite\sqlitelogger.h" />
