@@ -11,9 +11,12 @@ CreateTime: 2018-9-9 21:41
 #define __package_h__
 
 #include "packagepublic.h"
+#include "table.h"
+#include "path.h"
 
 RATEL_NAMESPACE_BEGIN
-
+class DB;
+class DirTree;
 class RATEL_PACKAGE_API Package 
 {
 public:
@@ -27,12 +30,30 @@ public:
     bool exportFile(const Path& sourcefilepath, const Path& local_targetfilepath);
     bool load(const Path& pkgpath);
     bool createNew(const Path& newpkgpath);
+    void commit();
     bool opened()const;
-    Package();
+    void close();
+    void setWorkDir(const Path& dir);
+    const Path& workDir()const{ return workdir_; }
+    Package(const Path& workdir);
     ~Package();
+
 private:
-    struct Impl;
-    Impl* impl_;
+    void releaseResources();
+    bool initDB();
+    void releaseDB();
+    int32 writeNewFileData(const Path& sourcefile);
+    int32 addFileRecordToDB(const RString& filename, int32 dirid);   
+    Path workdir_;
+    RString lasterr_;
+    Path dbfile_;
+    DB* db_ = nullptr;
+    Path pkgfile_;    
+    DirTree* dirtree_ = nullptr;
+    Table dirdbtable_;
+    Table filedbtable_;
+    Path tmpdatafile_;
+    std::ofstream* tmpdatafilewriter_ = nullptr;
 };
 
 RATEL_NAMESPACE_END

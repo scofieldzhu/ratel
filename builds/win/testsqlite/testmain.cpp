@@ -1,7 +1,7 @@
 #include <iostream>
 #include "db.h"
 #include "statement.h"
-#include "openflag.h"
+#include "sqlite3.h"
 #include "path.h"
 #include "table.h"
 #include "tablecol.h"
@@ -10,7 +10,7 @@ USING_RATEL
 
 int main()
 {    
-    DB* db = DB::OpenDB("test.db", RATEL_DB_OPEN_READWRITE | RATEL_DB_OPEN_CREATE);
+    DB* db = DB::OpenDB("test.db", SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
     if (db == nullptr) {
         cout << "Open test.db failed!" << endl;
         return 0;
@@ -24,7 +24,7 @@ int main()
 
     RString cursql = t.makeCreateSql();
     Statement* stat = db->createStatement(cursql);
-    ResultCode rescode = stat->stepExec();
+    int32 rescode = stat->stepExec();
     delete stat;
 
     Table files("File");
@@ -63,7 +63,7 @@ int main()
 // 
     cursql = "select * from Directory;";
     stat = db->createStatement(cursql);
-    while((rescode = stat->stepExec()) == RESCODE_ROW) {
+    while((rescode = stat->stepExec()) == SQLITE_ROW) {
         int32 id = stat->fetchIntColumn(0);
         RString name = stat->fetchTextColumn(1);
         int32 fid = stat->fetchIntColumn(2);

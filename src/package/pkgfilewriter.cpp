@@ -24,7 +24,7 @@ PkgFileWriter::~PkgFileWriter()
 
 bool PkgFileWriter::beginWrite()
 {
-    if(!filepath_.exists() || !filepath_.isRegularFile()){
+    if(!filepath_.parentPath().exists()){
         slog_err(pkglogger) << "invalid filepath(" << filepath_.rstring().cstr() << ")!" << endl;
         return false;
     }
@@ -39,7 +39,7 @@ bool PkgFileWriter::beginWrite()
 
 bool PkgFileWriter::writeFileData(const Path& thefile)
 {
-    if(inWritting()) {
+    if(!inWritting()) {
         slog_err(pkglogger) << "writer is not in writting mode at present!" << endl;
         return false;
     }
@@ -59,7 +59,7 @@ bool PkgFileWriter::writeFileData(const Path& thefile)
     ofs_.write((const char*)&filesize, sizeof(uint32));
     //write file content
     const uint32 kBufSize = 512;
-    char buffer[kBufSize] = { '\0' };
+    char buffer[kBufSize] = {'\0'};
     while(true){
         if(ifs_.read(buffer, kBufSize)){
             ofs_.write(buffer, kBufSize);

@@ -9,26 +9,25 @@ CreateTime: 2018-9-16 21:54
 =========================================================================*/
 #include "package.h"
 #include <fstream>
-#include "path.h"
-#include "pkgfilereader.h"
 #include "db.h"
-#include "openflag.h"
-#include "statement.h"
-#include "rstrutil.h"
-#include "table.h"
-#include "tablecol.h"
-#include "pkglogger.h"
 #include "dirtree.h"
 #include "dirnode.h"
-#include "pkglogger.h"
 #include "dirwalker.h"
+#include "path.h"
+#include "pathremover.h"
+#include "pkglogger.h"
+#include "pkgfilereader.h"
+#include "pkgfilewriter.h"
+#include "rstrutil.h"
+#include "sqlite3.h"
+#include "statement.h"
+#include "table.h"
+#include "tablecol.h"
 using namespace std;
 
 RATEL_NAMESPACE_BEGIN
 
-#define RESET_LASTERR() impl_->lasterr = "noerr";
-
-const Path kTempDir = "./temp";
+#define RESET_LASTERR() lasterr_ = "noerr";
 
 const int32 kReadBufferSize = 1024 * 10; //10K
 
@@ -44,126 +43,161 @@ namespace {
     #define GUID_FIELD "guid"
 }
 
-struct Package::Impl 
+Package::Package(const Path& workdir)
+    :workdir_(workdir),
+    dirdbtable_("Directory"),
+    filedbtable_("File")
 {
-    RString lasterr;
-    Path* curdbpath = nullptr;
-    Path* curpkgpath = nullptr;
-    DB* db = nullptr;
-    DirTree* dirtree = nullptr;
-    Table dirtable;
-    Table filetable;
-    ofstream* datafilewriter = nullptr;
-    
-    Impl()
-        :dirtable("Directory"),
-        filetable("File") 
-    {
-        dirtable.addColumn(IntCol(ID_FIELD).primaryKeyOn().uniqueOn().notNullOn());
-        dirtable.addColumn(StrCol(NAME_FIELD, 50).notNullOn());
-        dirtable.addColumn(IntCol(PARENT_FIELD).setDefaultValue(-1).defaultOn());
-        dirtable.addColumn(IntCol(STATUS_FIELD).setDefaultValue(1).defaultOn());
+    logverify(pkglogger, workdir_.isDirectory());
+    dirdbtable_.addColumn(IntCol(ID_FIELD).primaryKeyOn().uniqueOn().notNullOn());
+    dirdbtable_.addColumn(StrCol(NAME_FIELD, 50).notNullOn());
+    dirdbtable_.addColumn(IntCol(PARENT_FIELD).setDefaultValue(-1).defaultOn());
+    dirdbtable_.addColumn(IntCol(STATUS_FIELD).setDefaultValue(1).defaultOn());
 
-        filetable.addColumn(IntCol(ID_FIELD).primaryKeyOn().uniqueOn().notNullOn());
-        filetable.addColumn(StrCol(NAME_FIELD, 100).notNullOn());
-        filetable.addColumn(IntCol(DIR_FIELD).setDefaultValue(-1).defaultOn());
-        filetable.addColumn(IntCol(STATUS_FIELD).setDefaultValue(1).defaultOn());
-
-        datafilewriter = new ofstream("tmp.dat", ios::out | ios::binary);
-        bool ok = datafilewriter->is_open();
-        logverify(pkglogger, ok);
-    }
-    
-    void releaseDB()
-    {
-        if(db)
-            delete db;
-        db = nullptr;
-    }
-
-    int32 addFileToDataFileSet(const Path& sourcefile)
-    {
-        datafilewriter->seekp(0, ios_base::end);
-        int32 newfileid = g_DataFileIdSeed++;
-        (*datafilewriter) << newfileid; //write 'file_id' value
-        ifstream ifs(sourcefile.cstr(), ios::in | ios::binary);
-        ifs.seekg(0, ios_base::beg);
-        (*datafilewriter) << ifs.tellg(); //write 'file_data_size' value
-        while(ifs){
-            char databuffer[kReadBufferSize + 1] = { '\0' };
-            ifs.read(databuffer, kReadBufferSize);
-            datafilewriter->write(databuffer, ifs.gcount());
-            if(ifs.gcount() < kReadBufferSize)
-                break; //it's eof
-        }
-        ifs.close();
-        return newfileid;
-    }
-
-    int32 addFileRecordToDB(const RString& filename, int32 dirid)
-    {
-        RString sql = filetable.makeInsertSql({NAME_FIELD, DIR_FIELD}, "'%s',%d", filename.cstr(), dirid);
-        Statement* stat = db->createStatement(sql);
-        logverify(pkglogger, stat);
-        ResultCode rc = stat->stepExec();
-        logverify(pkglogger, rc == RESCODE_DONE);
-        delete stat;
-        sql = filetable.makeQueryRowWhenSql("%s='%s' and %s=%d", NAME_FIELD, filename.cstr(), DIR_FIELD, dirid);
-        stat = db->createStatement(sql);
-        logverify(pkglogger, stat);
-        rc = stat->stepExec();
-        logverify(pkglogger, rc == RESCODE_ROW);
-        int32 newrecordid = stat->fetchIntColumn(0);
-        delete stat;
-        return newrecordid;
-    }
-};
-
-Package::Package()
-    :impl_(new Impl)
-{}
+    filedbtable_.addColumn(IntCol(ID_FIELD).primaryKeyOn().uniqueOn().notNullOn());
+    filedbtable_.addColumn(StrCol(NAME_FIELD, 100).notNullOn());
+    filedbtable_.addColumn(IntCol(DIR_FIELD).setDefaultValue(-1).defaultOn());
+    filedbtable_.addColumn(IntCol(STATUS_FIELD).setDefaultValue(1).defaultOn());
+}
 
 Package::~Package()
 {
-    delete impl_;
+    releaseResources();
+}
+
+void Package::releaseResources()
+{
+    releaseDB();
+    if(dirtree_)
+        rtdelete(dirtree_);
+    dirtree_ = nullptr;
+    if(tmpdatafilewriter_){
+        tmpdatafilewriter_->close();
+        rtdelete(tmpdatafilewriter_);
+    }
+    tmpdatafilewriter_ = nullptr;    
+    if(dbfile_.exists())
+        PathRemover().perform(dbfile_);
+    if(tmpdatafile_.exists())
+        PathRemover().perform(tmpdatafile_);
+}
+
+void Package::releaseDB()
+{
+    if(db_)
+        rtdelete(db_);
+    db_ = nullptr;
+}
+
+int32 Package::writeNewFileData(const Path& sourcefile)
+{
+    if(tmpdatafilewriter_ == nullptr){
+        tmpdatafile_ = workdir_.join(rstrutil::NewGuid() + ".DAT");
+        std::string localefn;
+        tmpdatafile_.rstring().decodeToLocale(localefn);
+        tmpdatafilewriter_ = new ofstream(localefn.c_str(), ios::out | ios::binary);
+        bool ok = tmpdatafilewriter_->is_open();
+        logverify(pkglogger, ok);
+    }
+    tmpdatafilewriter_->seekp(0, ios_base::end);
+    int32 newfileid = g_DataFileIdSeed++;
+    (*tmpdatafilewriter_) << newfileid; //write 'file_id' value
+    ifstream ifs(sourcefile.cstr(), ios::in | ios::binary);
+    ifs.seekg(0, ios_base::beg);
+    (*tmpdatafilewriter_) << ifs.tellg(); //write 'file_data_size' value
+    while(ifs){
+        char databuffer[kReadBufferSize + 1] = {'\0'};
+        ifs.read(databuffer, kReadBufferSize);
+        tmpdatafilewriter_->write(databuffer, ifs.gcount());
+        if(ifs.gcount() < kReadBufferSize)
+            break; //it's eof
+    }
+    ifs.close();
+    return newfileid;
+}
+
+int32 Package::addFileRecordToDB(const RString& filename, int32 dirid)
+{
+    RString sql = filedbtable_.makeInsertSql({ NAME_FIELD, DIR_FIELD }, "'%s',%d", filename.cstr(), dirid);
+    Statement* stat = db_->createStatement(sql);
+    logverify(pkglogger, stat);
+    int32 rc = stat->stepExec();
+    logverify(pkglogger, rc == SQLITE_DONE);
+    delete stat;
+    sql = filedbtable_.makeQueryRowWhenSql("%s='%s' and %s=%d", NAME_FIELD, filename.cstr(), DIR_FIELD, dirid);
+    stat = db_->createStatement(sql);
+    logverify(pkglogger, stat);
+    rc = stat->stepExec();
+    logverify(pkglogger, rc == SQLITE_ROW);
+    int32 newrecordid = stat->fetchIntColumn(0);
+    delete stat;
+    return newrecordid;
+}
+
+bool Package::initDB()
+{
+    logverify(pkglogger, db_);
+    RString createsql = dirdbtable_.makeCreateSql();
+    Statement* stat = db_->createStatement(createsql);
+    if(stat == nullptr){
+        lasterr_ = RString::FormatString("create statement failed! sql:%s err:%s", createsql.cstr(), db_->errMsg().cstr());        
+        return false;
+    }
+    if(stat->stepExec() != SQLITE_DONE){
+        lasterr_ = RString::FormatString("create dirtable stepExec failed!(sql:%s details:%s)", createsql.cstr(), stat->errMsg().cstr());
+        return false;
+    }
+    delete stat;
+    createsql = filedbtable_.makeCreateSql();
+    stat = db_->createStatement(createsql);
+    if(stat == nullptr){
+        lasterr_ = RString::FormatString("create statement failed! sql:%s err:%s", createsql.cstr(), db_->errMsg().cstr());
+        return false;
+    }
+    if(stat->stepExec() != SQLITE_DONE){
+        lasterr_ = RString::FormatString("create filetable stepExec failed!(sql:%s details:%s)", createsql.cstr(), stat->errMsg().cstr());        
+        return false;
+    }
+    delete stat;
+    return true;
 }
 
 const RString& Package::lastError() const
 {
-    return impl_->lasterr;
+    return lasterr_;
 }
 
 bool Package::createDir(const RString& name, const Path& location)
 {
     RESET_LASTERR();
     if(!opened()){
-        impl_->lasterr = "package is not opened!";
+        lasterr_ = "package is not opened!";
         return false;
     }
-    DirNode* newnode = impl_->dirtree->createDir(name, location);
+    DirNode* newnode = dirtree_->createDir(name, location);
     if(!newnode){
-        impl_->lasterr = RString::FormatString("dirtree->createDir(%s, %s) failed! ", name.cstr(), location.cstr());
+        lasterr_ = RString::FormatString("dirtree->createDir(%s, %s) failed! ", name.cstr(), location.cstr());
         return false;
     }
-    RString sql = impl_->dirtable.makeInsertSql({NAME_FIELD, PARENT_FIELD}, "'%s', %d", name.cstr(), newnode->parent->dbid);
-    Statement* newstmt = impl_->db->createStatement(sql);
+    RString sql = dirdbtable_.makeInsertSql({NAME_FIELD, PARENT_FIELD}, "'%s', %d", name.cstr(), newnode->parent->dbid);
+    Statement* newstmt = db_->createStatement(sql);
     if(newstmt == nullptr){
-        impl_->lasterr = RString::FormatString("createStatement(sql:%s) failed! ", sql.cstr());
+        lasterr_ = RString::FormatString("createStatement(sql:%s) failed! ", sql.cstr());
         return false;
     }
-    if(newstmt->stepExec() != RESCODE_DONE){
+    if(newstmt->stepExec() != SQLITE_DONE){
         delete newstmt;
-        impl_->lasterr = RString::FormatString("stepExec(sql:%s) failed! ", sql.cstr());
+        lasterr_ = RString::FormatString("stepExec(sql:%s) failed! ", sql.cstr());
         return false;
     }
     delete newstmt;
     //query new id
-    sql = impl_->dirtable.makeQueryRowWhenSql("%s=%d and %s='%s'", PARENT_FIELD, newnode->parent->dbid, NAME_FIELD, name.cstr());    
-    newstmt = impl_->db->createStatement(sql);
-    ResultCode rc = newstmt->stepExec();
-    if(rc != RESCODE_ROW){
+    sql = dirdbtable_.makeQueryRowWhenSql("%s=%d and %s='%s'", PARENT_FIELD, newnode->parent->dbid, NAME_FIELD, name.cstr());    
+    newstmt = db_->createStatement(sql);
+    int32 rc = newstmt->stepExec();
+    if(rc != SQLITE_ROW){
         delete newstmt;
-        impl_->lasterr = RString::FormatString("stepExec(sql:%s) failed! ", sql.cstr());
+        lasterr_ = RString::FormatString("stepExec(sql:%s) failed! ", sql.cstr());
         return false;                
     }
     newnode->dbid = newstmt->fetchIntColumn(0);
@@ -227,15 +261,15 @@ bool Package::importFile(const Path& dirlocation, const Path& sourcefile)
         return false;
     }
     const RString sourcefilename = sourcefile.filename().rstring();
-    FileNode* filenode = impl_->dirtree->createFile(dirlocation, sourcefilename);
+    FileNode* filenode = dirtree_->createFile(dirlocation, sourcefilename);
     if(filenode == nullptr) {
         slog_err(pkglogger) << "create file:" << sourcefilename.cstr() << " at dir:" << dirlocation.cstr() << " failed!" << endl;
         return false;
     }
-    int32 newfileid = impl_->addFileToDataFileSet(sourcefile);
+    int32 newfileid = writeNewFileData(sourcefile);
     filenode->datafileid = newfileid;
     filenode->init = 1;    
-    filenode->dbid = impl_->addFileRecordToDB(sourcefilename, impl_->dirtree->locateDir(dirlocation)->dbid);
+    filenode->dbid = addFileRecordToDB(sourcefilename, dirtree_->locateDir(dirlocation)->dbid);
     return true;
 }
 
@@ -251,59 +285,86 @@ bool Package::exportFile(const Path& sourcefilepath, const Path& local_targetfil
 
 bool Package::load(const Path& pkgpath)
 {
+    RESET_LASTERR();
+    if(!pkgpath.exists()){
+        lasterr_ = RString::FormatString("pkgpath(%s) not exists!", pkgpath.cstr());
+        return false;
+    }
+
     return false;
 }
 
 bool Package::createNew(const Path& newpkgpath)
 {
     RESET_LASTERR();
-    impl_->curpkgpath = new Path(newpkgpath);
-    Path pkgdir = newpkgpath.parentPath();
-    if(!pkgdir.exists()){
-        impl_->lasterr = RString::FormatString("new package filepath(%s) is invalid!", newpkgpath.rstring().cstr());
+    if(!workdir_.isDirectory()){
+        lasterr_ = RString::FormatString("workdir(%s) is not valid directory!", workdir_.cstr());
         return false;
     }
-    Path newdbpath = pkgdir.join(rstrutil::NewGuid() + ".db");
-    impl_->db = DB::OpenDB(newdbpath, RATEL_DB_OPEN_READWRITE | RATEL_DB_OPEN_CREATE);
-    if(impl_->db == nullptr){
-        impl_->lasterr = RString::FormatString("create db file(%s) failed!", newdbpath.rstring().cstr());
+    pkgfile_ = newpkgpath;
+    if(!pkgfile_.parentPath().exists()){
+        lasterr_ = RString::FormatString("new package filepath(%s) is invalid!", pkgfile_.cstr());
         return false;
     }
-    RString createsql = impl_->dirtable.makeCreateSql();
-    Statement* stat = impl_->db->createStatement(createsql);
-    if(stat == nullptr){
-        impl_->lasterr = RString::FormatString("create statement failed! sql:%s err:%s", createsql.cstr(), impl_->db->errMsg().cstr());
-        impl_->releaseDB();
+    dbfile_ = workdir_.join(rstrutil::NewGuid() + ".db");
+    db_ = DB::OpenDB(dbfile_, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
+    if(db_ == nullptr){
+        lasterr_ = RString::FormatString("create db file(%s) failed!", dbfile_.cstr());
         return false;
     }
-    int32 result = stat->stepExec();
-    if(result != RESCODE_DONE){
-        impl_->lasterr = RString::FormatString("create dirtable stepExec failed!(sql:%s details:%s)", createsql.cstr(), stat->errMsg().cstr());
-        impl_->releaseDB();
+    if(!initDB()){
+        lasterr_ = RString::FormatString("init created db(%s) failed!", dbfile_.cstr());
+        releaseDB();
         return false;
-    }
-    delete stat;
-    createsql = impl_->filetable.makeCreateSql();
-    stat = impl_->db->createStatement(createsql);
-    if(stat == nullptr){
-        impl_->lasterr = RString::FormatString("create statement failed! sql:%s err:%s", createsql.cstr(), impl_->db->errMsg().cstr());
-        impl_->releaseDB();
-        return false;
-    }
-    result = stat->stepExec();
-    if(result != RESCODE_DONE){
-        impl_->lasterr = RString::FormatString("create filetable stepExec failed!(sql:%s details:%s)", createsql.cstr(), stat->errMsg().cstr());
-        impl_->releaseDB();
-        return false;
-    }
-    delete stat;
-    impl_->dirtree = new DirTree();
+    }    
+    dirtree_ = new DirTree();
     return true;
+}
+
+void Package::commit()
+{
+    if(!opened()){
+        slog_err(pkglogger) << "not opened yet!" << endl;
+        return;
+    }    
+    tmpdatafilewriter_->flush();
+    PkgFileWriter pkgwriter(pkgfile_);
+    if(!pkgwriter.beginWrite()){
+        slog_err(pkglogger) << "PkgFileWriter(" << pkgfile_.cstr() << ") beginWrite failed!" << endl;
+        return;
+    }
+    logverify(pkglogger, dbfile_.exists());
+    if(!pkgwriter.writeFileData(dbfile_)){
+        slog_err(pkglogger) << "PkgFileWriter writeFileData " << pkgfile_.cstr() << " failed!" << endl;
+        //do cleanup
+        return;
+    }
+    if(tmpdatafile_.exists()){
+        if(!pkgwriter.writeFileData(tmpdatafile_)){
+            slog_err(pkglogger) << "PkgFileWriter writeFileData " << tmpdatafile_.cstr() << " failed!" << endl;
+            //do cleanup
+            return;
+        }        
+    }
 }
 
 bool Package::opened() const
 {
-    return impl_->db != nullptr;
+    return db_ != nullptr;
+}
+
+void Package::close()
+{
+    if(opened()){
+        rtdelete(db_);
+        db_ = nullptr;
+    }
+}
+
+void Package::setWorkDir(const Path & dir)
+{
+    if(dir.isDirectory())
+        workdir_ = dir;
 }
 
 RATEL_NAMESPACE_END

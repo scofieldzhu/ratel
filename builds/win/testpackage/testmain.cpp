@@ -7,6 +7,8 @@
 #include "standardFormatter.h"
 #include "sqlitelogger.h"
 #include "pkglogger.h"
+
+#include "pathremover.h"
 using namespace std;
 USING_RATEL
 USING_SFLOGGER
@@ -40,8 +42,8 @@ void InitLogger()
 
 void TestCase_TestPackage()
 {
-    Package pkg;
-    Path pkgpath("./temp/x.tcf");
+    Package pkg("./temp");
+    Path pkgpath("./temp/y.tcf");
     if (!pkg.createNew(pkgpath))
         return;
     if (!pkg.createDir("testdir1", "*/")) 
@@ -52,6 +54,7 @@ void TestCase_TestPackage()
         return;
     if(!pkg.importDir("*/testdir2", "C:\\work\\github\\ratel\\ratel\\src"))
         return; 
+    pkg.commit();
 
 }
 
@@ -59,6 +62,7 @@ int main()
 {    
     InitLogger();
     slog_info(g_AppLogger) << "enter main..." << endl;
+
     TestCase_TestPackage();
 
 

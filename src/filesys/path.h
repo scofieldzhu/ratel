@@ -19,6 +19,7 @@ class RATEL_FILESYS_API Path
 public:
     static const char Separator;
     const char* cstr()const { return pathstr_.cstr(); }
+    std::wstring toWString()const;
     const RString& rstring()const { return pathstr_; }
     bool exists()const;
     bool isDirectory()const;

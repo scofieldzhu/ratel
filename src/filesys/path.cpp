@@ -91,4 +91,11 @@ bool Path::isRegularFile() const
     return stat(localestring.c_str(), &s) == 0 && (s.st_mode & S_IFREG);
 }
 
+std::wstring Path::toWString() const
+{
+    std::wstring result;
+    pathstr_.decodeToWString(result);
+    return result;
+}
+
 RATEL_NAMESPACE_END

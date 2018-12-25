@@ -60,6 +60,9 @@
     <ClInclude Include="..\..\..\src\basic\rstrutil.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\basic\langext.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\basic\basiclogger.cpp">

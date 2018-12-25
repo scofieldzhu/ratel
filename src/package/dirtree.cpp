@@ -199,16 +199,18 @@ void DirTree::deleteDir(const RString& dirpath)
 void DirTree::deleteDirNode(DirNode* dirnode)
 {
     logverify(pkglogger, dirnode != nullptr);
-    detachChildNode(*dirnode->parent, dirnode->name);
+    if(dirnode->parent)
+        detachChildNode(*dirnode->parent, dirnode->name);
     if(!dirnode->nextchild){
-        delete dirnode; // release this node's memory
+        rtdelete(dirnode); // release this node's memory
         return;
     }
     DirNode* nextsibling = nullptr;
     for(DirNode* curchild = dirnode->nextchild; curchild != nullptr; curchild = nextsibling){
         nextsibling = curchild->nextsibling;
         deleteDirNode(curchild);
-    }        
+    }   
+    rtdelete(dirnode); // release this node's memory
 }
 
 void DirTree::detachChildNode(DirNode& parent, const RString& childname)
