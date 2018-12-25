@@ -14,5 +14,6 @@ Module: basic.h
 #include <memory>
 #include <functional>
 #include "rstring.h"
+#include "langext.h"
 
 #endif
