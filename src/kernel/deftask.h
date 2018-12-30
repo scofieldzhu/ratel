@@ -16,7 +16,7 @@ RATEL_NAMESPACE_BEGIN
 class RATEL_KERNEL_API Task 
 {
 public:
-    virtual int execute() = 0;
+    virtual int32 execute() = 0;
     virtual ~Task() {};
 };
 RATEL_NAMESPACE_END

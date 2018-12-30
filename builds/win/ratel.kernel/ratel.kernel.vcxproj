@@ -159,6 +159,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\src\kernel\deftask.h" />
     <ClInclude Include="..\..\..\src\kernel\kernelpublic.h" />
+    <ClInclude Include="..\..\..\src\kernel\agilefilepipe.h" />
     <ClInclude Include="..\..\..\src\kernel\task.h" />
   </ItemGroup>
   <ItemGroup>
@@ -166,6 +167,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\kernel\deftask.cpp" />
+    <ClCompile Include="..\..\..\src\kernel\agilefilepipe.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
