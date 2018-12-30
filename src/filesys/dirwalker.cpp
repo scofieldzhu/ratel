@@ -21,8 +21,7 @@ void DirWalker::walk(MeetFunc func)
     if(!curdir_.exists())
         return;
     Path sortpath = curdir_.join("*.*");
-    std::wstring rootdir;
-    sortpath.rstring().decodeToWString(rootdir);
+    std::wstring rootdir = sortpath.rstring().decodeToWString();
     WIN32_FIND_DATA wfd;
     memset(std::addressof(wfd.cFileName), 0, sizeof(wfd.cFileName[0]) * MAX_PATH);
     HANDLE fh = ::FindFirstFile(rootdir.c_str(), &wfd);

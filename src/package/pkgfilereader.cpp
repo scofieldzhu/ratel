@@ -14,6 +14,10 @@ using namespace std;
 
 RATEL_NAMESPACE_BEGIN
 
+namespace{
+    const uint32 kReadBufferSize = 1024 * 4; // 4K
+}
+
 PkgFileReader::PkgFileReader(const Path& filepath)
     :pkgpath_(filepath)
 {}
@@ -26,11 +30,11 @@ PkgFileReader::~PkgFileReader()
 bool PkgFileReader::open() 
 {
     dbdatasize_ = -1;
-    if(pkgpath_.isRegularFile()){
-        slog_err(pkglogger) << "pkgpath(" << pkgpath_.rstring().cstr() << ") is invalid!" << endl;
+    if(!pkgpath_.isRegularFile()){
+        slog_err(pkglogger) << "pkg file(" << pkgpath_.rstring().cstr() << ") isn't single file!" << endl;
         return false;
     }
-    fs_.open(pkgpath_.rstring().cstr(), ios_base::in | ios_base::binary);        
+    fs_.open(pkgpath_.toLocale().c_str(), ios_base::in | ios_base::binary);        
     if(fs_){
         if(!readTypeId())
             return false;
@@ -45,7 +49,7 @@ bool PkgFileReader::open()
 bool PkgFileReader::readDBFileData(char*& filedata, uint32& datasize)
 {
     if(dbdatasize_ > 0 && fs_){        
-        fs_.seekg(ios_base::beg, kPkgTypeCharNum + sizeof(uint32));
+        locateDBDataPos();
         if(fs_){
             fs_.read(filedata, dbdatasize_);
             if(fs_){
@@ -57,10 +61,39 @@ bool PkgFileReader::readDBFileData(char*& filedata, uint32& datasize)
     return false;
 }
 
+bool PkgFileReader::readDBDataToFile(std::ofstream& os)
+{
+    if(!fs_ || dbdatasize_ <= 0)
+        return false;
+    locateDBDataPos();
+    if(!fs_)
+        return false;
+    char databuffer[kReadBufferSize] = {'\0'};
+    int32 curdigestion = 0, leftover = 0, needreadbytes = 0;
+    while(curdigestion < dbdatasize_){        
+        leftover = dbdatasize_ - curdigestion;
+        if(leftover <= 0) //realdy finished!
+            break;
+        needreadbytes = (leftover >= kReadBufferSize ? kReadBufferSize : leftover);
+        fs_.read(databuffer, needreadbytes);
+        if(fs_.gcount() < needreadbytes){//some exception error            
+            if(fs_.eof())
+                slog_err(pkglogger) << "db file data is not integrated!" << endl;
+            os.write(databuffer, fs_.gcount());
+            os.flush();
+            return false;
+        }
+        os.write(databuffer, needreadbytes);
+        os.flush();
+        curdigestion += needreadbytes;
+    };
+    return true;
+}
+
 bool PkgFileReader::readFileData(int32 offset, uint32 size, char*& outdata)
 {
     if(dbdatasize_ > 0 && fs_){
-        fs_.seekg(ios_base::beg, kPkgTypeCharNum + sizeof(uint32) + offset);
+        fs_.seekg(kPkgTypeCharNum + sizeof(uint32) + offset, ios_base::beg);
         if(fs_){
             fs_.read(outdata, size);
             if(fs_)
@@ -74,6 +107,11 @@ void PkgFileReader::close()
 {
     if(fs_.is_open())
         fs_.close();
+}
+
+void PkgFileReader::locateDBDataPos()
+{
+    fs_.seekg(kPkgTypeCharNum + sizeof(uint32), ios_base::beg);
 }
 
 bool PkgFileReader::readTypeId()
@@ -91,7 +129,7 @@ bool PkgFileReader::readTypeId()
 bool PkgFileReader::readDBDataSize()
 {    
     fs_.read((char*)&dbdatasize_, sizeof(uint32));
-    return (fs_) ? true : false;    
+    return (bool)fs_;    
 }
 
 RATEL_NAMESPACE_END

@@ -294,8 +294,8 @@ public:
 
     static RString FormatString(const char* format, ...);
 
-    const RString& decodeToLocale(std::string& locale)const;
-    const RString& decodeToWString(std::wstring&)const;
+    std::string decodeToLocale()const;
+    std::wstring decodeToWString()const;
     RString& encodeFromLocale(const char* localestr);
     RString& encodeFromWString(const std::wstring& srcstr);
 

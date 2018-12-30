@@ -40,7 +40,7 @@ void InitLogger()
     RATEL::package::SetLogger(g_AppLogger);
 }
 
-void TestCase_TestPackage()
+void TestCase_TestPackage_Create()
 {
     Package pkg("./temp");
     Path pkgpath("./temp/y.tcf");
@@ -58,12 +58,25 @@ void TestCase_TestPackage()
 
 }
 
+void TestCase_TestPackage_Load()
+{
+    Package pkg("./temp");
+    if(!pkg.load("y.tcf")){
+        slog_err(g_AppLogger) << "load package failed!" << endl;
+        return;
+    }
+    slog_err(g_AppLogger) << "load package ok!" << endl;
+
+
+}
+
 int main() 
 {    
     InitLogger();
     slog_info(g_AppLogger) << "enter main..." << endl;
 
-    TestCase_TestPackage();
+    //TestCase_TestPackage_Create();
+    TestCase_TestPackage_Load();
 
 
     return 0;

@@ -21,12 +21,14 @@ public:
     bool open();
     bool isopened()const { return fs_.is_open(); }
     bool readDBFileData(char*& filedata, uint32& datasize);
+    bool readDBDataToFile(std::ofstream& os);
     bool readFileData(int32 offset, uint32 size, char*& outdata);
     void close();
     PkgFileReader(const Path& filepath);
     ~PkgFileReader();
 
 private:
+    void locateDBDataPos();
     bool readTypeId();
     bool readDBDataSize();
     Path pkgpath_;

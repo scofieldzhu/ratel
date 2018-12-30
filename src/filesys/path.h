@@ -20,6 +20,7 @@ public:
     static const char Separator;
     const char* cstr()const { return pathstr_.cstr(); }
     std::wstring toWString()const;
+    std::string toLocale()const;
     const RString& rstring()const { return pathstr_; }
     bool exists()const;
     bool isDirectory()const;

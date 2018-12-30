@@ -44,11 +44,11 @@ namespace {
 }
 
 Package::Package(const Path& workdir)
-    :workdir_(workdir),
-    dirdbtable_("Directory"),
+    :dirdbtable_("Directory"),
     filedbtable_("File")
 {
-    logverify(pkglogger, workdir_.isDirectory());
+    if(workdir.isDirectory())
+        workdir_ = workdir;
     dirdbtable_.addColumn(IntCol(ID_FIELD).primaryKeyOn().uniqueOn().notNullOn());
     dirdbtable_.addColumn(StrCol(NAME_FIELD, 50).notNullOn());
     dirdbtable_.addColumn(IntCol(PARENT_FIELD).setDefaultValue(-1).defaultOn());
@@ -92,9 +92,8 @@ void Package::releaseDB()
 int32 Package::writeNewFileData(const Path& sourcefile)
 {
     if(tmpdatafilewriter_ == nullptr){
-        tmpdatafile_ = workdir_.join(rstrutil::NewGuid() + ".DAT");
-        std::string localefn;
-        tmpdatafile_.rstring().decodeToLocale(localefn);
+        tmpdatafile_ = generateTmpDataFilePath();
+        std::string localefn = tmpdatafile_.rstring().decodeToLocale();
         tmpdatafilewriter_ = new ofstream(localefn.c_str(), ios::out | ios::binary);
         bool ok = tmpdatafilewriter_->is_open();
         logverify(pkglogger, ok);
@@ -132,6 +131,16 @@ int32 Package::addFileRecordToDB(const RString& filename, int32 dirid)
     int32 newrecordid = stat->fetchIntColumn(0);
     delete stat;
     return newrecordid;
+}
+
+Path Package::generateDBFilePath() const
+{
+    return workdir_.join(rstrutil::NewGuid()+".db");
+}
+
+Path Package::generateTmpDataFilePath() const
+{
+    return workdir_.join(rstrutil::NewGuid()+".DAT");
 }
 
 bool Package::initDB()
@@ -287,10 +296,21 @@ bool Package::load(const Path& pkgpath)
 {
     RESET_LASTERR();
     if(!pkgpath.exists()){
-        lasterr_ = RString::FormatString("pkgpath(%s) not exists!", pkgpath.cstr());
+        lasterr_ = RString::FormatString("pkg file(%s) not exists!", pkgpath.cstr());
         return false;
     }
-
+    PkgFileReader pkgreader(pkgpath);
+    if(!pkgreader.open()){
+        lasterr_ = RString::FormatString("pkg file(%s) isn't well-formed!", pkgpath.cstr());
+        return false;
+    }
+    dbfile_ = generateDBFilePath();
+    std::string localepathstr = dbfile_.rstring().decodeToLocale();
+    ofstream ofs(localepathstr.c_str(), ios::out | ios::binary);
+    if(pkgreader.readDBDataToFile(ofs)){
+        ofs.close();
+        return true;
+    }    
     return false;
 }
 
@@ -306,7 +326,7 @@ bool Package::createNew(const Path& newpkgpath)
         lasterr_ = RString::FormatString("new package filepath(%s) is invalid!", pkgfile_.cstr());
         return false;
     }
-    dbfile_ = workdir_.join(rstrutil::NewGuid() + ".db");
+    dbfile_ = generateDBFilePath();
     db_ = DB::OpenDB(dbfile_, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
     if(db_ == nullptr){
         lasterr_ = RString::FormatString("create db file(%s) failed!", dbfile_.cstr());

@@ -44,6 +44,8 @@ private:
     void releaseDB();
     int32 writeNewFileData(const Path& sourcefile);
     int32 addFileRecordToDB(const RString& filename, int32 dirid);   
+    Path generateDBFilePath()const;
+    Path generateTmpDataFilePath()const;
     Path workdir_;
     RString lasterr_;
     Path dbfile_;

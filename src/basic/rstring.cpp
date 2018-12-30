@@ -1021,23 +1021,20 @@ RString RString::FormatString(const char * format, ...)
     return buffer;
 }
 
-const RString& RString::decodeToLocale(std::string& locale) const
+std::string RString::decodeToLocale() const
 {
     //convert utf8 to wstring
-    std::wstring tmpwstr;
-    decodeToWString(tmpwstr);
+    std::wstring tmpwstr = decodeToWString();
     //convert wstring to locale string    
     std::locale l(""); //get locale from environment, same as: setlocale(LC_ALL, "").
     std::wstring_convert<LocaleCodecvt> cvt(new LocaleCodecvt(l.name()));
-    locale = cvt.to_bytes(tmpwstr);
-    return *this;
+    return cvt.to_bytes(tmpwstr);
 }
 
-const RString& RString::decodeToWString(std::wstring& reswstr) const
+std::wstring RString::decodeToWString() const
 {
     std::wstring_convert<std::codecvt_utf8<wchar_t>> cvt;
-    reswstr = cvt.from_bytes(cstr());
-    return *this;
+    return cvt.from_bytes(cstr());
 }
 
 RString& RString::encodeFromLocale(const char* localestr)

@@ -69,33 +69,33 @@ Path Path::filename() const
 
 bool Path::exists() const
 {
-    std::string localestring;
-    pathstr_.decodeToLocale(localestring);
+    std::string localestring = pathstr_.decodeToLocale();
     struct stat s;
     return stat(localestring.c_str(), &s) == 0;
 }
 
 bool Path::isDirectory() const
 {
-    std::string localestring;
-    pathstr_.decodeToLocale(localestring);
+    std::string localestring = pathstr_.decodeToLocale();
     struct stat s;
     return stat(localestring.c_str(), &s) == 0 && (s.st_mode & S_IFDIR);
 }
 
 bool Path::isRegularFile() const
 {    
-    std::string localestring;
-    pathstr_.decodeToLocale(localestring);
+    std::string localestring = pathstr_.decodeToLocale();
     struct stat s;
     return stat(localestring.c_str(), &s) == 0 && (s.st_mode & S_IFREG);
 }
 
 std::wstring Path::toWString() const
 {
-    std::wstring result;
-    pathstr_.decodeToWString(result);
-    return result;
+    return pathstr_.decodeToWString();
+}
+
+std::string Path::toLocale() const
+{
+    return pathstr_.decodeToLocale();
 }
 
 RATEL_NAMESPACE_END
