@@ -14,20 +14,69 @@ CreateTime: 2018-12-30 10:33
 #include "kernelpublic.h"
 
 RATEL_NAMESPACE_BEGIN
-class AgileFilePipe
+class RATEL_KERNEL_API AgileFilePipe
 {
 public:
+    enum PosType
+    {
+        BEGIN,
+        CUR,
+        END
+    };
     explicit operator bool()const;
     bool operator!()const;
     bool eof()const;
     bool fail()const;    
-    AgileFilePipe& eatOff(int32 off, uint32 size);
+    AgileFilePipe& eat(int32 off, uint32 size);
     AgileFilePipe& shrink(uint32 size);
-    AgileFilePipe& setRPosToBegin(int32 off);
-    AgileFilePipe& setRPosToCur(int32 off);
-    AgileFilePipe& setRPosToEnd(int32 off);
-    AgileFilePipe(const char* filepath, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
-    AgileFilePipe(const std::string& filepath, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
+    AgileFilePipe& operator<<(bool val);
+    AgileFilePipe& operator<<(short val);
+    AgileFilePipe& operator<<(unsigned short val);
+    AgileFilePipe& operator<<(int val);
+    AgileFilePipe& operator<<(unsigned int val);
+    AgileFilePipe& operator<<(long val);
+    AgileFilePipe& operator<<(unsigned long val);
+    AgileFilePipe& operator<<(long long val);
+    AgileFilePipe& operator<<(unsigned long long val);
+    AgileFilePipe& operator<<(float val);
+    AgileFilePipe& operator<<(double val);
+    AgileFilePipe& operator<<(long double val);
+    AgileFilePipe& operator<<(void* val);
+    AgileFilePipe& operator<<(std::streambuf* sb);
+    AgileFilePipe& operator<<(std::ostream& (*pf)(std::ostream&));
+    AgileFilePipe& operator<<(std::ios& (*pf)(std::ios&));
+    AgileFilePipe& operator<<(std::ios_base& (*pf)(std::ios_base&));
+    AgileFilePipe& setReadPos(int32 pos, PosType);
+    AgileFilePipe& readData(char* data, uint32 size);
+    uint32 tellReadPos();
+    AgileFilePipe& ignore(uint32 cnt = 1, int32 delim = std::char_traits<char>::eof());
+    uint32 getCount()const;
+    AgileFilePipe& operator>>(bool val);
+    AgileFilePipe& operator>>(short val);
+    AgileFilePipe& operator>>(unsigned short val);
+    AgileFilePipe& operator>>(int val);
+    AgileFilePipe& operator>>(unsigned int val);
+    AgileFilePipe& operator>>(long val);
+    AgileFilePipe& operator>>(unsigned long val);
+    AgileFilePipe& operator>>(long long val);
+    AgileFilePipe& operator>>(unsigned long long val);
+    AgileFilePipe& operator>>(float val);
+    AgileFilePipe& operator>>(double val);
+    AgileFilePipe& operator>>(long double val);
+    AgileFilePipe& operator>>(void* val);
+    AgileFilePipe& operator>>(std::streambuf* sb);
+    AgileFilePipe& operator>>(std::istream& (*pf)(std::istream&));
+    AgileFilePipe& operator>>(std::ios& (*pf)(std::ios&));
+    AgileFilePipe& operator>>(std::ios_base& (*pf)(std::ios_base&));
+    AgileFilePipe& setWritePos(int32 pos, PosType);    
+    AgileFilePipe& writeData(const char* data, uint32 size);
+    uint32 tellWritePos();
+    void open(const char* filepath);
+    void open(const std::string& filepath);
+    bool isOpened()const;
+    void close();
+    AgileFilePipe(const char* filepath);
+    AgileFilePipe(const std::string& filepath);
     ~AgileFilePipe();   
 
 private:

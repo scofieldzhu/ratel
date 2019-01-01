@@ -305,8 +305,7 @@ bool Package::load(const Path& pkgpath)
         return false;
     }
     dbfile_ = generateDBFilePath();
-    std::string localepathstr = dbfile_.rstring().decodeToLocale();
-    ofstream ofs(localepathstr.c_str(), ios::out | ios::binary);
+    ofstream ofs(dbfile_.toLocale().c_str(), ios::out | ios::binary);
     if(pkgreader.readDBDataToFile(ofs)){
         ofs.close();
         return true;
