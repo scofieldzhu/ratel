@@ -12,21 +12,29 @@ CreateTime: 2018-12-30 10:33
 using namespace std;
 
 RATEL_NAMESPACE_BEGIN
-ios_base::seekdir MatchSeekDir(AgileFilePipe::PosType pt)
-{
-    if(pt == AgileFilePipe::BEGIN)
-        return ios_base::beg;
-    if(pt == AgileFilePipe::CUR)
-        return ios_base::cur;
-    return ios_base::end;
+
+namespace{
+    ios_base::openmode kRWBMode = ios_base::in|ios_base::out|ios_base::binary;
+    ios_base::openmode kWBTruncMode = ios_base::out | ios_base::binary | ios_base::trunc;
+
+    ios_base::seekdir MatchSeekDir(AgileFilePipe::PosType pt)
+    {
+        if(pt==AgileFilePipe::BEGIN)
+            return ios_base::beg;
+        if(pt==AgileFilePipe::CUR)
+            return ios_base::cur;
+        return ios_base::end;
+    }
 }
 
 AgileFilePipe::AgileFilePipe(const char* filepath)
-    :fs_(filepath, ios_base::in | ios_base::out | ios_base::binary)
+    :fs_(filepath, kRWBMode),
+    filepath_(filepath)
 {}
 
 AgileFilePipe::AgileFilePipe(const std::string& filepath)
-    :fs_(filepath, ios_base::in | ios_base::out | ios_base::binary)
+    :fs_(filepath, kRWBMode),
+    filepath_(filepath)
 {}
 
 AgileFilePipe::~AgileFilePipe()
@@ -206,16 +214,25 @@ uint32 AgileFilePipe::tellWritePos()
 void AgileFilePipe::open(const char* filepath)
 {
     fs_.open(filepath);
+    filepath_ = filepath;
 }
 
 void AgileFilePipe::open(const std::string& filepath)
 {
     fs_.open(filepath);
+    filepath_ = filepath;
 }
 
 bool AgileFilePipe::isOpened() const
 {
     return fs_.is_open();
+}
+
+void AgileFilePipe::trunc()
+{
+    if(fs_)
+        fs_.close();
+    fs_.open(filepath_, kWBTruncMode);
 }
 
 void AgileFilePipe::close()

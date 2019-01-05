@@ -74,13 +74,16 @@ public:
     void open(const char* filepath);
     void open(const std::string& filepath);
     bool isOpened()const;
+    void trunc();
     void close();
+    const std::string& filepath()const{return filepath_;}
     AgileFilePipe(const char* filepath);
     AgileFilePipe(const std::string& filepath);
     ~AgileFilePipe();   
 
 private:
     std::fstream fs_;
+    std::string filepath_;
 };
 RATEL_NAMESPACE_END
 

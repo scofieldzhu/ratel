@@ -39,6 +39,6 @@ void CheckedArrayDelete(T* p)
 RATEL_NAMESPACE_END
 
 #define rtdelete(p) RATEL::CheckedDelete(p)
-#define rtarrydelete(parry) RATEL::CheckedArrayDelete(p)
+#define rtarrydelete(parry) RATEL::CheckedArrayDelete(parry)
 
 #endif
