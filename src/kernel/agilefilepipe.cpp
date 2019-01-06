@@ -172,6 +172,16 @@ AgileFilePipe& AgileFilePipe::operator<<(std::ios_base& (*pf)(std::ios_base&))
     return *this;
 }
 
+AgileFilePipe& AgileFilePipe::rewindReadPos()
+{
+    return setReadPos(0, BEGIN);
+}
+
+AgileFilePipe& AgileFilePipe::setReadEndPos()
+{
+    return setReadPos(0, END);
+}
+
 AgileFilePipe& AgileFilePipe::setReadPos(int32 pos, PosType ptype)
 {
     fs_.seekg(pos, MatchSeekDir(ptype));
@@ -195,7 +205,7 @@ AgileFilePipe& AgileFilePipe::ignore(uint32 cnt, int32 delim)
     return *this;
 }
 
-uint32 AgileFilePipe::getCount() const
+uint32 AgileFilePipe::getReadCount() const
 {
     return fs_.gcount();
 }
@@ -209,6 +219,12 @@ AgileFilePipe& AgileFilePipe::writeData(const char* data, uint32 size)
 uint32 AgileFilePipe::tellWritePos() 
 {
     return fs_.tellp();
+}
+
+AgileFilePipe& AgileFilePipe::flush()
+{
+    fs_.flush();
+    return *this;
 }
 
 void AgileFilePipe::open(const char* filepath)
@@ -238,6 +254,12 @@ void AgileFilePipe::trunc()
 void AgileFilePipe::close()
 {
     fs_.close();
+}
+
+uint32 AgileFilePipe::getSize() 
+{
+    setReadPos(0, END);
+    return tellReadPos();
 }
 
 AgileFilePipe& AgileFilePipe::operator>>(bool val)
@@ -340,6 +362,16 @@ AgileFilePipe& AgileFilePipe::operator>>(std::ios_base& (*pf)(std::ios_base&))
 {
     fs_ >> pf;
     return *this;
+}
+
+AgileFilePipe& AgileFilePipe::rewindWritePos()
+{
+    return setWritePos(0, BEGIN);
+}
+
+AgileFilePipe& AgileFilePipe::setWriteEndPos()
+{
+    return setWritePos(0, END);
 }
 
 AgileFilePipe& AgileFilePipe::setWritePos(int32 pos, PosType ptype)

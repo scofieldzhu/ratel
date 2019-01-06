@@ -46,11 +46,13 @@ public:
     AgileFilePipe& operator<<(std::ostream& (*pf)(std::ostream&));
     AgileFilePipe& operator<<(std::ios& (*pf)(std::ios&));
     AgileFilePipe& operator<<(std::ios_base& (*pf)(std::ios_base&));
+    AgileFilePipe& rewindReadPos();
+    AgileFilePipe& setReadEndPos();
     AgileFilePipe& setReadPos(int32 pos, PosType);
     AgileFilePipe& readData(char* data, uint32 size);
     uint32 tellReadPos();
     AgileFilePipe& ignore(uint32 cnt = 1, int32 delim = std::char_traits<char>::eof());
-    uint32 getCount()const;
+    uint32 getReadCount()const;
     AgileFilePipe& operator>>(bool val);
     AgileFilePipe& operator>>(short val);
     AgileFilePipe& operator>>(unsigned short val);
@@ -68,14 +70,18 @@ public:
     AgileFilePipe& operator>>(std::istream& (*pf)(std::istream&));
     AgileFilePipe& operator>>(std::ios& (*pf)(std::ios&));
     AgileFilePipe& operator>>(std::ios_base& (*pf)(std::ios_base&));
+    AgileFilePipe& rewindWritePos();
+    AgileFilePipe& setWriteEndPos();
     AgileFilePipe& setWritePos(int32 pos, PosType);    
     AgileFilePipe& writeData(const char* data, uint32 size);
     uint32 tellWritePos();
+    AgileFilePipe& flush();
     void open(const char* filepath);
     void open(const std::string& filepath);
     bool isOpened()const;
     void trunc();
     void close();
+    uint32 getSize();
     const std::string& filepath()const{return filepath_;}
     AgileFilePipe(const char* filepath);
     AgileFilePipe(const std::string& filepath);

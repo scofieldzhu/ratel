@@ -40,6 +40,8 @@ public:
     ~DataBlockFile();
 
 private:
+    void fflushHeaderData();
+    bool isEmpty();
     void releaseResource();
     void loadData();
     enum DBlockSate{
@@ -49,14 +51,14 @@ private:
     };
     struct DataBlockItem{
         fid fileid = 0;
-        uint32 offset = 0;
+        uint32 offset = 0; // from data zone start position
         uint32 size = 0;
         DBlockSate state = DBLOCKSATE_EMPTY;
     };
     struct DbkFileHeader{
         char filetype[4]; //dbk
         uint32 maxreservedfilecnt = 0;
-        uint32 curfilecnt = 0;
+        uint32 maxuseditemindex = 0;
     };
     struct DbkFileInfo{
         DbkFileHeader header;

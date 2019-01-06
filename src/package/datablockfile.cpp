@@ -13,8 +13,9 @@ using namespace std;
 RATEL_NAMESPACE_BEGIN
 
 namespace{
-    const char* kFileTypes[] = {'d', 'b', 'k', '\0'};
+    const char kFileTypes[] = {'d', 'b', 'k', '\0'};
     const uint32 kDefaultMaxReservedFileCnt = 512;
+    const uint32 kMaxRWBlockItemCount = 80;
 }
 
 DataBlockFile::DataBlockFile(const char* file)
@@ -27,6 +28,27 @@ DataBlockFile::DataBlockFile(const string& file)
 
 DataBlockFile::~DataBlockFile()
 {}
+
+void DataBlockFile::fflushHeaderData()
+{
+    filepipe_.rewindWritePos();
+    filepipe_.writeData((const char*)fileheader_, sizeof(fileheader_));
+    uint32 cureatitemcnt = 0, leftitemcnt = 0, nextreaditemcnt = 0;
+    while(cureatitemcnt < fileheader_->maxreservedfilecnt){
+        leftitemcnt = fileheader_->maxreservedfilecnt - cureatitemcnt;
+        if(leftitemcnt <= 0)
+            break;
+        nextreaditemcnt = leftitemcnt < kMaxRWBlockItemCount ? leftitemcnt : kMaxRWBlockItemCount;
+        filepipe_.writeData((const char*)&fileitems_[cureatitemcnt], nextreaditemcnt * sizeof(DataBlockItem));
+        filepipe_.flush();
+        cureatitemcnt += nextreaditemcnt;
+    };
+}
+
+bool DataBlockFile::isEmpty() 
+{
+    return filepipe_.getSize() == 0;
+}
 
 void DataBlockFile::releaseResource()
 {
@@ -69,11 +91,12 @@ bool DataBlockFile::isValid()const
 void DataBlockFile::initEmpty()
 {
     releaseResource();
-    filepipe_.trunc();
+    if(!filepipe_.getSize())
+        filepipe_.trunc();
     fileheader_ = new DbkFileHeader();
     memcpy(fileheader_->filetype, kFileTypes, sizeof(kFileTypes));
     fileheader_->maxreservedfilecnt = kDefaultMaxReservedFileCnt;
-    fileheader_->curfilecnt = 0;
+    fileheader_->maxuseditemindex = 0;
     fileitems_ = new DataBlockItem[fileheader_->maxreservedfilecnt];
 }
 
