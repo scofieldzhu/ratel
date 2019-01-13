@@ -13,63 +13,55 @@ CreateTime: 2018-12-30 20:09
 /***********************************************************************
 FileType                    // dbk 4 bytes
 MaxReservedFileCount        // 4 bytes
-CurrentFileCount            // 4 bytes
-FileID0 DataOffset DataSize //4 * 3 = 12bytes
-FileID1 DataOffset DataSize //4 * 3 = 12bytes
-FileID2 DataOffset DataSize //4 * 3 = 12bytes
+CurrentBlockCount            // 4 bytes
+BlockID0 DataOffset DataSize //4 * 3 = 12bytes
+BlockID1 DataOffset DataSize //4 * 3 = 12bytes
+BlockID2 DataOffset DataSize //4 * 3 = 12bytes
    :         :          :
-FileIDn DataOffset DataSize //4 * 3 = 12bytes                                
+BlockIDn DataOffset DataSize //4 * 3 = 12bytes                                
 ************************************************************************/
-
 #include "packagepublic.h"
-#include "agilefilepipe.h"
+#include "agilefileoperator.h"
 
 RATEL_NAMESPACE_BEGIN
 class RATEL_PACKAGE_API DataBlockFile
 {
 public:
-    using fid = uint32;
-    void removeDataBlock(fid blockid);
-    void appendDataBlock(fid blockid, const char* data, uint32 size);
-    int32 getDataBlockSize(fid id)const;
-    bool fetchDataBlock(fid blockid, char* recvdata, uint32 datasize);
-    bool isValid()const;
+    using bid = uint32;
+    void removeDataBlock(bid blockid);
+    void appendDataBlock(bid blockid, const char* data, uint32 size);
+    bool fetchDataBlock(bid blockid, char* recvdata, uint32& datasize);
+    operator bool()const;
+    int32 findDataBlock(bid id)const;
+    bool existsDataBlock(bid id)const{return findDataBlock(id) != -1;}
     void initEmpty();
-    DataBlockFile(const char* file);
-    DataBlockFile(const std::string& file);
+    DataBlockFile(const std::wstring& file);
     ~DataBlockFile();
 
 private:
-    void fflushHeaderData();
+    void fflushHeaderData(bool onlyvaliditems);
     bool isEmpty();
     void releaseResource();
     void loadData();
-    enum DBlockSate{
-        DBLOCKSATE_EMPTY,
-        DBLOCKSATE_NORMAL,
-        DBLOCKSATE_FAKE
-    };
+    int32 calcNextUsedFileDataOffset()const;
     struct DataBlockItem{
-        fid fileid = 0;
+        bid blockid = 0;
         uint32 offset = 0; // from data zone start position
         uint32 size = 0;
-        DBlockSate state = DBLOCKSATE_EMPTY;
     };
     struct DbkFileHeader{
         char filetype[4]; //dbk
-        uint32 maxreservedfilecnt = 0;
-        uint32 maxuseditemindex = 0;
+        uint32 maxreservblockcnt = 0;
+        uint32 useditemcnt = 0;
     };
     struct DbkFileInfo{
         DbkFileHeader header;
-        DataBlockItem fileitem[1]; //only placeholder
+        DataBlockItem itemarray[1]; //only placeholder
     };
-    AgileFilePipe filepipe_;
-    DbkFileHeader* fileheader_ = nullptr;
-    DataBlockItem* fileitems_ = nullptr;
+    AgileFileOperator agfileop_;
+    DbkFileHeader* header_ = nullptr;
+    DataBlockItem* blockitems_ = nullptr;
 };
-
-void CreateDataBlockFile();
 
 RATEL_NAMESPACE_END
 

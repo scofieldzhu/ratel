@@ -8,6 +8,7 @@ Module: datablockfile.cpp
 CreateTime: 2018-12-30 20:09
 =========================================================================*/
 #include "datablockfile.h"
+#include "pkglogger.h"
 using namespace std;
 
 RATEL_NAMESPACE_BEGIN
@@ -18,106 +19,180 @@ namespace{
     const uint32 kMaxRWBlockItemCount = 80;
 }
 
-DataBlockFile::DataBlockFile(const char* file)
-    :filepipe_(file)
-{}
-
-DataBlockFile::DataBlockFile(const string& file)
-    :filepipe_(file)
+DataBlockFile::DataBlockFile(const wstring& file)
+    :agfileop_(file)
 {}
 
 DataBlockFile::~DataBlockFile()
 {}
 
-void DataBlockFile::fflushHeaderData()
+void DataBlockFile::fflushHeaderData(bool onlyvaliditems)
 {
-    filepipe_.rewindWritePos();
-    filepipe_.writeData((const char*)fileheader_, sizeof(fileheader_));
+    agfileop_.rewind();
+    agfileop_.writeData((const char*)header_, sizeof(header_));
+    const uint32 kTargetOpFileCnt = onlyvaliditems ? header_->useditemcnt : header_->maxreservblockcnt;
     uint32 cureatitemcnt = 0, leftitemcnt = 0, nextreaditemcnt = 0;
-    while(cureatitemcnt < fileheader_->maxreservedfilecnt){
-        leftitemcnt = fileheader_->maxreservedfilecnt - cureatitemcnt;
+    while(cureatitemcnt < kTargetOpFileCnt){
+        leftitemcnt = kTargetOpFileCnt - cureatitemcnt;
         if(leftitemcnt <= 0)
             break;
         nextreaditemcnt = leftitemcnt < kMaxRWBlockItemCount ? leftitemcnt : kMaxRWBlockItemCount;
-        filepipe_.writeData((const char*)&fileitems_[cureatitemcnt], nextreaditemcnt * sizeof(DataBlockItem));
-        filepipe_.flush();
+        agfileop_.writeData((const char*)&blockitems_[cureatitemcnt], nextreaditemcnt * sizeof(DataBlockItem));
         cureatitemcnt += nextreaditemcnt;
     };
+    agfileop_.flush();
 }
 
 bool DataBlockFile::isEmpty() 
 {
-    return filepipe_.getSize() == 0;
+    uint32 filesize = 0;
+    return agfileop_.getSize(filesize) && filesize == 0;
 }
 
 void DataBlockFile::releaseResource()
 {
-    if(fileheader_){
-        rtdelete(fileheader_);
-        fileheader_ = nullptr;
+    if(header_){
+        rtdelete(header_);
+        header_ = nullptr;
     }
-    if(fileitems_){
-        rtarrydelete(fileitems_);
-        fileitems_ = nullptr;
+    if(blockitems_){
+        rtarrydelete(blockitems_);
+        blockitems_ = nullptr;
     }
 }
 
 void DataBlockFile::loadData()
 {
-    if(filepipe_.fail())
+    if(!agfileop_.isOpened())
         return;
-    fileheader_ = new DbkFileHeader();
-    if(!filepipe_.readData((char*)fileheader_, sizeof(DbkFileHeader))){
+    header_ = new DbkFileHeader();
+    if(!agfileop_.readData((char*)header_, sizeof(DbkFileHeader))){
         releaseResource();
         return;
     }
-    if(string(fileheader_->filetype) != kFileTypes){
+    if(string(header_->filetype) != kFileTypes){
         releaseResource();
         return;
     }    
-    fileitems_ = new DataBlockItem[fileheader_->maxreservedfilecnt];
-    filepipe_.readData((char*)fileitems_,fileheader_->maxreservedfilecnt * sizeof(DataBlockItem));
-    if(filepipe_.fail()){
+    blockitems_ = new DataBlockItem[header_->maxreservblockcnt];
+    if(!agfileop_.readData((char*)blockitems_,header_->maxreservblockcnt * sizeof(DataBlockItem))){
         releaseResource();
         return;
-    }
+    }    
 }
 
-bool DataBlockFile::isValid()const
+int32 DataBlockFile::calcNextUsedFileDataOffset() const
 {
-    return filepipe_ && fileheader_;
+    const DataBlockItem* preitem = header_->useditemcnt ? (const DataBlockItem*)nullptr : &blockitems_[header_->useditemcnt - 1];
+    return preitem ? 0 : preitem->offset + preitem->size;      
 }
 
 void DataBlockFile::initEmpty()
 {
     releaseResource();
-    if(!filepipe_.getSize())
-        filepipe_.trunc();
-    fileheader_ = new DbkFileHeader();
-    memcpy(fileheader_->filetype, kFileTypes, sizeof(kFileTypes));
-    fileheader_->maxreservedfilecnt = kDefaultMaxReservedFileCnt;
-    fileheader_->maxuseditemindex = 0;
-    fileitems_ = new DataBlockItem[fileheader_->maxreservedfilecnt];
+    if(!isEmpty())
+        agfileop_.truncEmpty();
+    header_ = new DbkFileHeader();
+    memcpy(header_->filetype, kFileTypes, sizeof(kFileTypes));
+    header_->maxreservblockcnt = kDefaultMaxReservedFileCnt;
+    header_->useditemcnt = 0;
+    blockitems_ = new DataBlockItem[header_->maxreservblockcnt];
+    fflushHeaderData(true);
 }
 
-void DataBlockFile::removeDataBlock(fid blockid)
+void DataBlockFile::removeDataBlock(bid blockid)
 {
-
+    if(!*this){
+        slog_err(pkglogger) << "invalid file!" << endl;
+        return;
+    }
+    int32 blockindex = findDataBlock(blockid);
+    if(blockindex == -1){
+        slog_err(pkglogger) << "invalid block id:" << blockid << endl;
+        return;
+    }
+    const DataBlockItem& kTheBlock = blockitems_[blockindex];
+    if(!agfileop_.digest(kTheBlock.offset, kTheBlock.size)){
+        slog_err(pkglogger) << "digest failed! off:" << kTheBlock.offset << " size:" << kTheBlock.size << endl;
+        return;
+    }
+    //translate forward items started from the item next to block index
+    for(uint32 i = blockindex + 1; i < header_->useditemcnt; ++i)
+        blockitems_[i - 1] = blockitems_[i];
+    --header_->useditemcnt;
+    fflushHeaderData(true);
 }
 
-void DataBlockFile::appendDataBlock(fid blockid, const char* data, uint32 size)
+void DataBlockFile::appendDataBlock(bid blockid, const char* data, uint32 size)
 {
-
+    if(!*this){
+        slog_err(pkglogger) << "invalid file!" << endl;
+        return;
+    }
+    if(existsDataBlock(blockid)){
+        slog_err(pkglogger) << "invalid block id:" << blockid << endl;
+        return;
+    }    
+    if(header_->useditemcnt >= header_->maxreservblockcnt){
+        slog_err(pkglogger) << "no extra item for this block!" << blockid << endl;
+        return;
+    }
+    agfileop_.setEndPos();
+    uint32 oldfilesize = 0;
+    agfileop_.getSize(oldfilesize);
+    uint32 finishedbytes = 0;
+    if(!agfileop_.writeData(data, size, &finishedbytes)){
+        slog_err(pkglogger) << "write data failed!";
+        if(finishedbytes > 0) //abandon modified data
+            agfileop_.trunc(oldfilesize);
+        return;
+    }
+    const uint32 kNewBlockItemIndex = header_->useditemcnt;
+    blockitems_[kNewBlockItemIndex].blockid = blockid;
+    blockitems_[kNewBlockItemIndex].offset = oldfilesize - 1;
+    blockitems_[kNewBlockItemIndex].size = size;
+    ++header_->useditemcnt;
+    fflushHeaderData(true);
 }
 
-int32 DataBlockFile::getDataBlockSize(fid id) const
+bool DataBlockFile::fetchDataBlock(bid blockid, char* recvdata, uint32& datasize)
 {
+    if(!*this){
+        slog_err(pkglogger) << "invalid file!" << endl;
+        return false;
+    }
+    int32 blockindex = findDataBlock(blockid);
+    if(blockindex == -1){
+        slog_err(pkglogger) << "invalid block id:" << blockid << endl;
+        return false;
+    }
+    const DataBlockItem& kTheBlock = blockitems_[blockindex];
+    if(recvdata == nullptr){ //just return size        
+        datasize = kTheBlock.size;
+        return true;
+    }
+    if(datasize < kTheBlock.size){
+        slog_err(pkglogger) << "passed datasize is too small!" << endl;
+        return false;
+    }
+    agfileop_.setOpPos(kTheBlock.offset, AgileFileOperator::kBeginPos);    
+    return agfileop_.readData(recvdata, kTheBlock.size, &datasize);;
+}
+
+DataBlockFile::operator bool() const
+{
+    return agfileop_ && header_ && blockitems_;
+}
+
+int32 DataBlockFile::findDataBlock(bid id) const
+{
+    if(!*this)
+        return -1;
+    for(uint32 i = 0; i < header_->useditemcnt; ++i){
+        if(id == blockitems_[i].blockid)
+            return i;
+    }
     return -1;
-}
-
-bool DataBlockFile::fetchDataBlock(fid blockid, char* recvdata, uint32 datasize)
-{
-    return false;
 }
 
 RATEL_NAMESPACE_END
