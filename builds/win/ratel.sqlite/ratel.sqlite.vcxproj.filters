@@ -24,12 +24,6 @@
     <ClInclude Include="..\..\..\src\sqlite\db.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\sqlite\table.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\sqlite\tablecol.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\sqlite\statement.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -37,6 +31,21 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\sqlite\sqlite3ext.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\sqlite\dbtable.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\sqlite\dbtablecol.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\sqlite\inttabcol.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\sqlite\realtabcol.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\sqlite\strtabcol.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -53,9 +62,6 @@
     <ClCompile Include="..\..\..\src\sqlite\db.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\sqlite\table.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\sqlite\statement.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -63,6 +69,21 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\sqlite\sqlite3.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\sqlite\dbtable.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\sqlite\dbtablecol.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\sqlite\inttabcol.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\sqlite\realtabcol.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\sqlite\strtabcol.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

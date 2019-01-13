@@ -3,8 +3,8 @@
 #include "statement.h"
 #include "sqlite3.h"
 #include "path.h"
-#include "table.h"
-#include "tablecol.h"
+#include "dbtable.h"
+#include "dbtablecol.h"
 using namespace std;
 USING_RATEL
 
@@ -16,21 +16,21 @@ int main()
         return 0;
     }
 
-    Table t("Directory");
-    t.addColumn(IntCol("dirid").setPrimaryKey(true).setUnique(true).setNotNull(true));
-    t.addColumn(StrCol("name", 30));
-    t.addColumn(IntCol("fileid").setNotNull(true));
-    t.addColumn(IntCol("childdirid").setNotNull(true));
+    DbTable t("Directory");
+    t.addColumn(IntTabCol("dirid").setPrimaryKey(true).setUnique(true).setNotNull(true));
+    t.addColumn(StrTabCol("name", 30));
+    t.addColumn(IntTabCol("fileid").setNotNull(true));
+    t.addColumn(IntTabCol("childdirid").setNotNull(true));
 
     RString cursql = t.makeCreateSql();
     Statement* stat = db->createStatement(cursql);
     int32 rescode = stat->stepExec();
     delete stat;
 
-    Table files("File");
-    files.addColumn(IntCol("fileid").setPrimaryKey(true).setUnique(true).setNotNull(true));
-    files.addColumn(StrCol("name", 30));
-    files.addColumn(StrCol("diskfileuid", 100));
+    DbTable files("File");
+    files.addColumn(IntTabCol("fileid").setPrimaryKey(true).setUnique(true).setNotNull(true));
+    files.addColumn(StrTabCol("name", 30));
+    files.addColumn(StrTabCol("diskfileuid", 100));
     cursql = files.makeCreateSql();
     cout << cursql.cstr() << endl;
     stat = db->createStatement(cursql);

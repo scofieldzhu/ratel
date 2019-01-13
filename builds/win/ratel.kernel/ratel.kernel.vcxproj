@@ -109,13 +109,15 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;RATELKERNEL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;KERNEL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>../../../src/basic</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../src/basic;../../../3rd/sflogger/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>../../../3rd/sflogger/bin;../_bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>ratel.basic-x64-d.lib;sflogger.core-v140-x64-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -147,7 +149,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;RATELKERNEL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>../../../src/basic</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../src/basic;../../../3rd/sflogger/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -157,17 +159,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\src\kernel\agilefileoperator.h" />
     <ClInclude Include="..\..\..\src\kernel\deftask.h" />
+    <ClInclude Include="..\..\..\src\kernel\kernellogger.h" />
     <ClInclude Include="..\..\..\src\kernel\kernelpublic.h" />
-    <ClInclude Include="..\..\..\src\kernel\agilefilepipe.h" />
     <ClInclude Include="..\..\..\src\kernel\task.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\ratel.licenseheader" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\src\kernel\agilefileoperator.cpp" />
     <ClCompile Include="..\..\..\src\kernel\deftask.cpp" />
-    <ClCompile Include="..\..\..\src\kernel\agilefilepipe.cpp" />
+    <ClCompile Include="..\..\..\src\kernel\kernellogger.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -10,13 +10,12 @@ CreateTime: 2018-9-9 21:41
 #ifndef __package_h__
 #define __package_h__
 
-#include "packagepublic.h"
-#include "table.h"
+#include "dirtable.h"
+#include "filetable.h"
 #include "path.h"
 
 RATEL_NAMESPACE_BEGIN
 class DB;
-class DirTree;
 class RATEL_PACKAGE_API Package 
 {
 public:
@@ -51,9 +50,8 @@ private:
     Path dbfile_;
     DB* db_ = nullptr;
     Path pkgfile_;    
-    DirTree* dirtree_ = nullptr;
-    Table dirdbtable_;
-    Table filedbtable_;
+    DirTable dirtab_;
+    FileTable filetab_;
     Path tmpdatafile_;
     std::ofstream* tmpdatafilewriter_ = nullptr;
 };

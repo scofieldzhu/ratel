@@ -29,8 +29,8 @@ enum DataType
 };
 
 class TableRow;
-class TableCol;
-class Table;
+class DbTableCol;
+class DbTable;
 class DB;
 class Statement;
 

@@ -162,25 +162,32 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\sqlite\db.h" />
+    <ClInclude Include="..\..\..\src\sqlite\inttabcol.h" />
+    <ClInclude Include="..\..\..\src\sqlite\realtabcol.h" />
     <ClInclude Include="..\..\..\src\sqlite\sqlite3.h" />
     <ClInclude Include="..\..\..\src\sqlite\sqlite3ext.h" />
     <ClInclude Include="..\..\..\src\sqlite\sqlitelogger.h" />
     <ClInclude Include="..\..\..\src\sqlite\sqlitepublic.h" />
     <ClInclude Include="..\..\..\src\sqlite\statement.h" />
-    <ClInclude Include="..\..\..\src\sqlite\table.h" />
-    <ClInclude Include="..\..\..\src\sqlite\tablecol.h" />
+    <ClInclude Include="..\..\..\src\sqlite\dbtable.h" />
+    <ClInclude Include="..\..\..\src\sqlite\dbtablecol.h" />
+    <ClInclude Include="..\..\..\src\sqlite\strtabcol.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\ratel.licenseheader" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\sqlite\db.cpp" />
+    <ClCompile Include="..\..\..\src\sqlite\dbtablecol.cpp" />
+    <ClCompile Include="..\..\..\src\sqlite\inttabcol.cpp" />
+    <ClCompile Include="..\..\..\src\sqlite\realtabcol.cpp" />
     <ClCompile Include="..\..\..\src\sqlite\shell.c" />
     <ClCompile Include="..\..\..\src\sqlite\sqlite3.c" />
     <ClCompile Include="..\..\..\src\sqlite\sqlitelogger.cpp" />
     <ClCompile Include="..\..\..\src\sqlite\sqlitetable.cpp" />
     <ClCompile Include="..\..\..\src\sqlite\statement.cpp" />
-    <ClCompile Include="..\..\..\src\sqlite\table.cpp" />
+    <ClCompile Include="..\..\..\src\sqlite\dbtable.cpp" />
+    <ClCompile Include="..\..\..\src\sqlite\strtabcol.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
