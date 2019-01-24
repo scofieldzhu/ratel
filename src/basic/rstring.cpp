@@ -11,6 +11,8 @@ Module: rstring.cpp
 #include <codecvt>
 #include <locale>
 
+using namespace std;
+
 RATEL_NAMESPACE_BEGIN
 
 #define assert_pointer(ptr)\
@@ -24,7 +26,7 @@ RATEL_NAMESPACE_BEGIN
 const RString::size_type RString::npos = -1;
 
 namespace {
-    const int32 MAX_STR_BUFFER_SIZE = 250;
+    const int32_t MAX_STR_BUFFER_SIZE = 250;
     using LocaleCodecvt = std::codecvt_byname<wchar_t, char, mbstate_t>;
 }
 
@@ -909,14 +911,14 @@ RString::iterator RString::erase(const_iterator first, const_iterator last)
     return begin() + cnt;
 }
 
-RString& RString::eraseTail()
+RString& RString::popBack()
 {
     if(!empty())
         return erase(size() - 1);
     return *this;
 }
 
-RString& RString::eraseHeader()
+RString& RString::popFront()
 {
     if(!empty()){
         char* s = dataptr();
@@ -1056,10 +1058,125 @@ RString& RString::format(const char * format, ...)
 {
     va_list vl;
     va_start(vl, format);
-    char buffer[MAX_STR_BUFFER_SIZE] = { '\0' };
+    char buffer[MAX_STR_BUFFER_SIZE] = {'\0'};
     vsprintf_s(buffer, MAX_STR_BUFFER_SIZE - 1, format, vl);
     va_end(vl);
     return assign(buffer);
+}
+
+int16_t RString::toInt16() const
+{
+	std::stringstream ss;
+	ss << cstr();
+	int16_t val = 0;
+	ss >> val;
+	return val;
+}
+
+RString& RString::fromInt16(int16_t num)
+{
+	std::stringstream ss;
+	ss << num;
+	return assign(ss.str().c_str());
+}
+
+uint16_t RString::toUInt16() const
+{
+	std::stringstream ss;
+	ss << cstr();
+	uint16_t val = 0;
+	ss >> val;
+	return val;
+}
+
+RString& RString::fromUInt16(uint16_t num)
+{
+	std::stringstream ss;
+	ss << num;
+	return assign(ss.str().c_str());
+}
+
+int32_t RString::toInt32() const
+{
+	std::stringstream ss;
+	ss << cstr();
+	int32_t val = 0;
+	ss >> val;
+	return val;
+}
+
+RString& RString::fromInt32(uint32_t num)
+{
+	std::stringstream ss;
+	ss << num;
+	return assign(ss.str().c_str());
+}
+
+uint32_t RString::toUInt32() const
+{
+	std::stringstream ss;
+	ss << cstr();
+	uint32_t val = 0;
+	ss >> val;
+	return val;
+}
+
+RString& RString::fromUInt32(uint32_t num)
+{
+	std::stringstream ss;
+	ss << num;
+	return assign(ss.str().c_str());
+}
+
+int64_t RString::toInt64() const
+{
+	std::stringstream ss;
+	ss << cstr();
+	int64_t val = 0;
+	ss >> val;
+	return val;
+}
+
+RString& RString::fromInt64(int64_t num)
+{
+	std::stringstream ss;
+	ss << num;
+	return assign(ss.str().c_str());
+}
+
+uint64_t RString::toUInt64() const
+{
+	std::stringstream ss;
+	ss << cstr();
+	uint64_t val = 0;
+	ss >> val;
+	return val;
+}
+
+RString& RString::fromUInt64(uint64_t num)
+{
+	std::stringstream ss;
+	ss << num;
+	return assign(ss.str().c_str());
+}
+
+double RString::toDouble() const
+{
+	std::istringstream ss(cstr());
+	double val = 0;
+	ss >> val;
+	return val;
+}
+
+RString& RString::fromDouble(double num, int8_t p /*= 0*/, ios_base::fmtflags fs /*= 0*/)
+{
+	std::ostringstream ss;
+	if(p > 0)
+		ss.precision(p);
+	if(fs > 0)
+		ss.setf(fs);
+	ss << num;	
+	return assign(ss.str().c_str());
 }
 
 RString& RString::replace(const_iterator first, const_iterator last, const char* strptr, size_type cnt)
@@ -1069,7 +1186,7 @@ RString& RString::replace(const_iterator first, const_iterator last, const char*
 
 RString& RString::replace(const_iterator first, const_iterator last, const_iterator first2, const_iterator last2)
 {
-    if (first2 == last2)
+    if(first2 == last2)
         erase(first - begin(), last - first);
     else
         replace(first - begin(), last - first, &*first2, last2 - first2);
@@ -1078,7 +1195,7 @@ RString& RString::replace(const_iterator first, const_iterator last, const_itera
 
 RString& RString::replace(const_iterator first, const_iterator last, const_pointer first2, const_pointer last2)
 {
-    if (first2 == last2)
+    if(first2 == last2)
         erase(first - begin(), last - first);
     else
         replace(first - begin(), last - first, &*first2, last2 - first2);
@@ -1093,17 +1210,17 @@ RString& RString::replace(size_type off, size_type cnt, const RString& rhs)
 RString& RString::replace(size_type off, size_type cnt, const char* strptr, size_type rcnt)
 {
     assert_cond_pointer(rcnt != 0, strptr);
-    if (inside(strptr))
+    if(inside(strptr))
         return replace(off, cnt, *this, strptr - dataptr(), rcnt);	// substring, replace carefully
     checkOffset(off);
     cnt = getSuffixSize(off, cnt);
-    if (npos - rcnt <= size() - cnt)
+    if(npos - rcnt <= size() - cnt)
         throw std::logic_error("cnt value is too big!");	// result too long
     size_type leftover_num = size() - cnt - off;
-    if (rcnt < cnt)
+    if(rcnt < cnt)
         traits_type::move(dataptr() + off + rcnt, dataptr() + off + cnt, leftover_num);	// smaller hole, move tail up
     const size_type kNewNum = size() + rcnt - cnt;
-    if ((0 < rcnt || 0 < cnt) && grow(kNewNum)) {
+    if((0 < rcnt || 0 < cnt) && grow(kNewNum)) {
         // make room and rearrange
         if (cnt < rcnt)
             traits_type::move(dataptr() + off + rcnt, dataptr() + off + cnt, leftover_num);	// move tail down
@@ -1129,7 +1246,7 @@ RString& RString::replace(size_type off, size_type cnt, size_type chcnt, char ch
     if (chcnt < cnt)
         traits_type::move(dataptr() + off + chcnt, dataptr() + off + cnt, leftover_num);	// smaller hole, move tail up
     const size_type kNewNum = size() + chcnt - cnt;
-    if ((0 < chcnt || 0 < cnt) && grow(kNewNum)) {
+    if((0 < chcnt || 0 < cnt) && grow(kNewNum)) {
         // make room and rearrange
         if (cnt < chcnt)
             traits_type::move(dataptr() + off + chcnt, dataptr() + off + cnt, leftover_num);	// move tail down

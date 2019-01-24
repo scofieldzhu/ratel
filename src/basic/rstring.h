@@ -1,8 +1,14 @@
+/*=======================================================================
+Ratel is a application framework, which provides some convenient librarys
+for for those c++ developers pursuing fast-developement.
+Copyright (c) scofieldzhu. All rights reserved.	
+
+Project: ratel.basic 
+Module: rstring.h 
+=========================================================================*/
 #ifndef __rstring_hpp__
 #define __rstring_hpp__
 
-#include <vector>
-#include <string>
 #include "basicpublic.h"
 
 #pragma warning(disable:4251)
@@ -262,8 +268,10 @@ public:
     iterator erase(const_iterator w);
     // erase substring [first, last)
     iterator erase(const_iterator first, const_iterator last);
-    RString& eraseTail();
-    RString& eraseHeader();
+	// erase last char
+    RString& popBack();
+	// erase first char
+    RString& popFront();
 
     // replace [off, off + cnt) with _Right
     RString& replace(size_type off, size_type cnt, const RString& rhs);
@@ -293,13 +301,30 @@ public:
     RString& replace(const_iterator first, const_iterator last, iterator first2, iterator last2);
 
     static RString FormatString(const char* format, ...);
+	
+	RString& format(const char* format, ...);
+	int16_t toInt16()const;
+	RString& fromInt16(int16_t num);
+	uint16_t toUInt16()const;
+	RString& fromUInt16(uint16_t num);
+	int32_t toInt32()const;
+	RString& fromInt32(uint32_t num);
+	uint32_t toUInt32()const;
+	RString& fromUInt32(uint32_t num);
+	int64_t toInt64()const;
+	RString& fromInt64(int64_t num);
+	uint64_t toUInt64()const;
+	RString& fromUInt64(uint64_t num);
+	double toDouble()const;
+	RString& fromDouble(double num, int8_t precision = 0, std::ios_base::fmtflags fs = 0);
 
+	//decode to locale string
     std::string decodeToLocale()const;
+	//decode to wide char string utf-16
     std::wstring decodeToWString()const;
     RString& encodeFromLocale(const char* localestr);
     RString& encodeFromWString(const std::wstring& srcstr);
 
-    RString& format(const char* format, ...);
         
     // assign [strptr, <null>)
     RString& operator=(const char* strptr);
