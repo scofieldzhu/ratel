@@ -24,13 +24,7 @@
     <ClInclude Include="..\..\..\src\basic\arraryx.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\basic\basic.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\basic\basicpublic.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\basic\basetypes.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\basic\pair.hpp">
@@ -63,6 +57,12 @@
     <ClInclude Include="..\..\..\src\basic\langext.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\basic\variant.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\basic\basic.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\basic\basiclogger.cpp">
@@ -72,6 +72,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\basic\rstrutil.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\basic\variant.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

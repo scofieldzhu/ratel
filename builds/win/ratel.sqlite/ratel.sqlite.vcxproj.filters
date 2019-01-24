@@ -48,6 +48,9 @@
     <ClInclude Include="..\..\..\src\sqlite\strtabcol.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\sqlite\dbconstant.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\ratel.licenseheader" />
@@ -84,6 +87,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\sqlite\strtabcol.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\sqlite\dbconstant.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
