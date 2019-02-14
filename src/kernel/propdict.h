@@ -10,11 +10,11 @@ CreateTime: 2019-1-26 19:15
 #ifndef __propdict_h__
 #define __propdict_h__
 
-#include "sqlitepublic.h"
+#include "kernelpublic.h"
 
 RATEL_NAMESPACE_BEGIN
 
-class PropDict
+class RATEL_KERNEL_API PropDict
 {
 public:
 	typedef RString PropKey;

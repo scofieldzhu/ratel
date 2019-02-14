@@ -8,7 +8,7 @@ Module: propdict.cpp
 CreateTime: 2019-1-26 19:23
 =========================================================================*/
 #include "propdict.h"
-#include "sqlitelogger.h"
+#include "kernellogger.h"
 using namespace std;
 
 RATEL_NAMESPACE_BEGIN
@@ -58,7 +58,7 @@ bool PropDict::getPropStatus(const PropKey& key) const
 {
 	if(existProp(key))
 		return propstatusdict_.at(key);
-	slog_warn(sqlitelogger) << "Key[" << key.cstr() << "] not exists!" << endl;
+	slog_warn(kernellogger) << "Key[" << key.cstr() << "] not exists!" << endl;
 	return false;	
 }
 
