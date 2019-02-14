@@ -10,45 +10,28 @@ CreateTime: 2018-7-28 10:51
 #ifndef __dbtablecol_h__
 #define __dbtablecol_h__
 
-#include "sqlitepublic.h"
+#include "dbglobal.h"
+#include "propdict.h"
 
 RATEL_NAMESPACE_BEGIN
 
-#define DECL_COLCLS(Cls, DataType) \
-    public:\
-        virtual const char* dataTypeString()const{return #DataType;} \
-        virtual DbTableCol* clone()const { return new Cls(*this); }
-
-class RATEL_SQLITE_API DbTableCol
+class SqlDataMeta;
+class DbTableCol
 {
-public:
-    virtual const char* dataTypeString()const = 0;
-    virtual DbTableCol* clone()const = 0;
-    virtual RString description()const;
-    bool primaryKey() const{ return primarykey_;}
-    DbTableCol& setPrimaryKey(bool b);
-    DbTableCol& primaryKeyOn();
-    bool isNotNull() const{return notnull_;}
-    DbTableCol& setNotNull(bool b);
-    DbTableCol& notNullOn();
-    bool unique() const{return unique_;}
-    DbTableCol& setUnique(bool b);
-    DbTableCol& uniqueOn();
-    DbTableCol& setDefault(bool b);
-    bool isDefault() const{return default_;}
-    DbTableCol& defaultOn();
-    DataType dataType() const{return datatype_;}
-    const RString& name() const{return name_;}
-    DbTableCol(const RString& name, DataType dt);
-    virtual ~DbTableCol();
+public:    
+    const RString& name() const { return name_; }
+	virtual RString createSql()const;
+	PropDict& propDict() { return colpropdict_; }
+	const PropDict& propDict()const { return colpropdict_; }
+	void setDataMeta(const SqlDataMeta* meta) { sqldatameta_ = meta; }
+	const SqlDataMeta* dataMeta()const {return sqldatameta_; }
+    DbTableCol(const RString& name);
+    virtual ~DbTableCol() = default;
 
-protected:
+private:
     RString name_;
-    DataType datatype_;
-    bool primarykey_ = false;
-    bool unique_ = false;
-    bool notnull_ = false;
-    bool default_ = false;
+	PropDict colpropdict_;	
+	const SqlDataMeta* sqldatameta_ = nullptr;	
 };
 
 RATEL_NAMESPACE_END

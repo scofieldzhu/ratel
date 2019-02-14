@@ -8,81 +8,30 @@ Module: dbtablecol.cpp
 CreateTime: 2019-1-13 20:37
 =========================================================================*/
 #include "dbtablecol.h"
+#include "sqldatameta.h"
 
 RATEL_NAMESPACE_BEGIN
+using namespace sqlkw;
 
-DbTableCol::DbTableCol(const RString& name, DataType dt) 
-    :name_(name),
-    datatype_(dt)
+DbTableCol::DbTableCol(const RString& name)
+	:name_(name),
+	colpropdict_({kPrimaryKey, kNotNull, kUnique, kDefault})
 {}
 
-DbTableCol::~DbTableCol()
-{}
-
-RString DbTableCol::description() const
+RString DbTableCol::createSql()const
 {
-    RString desp = name()+" "+dataTypeString();
-    if(primarykey_){
-        desp += " ";
-        desp += PRIMARYKEY;
-    }
-    if(unique_){
-        desp += " ";
-        desp += UNIQUE;
-    }
-    if(notnull_){
-        desp += " ";
-        desp += NOTNULL;
-    }
-    return desp;
-}
-
-DbTableCol& DbTableCol::setPrimaryKey(bool b)
-{
-    primarykey_ = b;
-    return *this;
-}
-
-DbTableCol& DbTableCol::primaryKeyOn()
-{
-    primarykey_ = true;
-    return *this;
-}
-
-DbTableCol& DbTableCol::setNotNull(bool b)
-{
-    notnull_ = b;
-    return *this;
-}
-
-DbTableCol& DbTableCol::notNullOn()
-{
-    notnull_ = true;
-    return *this;
-}
-
-DbTableCol& DbTableCol::setUnique(bool b)
-{
-    unique_ = b;
-    return *this;
-}
-
-DbTableCol& DbTableCol::uniqueOn()
-{
-    unique_ = true;
-    return *this;
-}
-
-DbTableCol& DbTableCol::setDefault(bool b)
-{
-    default_ = b;
-    return *this;
-}
-
-DbTableCol& DbTableCol::defaultOn()
-{
-    default_ = true;
-    return *this;
+	if(sqldatameta_ == nullptr)
+		return "";
+	RString sql = name_ + " " + sqldatameta_->sql();
+	if(colpropdict_.getPropStatus(sqlkw::kPrimaryKey))
+		sql = sql + " " + sqlkw::kPrimaryKey;
+	if(colpropdict_.getPropStatus(sqlkw::kUnique))
+		sql = sql + " " + sqlkw::kUnique;
+	if(colpropdict_.getPropStatus(sqlkw::kNotNull))
+		sql = sql + " " + sqlkw::kNotNull;
+	if(colpropdict_.getPropStatus(sqlkw::kDefault))
+		sql = sql + " " + sqldatameta_->defaultValue();
+	return sql;
 }
 
 RATEL_NAMESPACE_END

@@ -10,7 +10,6 @@ CreateTime: 2018-7-14 10:36
 #ifndef __sqlitepublic_h__
 #define __sqlitepublic_h__
 
-#include "basic.h"
 #include "filesyspublic.h"
 
 #ifdef RATEL_SQLITE_EXPORTS
@@ -20,25 +19,13 @@ CreateTime: 2018-7-14 10:36
 #endif
 
 RATEL_NAMESPACE_BEGIN
-
-enum DataType
-{
-    INTEGER,
-    REAL,
-    STRING
-};
-
-class TableRow;
-class DbTableCol;
-class DbTable;
 class DB;
+class DbTable;
+class DbTableCol;
+class DbTableRecord;
+typedef std::vector<DbTableRecord*> DbTableRowSet;
 class Statement;
-
-#define PRIMARYKEY "PRIMARY KEY"
-#define UNIQUE "UNIQUE"
-#define NOTNULL "NOT NULL"
-#define DEFAULT "DEFAULT"
-
+class SqlDataMeta;
 RATEL_NAMESPACE_END
 
 #endif
