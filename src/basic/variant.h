@@ -26,11 +26,21 @@ public:
 	void setInt32(int32_t val);
 	bool convertToInt32(int32_t& result)const;
 	int32_t convertToInt32()const;	
+	void setUInt32(uint32_t val);
+	bool convertToUInt32(uint32_t& result)const;
+	uint32_t convertToUInt32()const;
+	void setDouble(double val);
+	bool convertToDouble(double& result)const;
+	double convertToDouble()const;	
 	bool operator==(const Variant& rhs)const;
 	bool operator!=(const Variant& rhs)const;
+	bool isNull()const{return type_ == kNullType;}
+	void setNull();
+	Variant();
 	Variant(int32_t val);
+	Variant(uint32_t val);
     Variant(double val);
-	Variant(const RString& str);
+	Variant(const char* str);
 	Variant(vptr_t ptr);
 	Variant(const Variant& rhs);
 	Variant& operator=(const Variant& rhs);	
@@ -38,7 +48,16 @@ public:
 
 private:    
     RString strvalue_;
-	BasicType type_;
+	enum DataType
+	{
+		kNullType,
+		kIntType,
+		kUIntType,
+		kDoubleType,
+		kStringType,
+		kVoidPtrType
+	};
+	DataType type_;
 };
 
 RATEL_NAMESPACE_END

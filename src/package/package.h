@@ -19,7 +19,6 @@ class DB;
 class RATEL_PACKAGE_API Package 
 {
 public:
-    const RString& lastError()const;
     bool createDir(const RString& name, const Path& location);
     bool importDir(const Path& targetdir, const Path& localdir);
     bool removeDir(const Path& dir);
@@ -41,12 +40,11 @@ private:
     void releaseResources();
     bool initDB();
     void releaseDB();
-    int32 writeNewFileData(const Path& sourcefile);
-    int32 addFileRecordToDB(const RString& filename, int32 dirid);   
+    int32_t writeNewFileData(const Path& sourcefile);
+    //int32_t addFileRecordToDB(const RString& filename, int32_t dirid);   
     Path generateDBFilePath()const;
     Path generateTmpDataFilePath()const;
     Path workdir_;
-    RString lasterr_;
     Path dbfile_;
     DB* db_ = nullptr;
     Path pkgfile_;    

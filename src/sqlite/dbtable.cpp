@@ -8,19 +8,25 @@ Module: table.cpp
 CreateTime: 2018-7-28 12:07
 =========================================================================*/
 #include "dbtable.h"
-#include <cstdarg>
+#include "db.h"
 #include "dbtablecol.h"
 #include "dbtablerecord.h"
 #include "sqldatameta.h"
 #include "sqlitelogger.h"
+#include "sqlite3.h"
+#include "statement.h"
 
 RATEL_NAMESPACE_BEGIN
-DbTable::DbTable(const RString & name)
-    :name_(name) 
+DbTable::DbTable(const RString & name, DB* db)
+    :name_(name),
+	db_(db)
 {}
 
 DbTable::~DbTable()
-{}
+{
+	for(auto col : columns_)
+		rtdelete(col);
+}
 
 bool DbTable::checkTableRecordValidity(const DbTableRecord& record) const
 {
@@ -70,32 +76,6 @@ RString DbTable::makeCreateSql(bool ifexists)
         sql += (col->createSql() + ",");
     sql.back() = ')';
     return sql;
-}
-
-RString DbTable::makeInsertRowSql(const char* valfmt, ...)
-{
-    static const int32_t kMaxBufSize = 400;
-    char buffer[kMaxBufSize] = { '\0' };
-    va_list vl;
-    va_start(vl, valfmt);
-    vsprintf_s(buffer, kMaxBufSize - 1, valfmt, vl);
-    va_end(vl);
-    return "insert into " + name_ + " values(" + buffer + ");";
-}
-
-RString DbTable::makeInsertRowSql(std::initializer_list<const char*> fields, const char* valfmt, ...)
-{
-    RString ressql = "insert into " + name_ + "(";
-    for(auto f : fields)
-        ressql += (RString(f) + ",");
-    ressql.back() = ')';
-    static const int32_t kMaxBufSize = 400;
-    char buffer[kMaxBufSize] = {'\0'};
-    va_list vl;
-    va_start(vl, valfmt);
-    vsprintf_s(buffer, kMaxBufSize - 1, valfmt, vl);
-    va_end(vl);
-    return ressql + " values(" + buffer + ");";
 }
 
 RString DbTable::makeInsertRowSql(const DbTableRecord& record)
@@ -151,4 +131,65 @@ RString DbTable::makeDropSql()
 {
     return "drop table " + name_ + ";";
 }
+
+bool DbTable::create()
+{
+	if(db_ == nullptr){
+		slog_err(sqlitelogger) << "no any db instance identified!" << endl;
+		return false;
+	}
+	RString createsql = makeCreateSql();
+	Statement* stat = db_->createStatement(createsql);
+	if(stat == nullptr){
+		slog_err(sqlitelogger) << "create statement failed! sql:" << createsql.cstr() << " err:" << db_->errMsg().cstr() << endl;
+		return false;
+	}
+	if(stat->stepExec() != SQLITE_DONE){		
+		slog_err(sqlitelogger) << "stepExec failed! sql:" << createsql.cstr() << " err:" << stat->errMsg().cstr() << endl;
+		delete stat;
+		return false;
+	}
+	delete stat;
+	return true;
+}
+
+bool DbTable::insertRow(const DbTableRecord& record)
+{
+	if(db_ == nullptr){
+		slog_err(sqlitelogger) << "no any db instance identified!" << endl;
+		return false;
+	}
+	RString sql = makeInsertRowSql(record);
+	Statement* stat = db_->createStatement(sql);
+	if(stat == nullptr){
+		slog_err(sqlitelogger) << "create statement failed! sql:" << sql.cstr() << " err:" << db_->errMsg().cstr() << endl;
+		return false;
+	}
+	int32_t rc = stat->stepExec();
+	if(rc != SQLITE_DONE){
+		slog_err(sqlitelogger) << "stepExec failed! sql:" << sql.cstr() << " err:" << stat->errMsg().cstr() << endl;
+		delete stat;
+		return false;
+	}
+	return true;	
+}
+
+void DbTable::drop()
+{
+	if(db_ == nullptr){
+		slog_err(sqlitelogger) << "no any db instance identified!" << endl;
+		return;
+	}
+	RString sql = makeDropSql();
+	Statement* stat = db_->createStatement(sql);
+	if(stat == nullptr){
+		slog_err(sqlitelogger) << "create statement failed! sql:" << sql.cstr() << " err:" << db_->errMsg().cstr() << endl;
+		return;
+	}
+	int32_t rc = stat->stepExec();
+	if(rc != SQLITE_DONE)
+		slog_err(sqlitelogger) << "stepExec failed! sql:" << sql.cstr() << " err:" << stat->errMsg().cstr() << endl;		
+	delete stat;
+}
+
 RATEL_NAMESPACE_END

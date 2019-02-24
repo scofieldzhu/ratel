@@ -18,6 +18,12 @@ RATEL_NAMESPACE_BEGIN
 class RATEL_PACKAGE_API FileTable : public DbTable
 {
 public:
+	static const RString kIdKey;
+	static const RString kNameKey;
+	static const RString kDirIdKey;
+	static const RString kFileUIDKey;
+	static const RString kStatusKey;	
+	int32_t queryId(const RString& filename, int32_t dirid);
     FileTable();
     ~FileTable();
 };

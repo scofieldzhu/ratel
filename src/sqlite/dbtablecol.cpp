@@ -18,6 +18,12 @@ DbTableCol::DbTableCol(const RString& name)
 	colpropdict_({kPrimaryKey, kNotNull, kUnique, kDefault})
 {}
 
+DbTableCol::~DbTableCol()
+{
+	if(sqldatameta_)
+		rtdelete(sqldatameta_);
+}
+
 RString DbTableCol::createSql()const
 {
 	if(sqldatameta_ == nullptr)
@@ -30,8 +36,16 @@ RString DbTableCol::createSql()const
 	if(colpropdict_.getPropStatus(sqlkw::kNotNull))
 		sql = sql + " " + sqlkw::kNotNull;
 	if(colpropdict_.getPropStatus(sqlkw::kDefault))
-		sql = sql + " " + sqldatameta_->defaultValue();
+		sql = sql + " " + sqlkw::kDefault + " " + sqldatameta_->defaultValue();
 	return sql;
+}
+
+DbTableCol& DbTableCol::setDataMeta(const SqlDataMeta& meta)
+{
+	if(sqldatameta_)
+		rtdelete(sqldatameta_);
+	sqldatameta_ = meta.clone();
+	return *this;
 }
 
 RATEL_NAMESPACE_END

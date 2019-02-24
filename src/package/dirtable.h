@@ -18,6 +18,11 @@ RATEL_NAMESPACE_BEGIN
 class RATEL_PACKAGE_API DirTable : public DbTable
 {
 public:
+	static const RString kIdKey;
+	static const RString kPathKey;
+	static const RString kParentKey;
+	static const RString kStatusKey;
+	int32_t queryId(const RString& path);
     DirTable();
     ~DirTable();
 };

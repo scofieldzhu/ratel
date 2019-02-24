@@ -12,12 +12,21 @@ CreateTime: 2019-1-26 12:16
 
 #define LOG_MISMATCHED_TYPE_DETECTED() slog_err(basiclogger) << "mismatched type detected!" << endl;
 #define CHECK_MISMATCHED_TYPE(t) if(type_ != t){ LOG_MISMATCHED_TYPE_DETECTED(); return false; }
-#define VERIFY_MATCHED_TYPE(t) logverifymsg(basiclogger, t != type_, "mismatched type detected!");
+#define VERIFY_MATCHED_TYPE(t) logverifymsg(basiclogger, t == type_, "mismatched type detected!");
 
 RATEL_NAMESPACE_BEGIN
+Variant::Variant()
+	:type_(kNullType)
+{}
+
 Variant::Variant(int32_t val)
 	:strvalue_(RString::FromInt32(val)),
 	type_(kIntType)
+{}
+
+Variant::Variant(uint32_t val)
+	:strvalue_(RString::FromUInt32(val)),
+	type_(kUIntType)
 {}
 
 Variant::Variant(double val)
@@ -30,7 +39,7 @@ Variant::Variant(vptr_t ptr)
 	type_(kVoidPtrType)
 {}
 
-Variant::Variant(const RString& str)
+Variant::Variant(const char* str)
 	:strvalue_(str),
 	type_(kStringType)
 {}
@@ -115,6 +124,49 @@ bool Variant::convertToInt32(int32_t& result) const
 	CHECK_MISMATCHED_TYPE(kIntType)
 	result = convertToInt32();
 	return true;
+}
+
+void Variant::setUInt32(uint32_t val)
+{
+	strvalue_.fromUInt32(val);
+	type_ = kUIntType;
+}
+
+bool Variant::convertToUInt32(uint32_t& result) const
+{
+	CHECK_MISMATCHED_TYPE(kUIntType)
+	result = convertToUInt32();
+	return true;
+}
+
+uint32_t Variant::convertToUInt32() const
+{
+	VERIFY_MATCHED_TYPE(kUIntType)
+	return strvalue_.toUInt32();
+}
+
+void Variant::setDouble(double val)
+{
+	strvalue_.fromDouble(val);
+	type_ = kDoubleType;
+}
+
+bool Variant::convertToDouble(double& result) const
+{
+	CHECK_MISMATCHED_TYPE(kDoubleType)
+	result = convertToDouble();
+	return true;
+}
+
+double Variant::convertToDouble() const
+{
+	VERIFY_MATCHED_TYPE(kDoubleType)
+	return strvalue_.toDouble();
+}
+
+void Variant::setNull()
+{
+	type_ = kNullType;
 }
 
 RATEL_NAMESPACE_END

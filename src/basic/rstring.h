@@ -209,17 +209,17 @@ public:
     RString substr(size_type off = 0, size_type cnt = npos) const;
 
     // compare [0, size()) with rhs
-    size_type compare(const RString& rhs) const;
+	int32_t compare(const RString& rhs) const;
     // compare [off, off + cnt) with rhs
-    size_type compare(size_type off, size_type cnt, const RString& rhs) const;
+	int32_t compare(size_type off, size_type cnt, const RString& rhs) const;
     // compare [off, off + cnt) with rhs [roff, roff + rcnt)
-    size_type compare(size_type off, size_type cnt, const RString& rhs, size_type roff, size_type rcnt = npos) const;
+	int32_t compare(size_type off, size_type cnt, const RString& rhs, size_type roff, size_type rcnt = npos) const;
     // compare [0, size()) with [strptr, <null>)
-    size_type compare(const char* strptr) const;
+	int32_t compare(const char* strptr) const;
     // compare [off, off + cnt) with [strptr, <null>)
-    size_type compare(size_type off, size_type cnt, const char* strptr) const;
+	int32_t compare(size_type off, size_type cnt, const char* strptr) const;
     // compare [off, off + cnt) with [lhs, lhs + rcnt)
-    size_type compare(size_type off, size_type cnt, const char* strptr, size_type rcnt) const;
+	int32_t compare(size_type off, size_type cnt, const char* strptr, size_type rcnt) const;
 
     // insert rhs at off
     RString& insert(size_type off, const RString& rhs);
@@ -300,15 +300,24 @@ public:
     // replace [first, last) with [first2, last2), const_iterators
     RString& replace(const_iterator first, const_iterator last, iterator first2, iterator last2);
 
+	//reformat rstring 
     static RString FormatString(const char* format, ...);
-	
-	RString& format(const char* format, ...);
+	RString& format(const char* format, ...);	
+
+	//conversion between rstring and number
+	static RString FromInt16(int16_t v){ return RString().fromInt16(v); }
+	static RString FromUnInt16(uint16_t v){ return RString().fromUInt16(v); }
+	static RString FromInt32(int32_t v){ return RString().fromInt32(v); }
+	static RString FromUInt32(uint32_t v){ return RString().fromUInt32(v); }
+	static RString FromInt64(int64_t v){ return RString().fromInt64(v); }		
+	static RString FromUInt64(uint64_t v){ return RString().fromUInt64(v); }
+	static RString FromDouble(double v){ return RString().fromDouble(v); }
 	int16_t toInt16()const;
 	RString& fromInt16(int16_t num);
 	uint16_t toUInt16()const;
 	RString& fromUInt16(uint16_t num);
 	int32_t toInt32()const;
-	RString& fromInt32(uint32_t num);
+	RString& fromInt32(int32_t num);
 	uint32_t toUInt32()const;
 	RString& fromUInt32(uint32_t num);
 	int64_t toInt64()const;
@@ -318,14 +327,12 @@ public:
 	double toDouble()const;
 	RString& fromDouble(double num, int8_t precision = 0, std::ios_base::fmtflags fs = 0);
 
-	//decode to locale string
+	//encode and decode rstring between locale and wstring charset
     std::string decodeToLocale()const;
-	//decode to wide char string utf-16
     std::wstring decodeToWString()const;
     RString& encodeFromLocale(const char* localestr);
-    RString& encodeFromWString(const std::wstring& srcstr);
+    RString& encodeFromWString(const std::wstring& srcstr);       
 
-        
     // assign [strptr, <null>)
     RString& operator=(const char* strptr);
     RString& operator=(char ch);
@@ -397,7 +404,7 @@ private:
     void assignMove(RString&& rhs);
 
     // compare [lhs, lhs + lsize) to [rhs, rhs + rsize) using traits
-    size_type traitsCompare(const char* const lhs, const size_type lsize, const char* const rhs, const size_type rsize)const;
+    int32_t traitsCompare(const char* const lhs, const size_type lsize, const char* const rhs, const size_type rsize)const;
 
     char* dataptr();
     const char* dataptr()const;
