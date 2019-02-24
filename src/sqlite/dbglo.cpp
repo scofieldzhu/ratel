@@ -4,10 +4,10 @@ for for those c++ developers pursuing fast-developement.
 Copyright (c) scofieldzhu. All rights reserved.	
 
 Project: ratel.sqlite 
-Module: dbglobal.cpp 
+Module: dbglo.cpp 
 CreateTime: 2019-1-26 19:52
 =========================================================================*/
-#include "dbglobal.h"
+#include "dbglo.h"
 
 RATEL_NAMESPACE_BEGIN
 namespace sqlkw

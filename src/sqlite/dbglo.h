@@ -4,11 +4,11 @@ for for those c++ developers pursuing fast-developement.
 Copyright (c) scofieldzhu. All rights reserved.	
 
 Project: ratel.sqlite 
-Module: dbglobal.h 
+Module: dbglo.h 
 CreateTime: 2019-1-26 19:42
 =========================================================================*/
-#ifndef __dbconstant_h__
-#define __dbconstant_h__
+#ifndef __dbglo_h__
+#define __dbglo_h__
 
 #include "sqlitepublic.h"
 
