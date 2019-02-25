@@ -174,6 +174,28 @@ bool DbTable::insertRow(const DbTableRecord& record)
 	return true;	
 }
 
+int32_t DbTable::queryPrimaryKeyId(const RString& sql)
+{
+	if(db_ == nullptr || sql.empty()){
+		slog_err(sqlitelogger) << "no any db instance identified or empty sql string!" << endl;
+		return -1;
+	}
+	Statement* stat = db_->createStatement(sql);
+	if(stat == nullptr){
+		slog_err(sqlitelogger) << "create statement failed! sql:" << sql.cstr() << " err:" << db_->errMsg().cstr() << endl;
+		return -1;
+	}
+	int32_t rc = stat->stepExec();
+	if(rc != SQLITE_ROW){
+		slog_err(sqlitelogger) << "stepExec failed! sql:" << sql.cstr() << " err:" << stat->errMsg().cstr() << endl;
+		delete stat;
+		return -1;
+	}
+	int32_t rid = stat->fetchIntColumn(0);
+	delete stat;
+	return rid;
+}
+
 void DbTable::drop()
 {
 	if(db_ == nullptr){

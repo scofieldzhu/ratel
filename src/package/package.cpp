@@ -147,12 +147,16 @@ bool Package::createDir(const RString& name, const Path& location)
 	if(location.rstring() == "./")
 		parentid = -1; //root dir
 	else{
-		parentid = dirtab_.queryId(location.cstr());
+		parentid = dirtab_.queryDirId(location.cstr());
 		if(parentid == -1){
 			slog_err(pkglogger) << "dir(" << location.cstr() << ") not exists!" << endl;
 			return false;
 		}
 		//check if exists redundant dir
+		if(dirtab_.queryDirId(name, parentid) != -1){
+			slog_err(pkglogger) << "sub dir(" << name.cstr() << ") already exists!" << endl;
+			return false;
+		}
 	}
 	Path newdirpath = location.join(name);
 	if(!dirtab_.insertRow(DbTableRecord({

@@ -35,6 +35,7 @@ public:
     RString makeDropSql();
 	bool create();
 	bool insertRow(const DbTableRecord& record);
+	int32_t queryPrimaryKeyId(const RString& sql);
 	void drop();
 	void setDB(DB* db) { db_ = db; }
 	DB* db(){ return db_; }
