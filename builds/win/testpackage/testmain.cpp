@@ -61,13 +61,31 @@ void TestCase_TestPackage_Create()
 void TestCase_TestPackage_Load()
 {
     Package pkg("./temp");
-    if(!pkg.load("y.tcf")){
-        slog_err(g_AppLogger) << "load package failed!" << endl;
-        return;
-    }
+	if(!pkg.createNew("./xx.tcf")){
+		slog_err(g_AppLogger) << "createNew failed!" << endl;
+		return;
+	}   
+	if(!pkg.createDir("testdir1", "./")){
+		slog_err(g_AppLogger) << "createDir failed!" << endl;
+		return;
+	}
+	if (!pkg.createDir("testdir2", "./")){
+		slog_err(g_AppLogger) << "createDir failed!" << endl;
+		return;
+	}
+	if (!pkg.createDir("testdir3", "./")){
+		slog_err(g_AppLogger) << "createDir failed!" << endl;
+		return;
+	}
+	if(!pkg.createDir("test31", "./testdir3")){
+		slog_err(g_AppLogger) << "createDir failed!" << endl;
+		return;
+	}
+	if(!pkg.createDir("test31", "./testdir3")){
+		slog_err(g_AppLogger) << "createDir same directory failed!" << endl;
+	}
+
     slog_err(g_AppLogger) << "load package ok!" << endl;
-
-
 }
 
 int main() 

@@ -78,20 +78,20 @@ AgileFileOperator::operator bool() const
     return isOpened();
 }
 
-bool AgileFileOperator::digest(uint32 off, uint32 size)
+bool AgileFileOperator::digest(uint32_t off, uint32_t size)
 {
     CHECK_OPENED();
-    uint32 filesize = 0;
+    uint32_t filesize = 0;
     getSize(filesize);
     if(off >= filesize || off + size > filesize){
         slog_err(kernellogger) << "invalid params passed! perhaps it's too large!" << endl;
         return false;
     }
-    static const uint32 kBufferSize = 1024;
+    static const uint32_t kBufferSize = 1024;
     char databuffer[kBufferSize] = {'\0'};    
-    uint32 rpos = off + size, wpos = off;    
+    uint32_t rpos = off + size, wpos = off;    
     while(rpos < filesize){
-        uint32 opsize = rpos + kBufferSize >= filesize ? filesize - rpos : kBufferSize;
+        uint32_t opsize = rpos + kBufferSize >= filesize ? filesize - rpos : kBufferSize;
         setOpPos(rpos, kBeginPos);
         readData(databuffer, opsize);
         setOpPos(wpos, kBeginPos);
@@ -102,14 +102,14 @@ bool AgileFileOperator::digest(uint32 off, uint32 size)
     return trunc(filesize - size);
 }
 
-bool AgileFileOperator::ignore(uint32 bytecnt)
+bool AgileFileOperator::ignore(uint32_t bytecnt)
 {
     CHECK_OPENED()
     setOpPos(bytecnt, kCurPos);
     return true;
 }
 
-bool AgileFileOperator::readData(char* recvdata, uint32 datasize, uint32* bytestoread)
+bool AgileFileOperator::readData(char* recvdata, uint32_t datasize, uint32_t* bytestoread)
 {
     if(isOpened())
         return ::ReadFile(fhandle_, recvdata, datasize, (LPDWORD)bytestoread, nullptr);    
@@ -128,7 +128,7 @@ void AgileFileOperator::setEndPos()
         setOpPos(0, kEndPos);
 }
 
-bool AgileFileOperator::setOpPos(int32 off, PosType t)
+bool AgileFileOperator::setOpPos(int32_t off, PosType t)
 {
     CHECK_OPENED()
     LARGE_INTEGER li;
@@ -136,7 +136,7 @@ bool AgileFileOperator::setOpPos(int32 off, PosType t)
     return ::SetFilePointerEx(fhandle_, li, nullptr, kMoveMethodDict.at(t)) != 0;
 }
 
-uint32 AgileFileOperator::tellPos()
+uint32_t AgileFileOperator::tellPos()
 {
     CHECK_OPENED();
     LARGE_INTEGER li;
@@ -144,7 +144,7 @@ uint32 AgileFileOperator::tellPos()
     return SetFilePointerEx(fhandle_, li, nullptr, FILE_CURRENT);    
 }
 
-bool AgileFileOperator::writeData(const char* data, uint32 size, uint32* writtenbytenum)
+bool AgileFileOperator::writeData(const char* data, uint32_t size, uint32_t* writtenbytenum)
 {
     if(isOpened())
         return ::WriteFile(fhandle_, data, size, (LPDWORD)writtenbytenum, nullptr);
@@ -162,7 +162,7 @@ bool AgileFileOperator::flush()
     return true;   
 }
 
-bool AgileFileOperator::trunc(uint32 size)
+bool AgileFileOperator::trunc(uint32_t size)
 {
     if(!isOpened())
         return false;
@@ -182,7 +182,7 @@ bool AgileFileOperator::truncEmpty()
     return trunc(0);
 }
 
-bool AgileFileOperator::getSize(uint32& size)
+bool AgileFileOperator::getSize(uint32_t& size)
 {
     if(!isOpened())
         return false;

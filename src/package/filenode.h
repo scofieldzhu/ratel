@@ -9,7 +9,6 @@ Module: filenode.h
 #ifndef __filenode_h__
 #define __filenode_h__
 
-#include "basic.h"
 #include "packagepublic.h"
 
 RATEL_NAMESPACE_BEGIN
@@ -17,9 +16,9 @@ RATEL_NAMESPACE_BEGIN
 struct FileNode
 {
     RString filename;
-    int32 datafileid = 0;
-    int32 dbid = -1;
-    int32 init = 0;
+    int32_t datafileid = 0;
+    int32_t dbid = -1;
+    int32_t init = 0;
 };
 using FileNodeList = std::vector<FileNode>;
 

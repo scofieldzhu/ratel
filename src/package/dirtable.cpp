@@ -35,27 +35,16 @@ DirTable::DirTable()
 DirTable::~DirTable()
 {}
 
-int32_t DirTable::queryId(const RString& path)
-{
-	if(db_ == nullptr){
-		slog_err(pkglogger) << "no any db instance identified!" << endl;
-		return -1;
-	}
+int32_t DirTable::queryDirId(const RString& path)
+{	
 	RString sql = makeQueryRowWhenSql("%s='%s'", kPathKey.cstr(), path.cstr());
-	Statement* stat = db_->createStatement(sql);
-	if(stat == nullptr){
-		slog_err(pkglogger) << "create statement failed! sql:" << sql.cstr() << " err:" << db_->errMsg().cstr() << endl;
-		return -1;
-	}
-	int32_t rc = stat->stepExec();
-	if(rc != SQLITE_ROW){
-		slog_err(pkglogger) << "stepExec failed! sql:" << sql.cstr() << " err:" << stat->errMsg().cstr() << endl;
-		delete stat;
-		return -1;
-	}
-	int32_t rid = stat->fetchIntColumn(0);
-	delete stat;
-	return rid;
+	return queryPrimaryKeyId(sql);
+}
+
+int32_t DirTable::queryDirId(const RString& dirname, int32_t parentdirid)
+{
+	RString sql = makeQueryRowWhenSql("%s LIKE '%%/%s' and %s=%d", kPathKey.cstr(), dirname.cstr(), kParentKey.cstr(), parentdirid);
+	return queryPrimaryKeyId(sql);
 }
 
 RATEL_NAMESPACE_END

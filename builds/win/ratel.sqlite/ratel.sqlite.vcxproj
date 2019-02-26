@@ -111,13 +111,13 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>RATEL_SQLITE_EXPORTS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../../../src/filesys;../../../src/basic;../../../3rd/sflogger/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../src/kernel;../../../src/filesys;../../../src/basic;../../../3rd/sflogger/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>../../../3rd/sflogger/bin;../_bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>ratel.basic-x64-d.lib;ratel.filesys-x64-d.lib;sflogger.core-v140-x64-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ratel.basic-x64-d.lib;ratel.filesys-x64-d.lib;ratel.kernel-x64-d.lib;sflogger.core-v140-x64-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -149,7 +149,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>RATEL_SQLITE_EXPORTS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../../../src/filesys;../../../src/basic;../../../3rd/sflogger/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../src/kernel;../../../src/filesys;../../../src/basic;../../../3rd/sflogger/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -157,14 +157,14 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>../../../3rd/sflogger/bin;../_bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>sflogger.core-v140-x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ratel.basic-x64.lib;ratel.filesys-x64.lib;ratel.kernel-x64.lib;sflogger.core-v140-x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\sqlite\db.h" />
-    <ClInclude Include="..\..\..\src\sqlite\dbconstant.h" />
-    <ClInclude Include="..\..\..\src\sqlite\inttabcol.h" />
-    <ClInclude Include="..\..\..\src\sqlite\realtabcol.h" />
+    <ClInclude Include="..\..\..\src\sqlite\dbglo.h" />
+    <ClInclude Include="..\..\..\src\sqlite\dbtablerecord.h" />
+    <ClInclude Include="..\..\..\src\sqlite\sqldatameta.h" />
     <ClInclude Include="..\..\..\src\sqlite\sqlite3.h" />
     <ClInclude Include="..\..\..\src\sqlite\sqlite3ext.h" />
     <ClInclude Include="..\..\..\src\sqlite\sqlitelogger.h" />
@@ -172,24 +172,20 @@
     <ClInclude Include="..\..\..\src\sqlite\statement.h" />
     <ClInclude Include="..\..\..\src\sqlite\dbtable.h" />
     <ClInclude Include="..\..\..\src\sqlite\dbtablecol.h" />
-    <ClInclude Include="..\..\..\src\sqlite\strtabcol.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\ratel.licenseheader" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\sqlite\db.cpp" />
-    <ClCompile Include="..\..\..\src\sqlite\dbconstant.cpp" />
+    <ClCompile Include="..\..\..\src\sqlite\dbglo.cpp" />
     <ClCompile Include="..\..\..\src\sqlite\dbtablecol.cpp" />
-    <ClCompile Include="..\..\..\src\sqlite\inttabcol.cpp" />
-    <ClCompile Include="..\..\..\src\sqlite\realtabcol.cpp" />
+    <ClCompile Include="..\..\..\src\sqlite\dbtablerecord.cpp" />
     <ClCompile Include="..\..\..\src\sqlite\shell.c" />
     <ClCompile Include="..\..\..\src\sqlite\sqlite3.c" />
     <ClCompile Include="..\..\..\src\sqlite\sqlitelogger.cpp" />
-    <ClCompile Include="..\..\..\src\sqlite\sqlitetable.cpp" />
     <ClCompile Include="..\..\..\src\sqlite\statement.cpp" />
     <ClCompile Include="..\..\..\src\sqlite\dbtable.cpp" />
-    <ClCompile Include="..\..\..\src\sqlite\strtabcol.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

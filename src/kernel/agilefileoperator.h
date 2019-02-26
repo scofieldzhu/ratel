@@ -22,22 +22,22 @@ public:
         kEndPos
     };    
     operator bool()const;
-    bool digest(uint32 off, uint32 size);
-    bool readData(char* recvdata, uint32 datasize, uint32* bytestoread = nullptr);
+    bool digest(uint32_t off, uint32_t size);
+    bool readData(char* recvdata, uint32_t datasize, uint32_t* bytestoread = nullptr);
     void rewind();
     void setEndPos();
-    bool setOpPos(int32 off, PosType);
-    uint32 tellPos();    
-    bool writeData(const char* data, uint32 size, uint32* writtenbytenum = nullptr);
+    bool setOpPos(int32_t off, PosType);
+    uint32_t tellPos();    
+    bool writeData(const char* data, uint32_t size, uint32_t* writtenbytenum = nullptr);
     bool flush();
     bool isOpened()const;
-    bool trunc(uint32 size);
+    bool trunc(uint32_t size);
     bool truncEmpty();
     bool open(const std::wstring& filename);
     void close();
-    bool getSize(uint32& size);
+    bool getSize(uint32_t& size);
     const std::wstring& filepath()const{ return filepath_; }
-    bool ignore(uint32 bytecnt);    
+    bool ignore(uint32_t bytecnt);    
     AgileFileOperator(const std::wstring& filepath);
     ~AgileFileOperator();   
 

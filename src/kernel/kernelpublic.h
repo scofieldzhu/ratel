@@ -15,6 +15,6 @@ Module: kernelpublic.h
     #define RATEL_KERNEL_API __declspec(dllimport)
 #endif
 
-#include "basicpublic.h"
+#include "basic.h"
 
 #endif

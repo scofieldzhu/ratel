@@ -38,27 +38,10 @@ FileTable::FileTable()
 FileTable::~FileTable()
 {}
 
-int32_t FileTable::queryId(const RString& filename, int32_t dirid)
-{
-	if(db_ == nullptr){
-		slog_err(pkglogger) << "no any db instance identified!" << endl;
-		return -1;
-	}
-	RString sql = makeQueryRowWhenSql("%s='%s' and %s=%d", kNameKey.cstr(), filename.cstr(), kDirIdKey.cstr(), dirid);
-	Statement* stat = db_->createStatement(sql);
-	if(stat == nullptr){
-		slog_err(pkglogger) << "create statement failed! sql:" << sql.cstr() << " err:" << db_->errMsg().cstr() << endl;
-		return -1;
-	}
-	int32_t rc = stat->stepExec();
-	if(rc != SQLITE_ROW){
-		slog_err(pkglogger) << "stepExec failed! sql:" << sql.cstr() << " err:" << stat->errMsg().cstr() << endl;
-		delete stat;
-		return -1;
-	}
-	int32_t rid = stat->fetchIntColumn(0);
-	delete stat;
-	return rid;
+int32_t FileTable::queryFileId(const RString& filename, int32_t dirid)
+{	
+	RString sql = makeQueryRowWhenSql("%s='%s' and %s=%d", kNameKey.cstr(), filename.cstr(), kDirIdKey.cstr(), dirid);	
+	return queryPrimaryKeyId(sql);
 }
 
 RATEL_NAMESPACE_END

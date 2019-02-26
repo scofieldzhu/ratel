@@ -15,8 +15,17 @@ Module: basicpublic.h
     #define RATEL_BASIC_API __declspec(dllimport)
 #endif
 
+#define WIN32_LEAN_AND_MEAN 
 #include <windows.h>
-#include "basetypes.h"
+#include <cstdint> // c++11
+#include <vector>
+#include <map>
+#include <list>
 #include <string>
+#include <algorithm>
+#include <memory>
+#include <functional>
+#include <sstream>
+#include "langext.h"
 
 #endif

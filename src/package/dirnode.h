@@ -17,7 +17,7 @@ RATEL_NAMESPACE_BEGIN
 struct RATEL_PACKAGE_API DirNode
 {   
     bool existFile(const RString& filename)const;
-    int32 findFile(const RString& filename)const;
+    int32_t findFile(const RString& filename)const;
     const DirNode* findSibling(const RString& siblingname);
     const DirNode* findChild(const RString& dirname)const;
     RString path()const;
@@ -28,7 +28,7 @@ struct RATEL_PACKAGE_API DirNode
     DirNode* parent = nullptr;
     DirNode* nextsibling = nullptr;
     DirNode* nextchild = nullptr;
-    int32 dbid = -1;
+    int32_t dbid = -1;
 };
 
 RATEL_NAMESPACE_END

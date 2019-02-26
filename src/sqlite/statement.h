@@ -19,12 +19,12 @@ class RATEL_SQLITE_API Statement
 public:    
     DB* db() { return dbinst_; }
     int32_t stepExec();
-    int32 fetchDataCount();
-    int32 fetchIntColumn(int32 col);
-    int64 fetchInt64Column(int32 col);
-    RString fetchTextColumn(int32 col);
-    double fetchDoubleColumn(int32 col);
-    int32 reset();
+    int32_t fetchDataCount();
+    int32_t fetchIntColumn(int32_t col);
+    int64_t fetchInt64Column(int32_t col);
+    RString fetchTextColumn(int32_t col);
+    double fetchDoubleColumn(int32_t col);
+    int32_t reset();
     RString errMsg();
     ~Statement();
 

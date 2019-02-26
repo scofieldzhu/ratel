@@ -163,6 +163,7 @@
     <ClInclude Include="..\..\..\src\kernel\deftask.h" />
     <ClInclude Include="..\..\..\src\kernel\kernellogger.h" />
     <ClInclude Include="..\..\..\src\kernel\kernelpublic.h" />
+    <ClInclude Include="..\..\..\src\kernel\propdict.h" />
     <ClInclude Include="..\..\..\src\kernel\task.h" />
   </ItemGroup>
   <ItemGroup>
@@ -172,6 +173,7 @@
     <ClCompile Include="..\..\..\src\kernel\agilefileoperator.cpp" />
     <ClCompile Include="..\..\..\src\kernel\deftask.cpp" />
     <ClCompile Include="..\..\..\src\kernel\kernellogger.cpp" />
+    <ClCompile Include="..\..\..\src\kernel\propdict.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

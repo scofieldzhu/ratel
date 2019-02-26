@@ -15,7 +15,7 @@ using namespace std;
 RATEL_NAMESPACE_BEGIN
 
 namespace{
-    const uint32 kReadBufferSize = 1024 * 4; // 4K
+    const uint32_t kReadBufferSize = 1024 * 4; // 4K
 }
 
 PkgFileReader::PkgFileReader(const Path& filepath)
@@ -46,7 +46,7 @@ bool PkgFileReader::open()
     return false;    
 }
 
-bool PkgFileReader::readDBFileData(char*& filedata, uint32& datasize)
+bool PkgFileReader::readDBFileData(char*& filedata, uint32_t& datasize)
 {
     if(dbdatasize_ > 0 && fs_){        
         locateDBDataPos();
@@ -69,7 +69,7 @@ bool PkgFileReader::readDBDataToFile(std::ofstream& os)
     if(!fs_)
         return false;
     char databuffer[kReadBufferSize] = {'\0'};
-    int32 curdigestion = 0, leftover = 0, needreadbytes = 0;
+    int32_t curdigestion = 0, leftover = 0, needreadbytes = 0;
     while(curdigestion < dbdatasize_){        
         leftover = dbdatasize_ - curdigestion;
         if(leftover <= 0) //realdy finished!
@@ -90,10 +90,10 @@ bool PkgFileReader::readDBDataToFile(std::ofstream& os)
     return true;
 }
 
-bool PkgFileReader::readFileData(int32 offset, uint32 size, char*& outdata)
+bool PkgFileReader::readFileData(int32_t offset, uint32_t size, char*& outdata)
 {
     if(dbdatasize_ > 0 && fs_){
-        fs_.seekg(kPkgTypeCharNum + sizeof(uint32) + offset, ios_base::beg);
+        fs_.seekg(kPkgTypeCharNum + sizeof(uint32_t) + offset, ios_base::beg);
         if(fs_){
             fs_.read(outdata, size);
             if(fs_)
@@ -111,7 +111,7 @@ void PkgFileReader::close()
 
 void PkgFileReader::locateDBDataPos()
 {
-    fs_.seekg(kPkgTypeCharNum + sizeof(uint32), ios_base::beg);
+    fs_.seekg(kPkgTypeCharNum + sizeof(uint32_t), ios_base::beg);
 }
 
 bool PkgFileReader::readTypeId()
@@ -128,7 +128,7 @@ bool PkgFileReader::readTypeId()
 
 bool PkgFileReader::readDBDataSize()
 {    
-    fs_.read((char*)&dbdatasize_, sizeof(uint32));
+    fs_.read((char*)&dbdatasize_, sizeof(uint32_t));
     return (bool)fs_;    
 }
 

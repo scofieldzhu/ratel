@@ -27,12 +27,12 @@ RATEL_NAMESPACE_BEGIN
 class RATEL_PACKAGE_API DataBlockFile
 {
 public:
-    using bid = uint32;
+    using bid = uint32_t;
     void removeDataBlock(bid blockid);
-    void appendDataBlock(bid blockid, const char* data, uint32 size);
-    bool fetchDataBlock(bid blockid, char* recvdata, uint32& datasize);
+    void appendDataBlock(bid blockid, const char* data, uint32_t size);
+    bool fetchDataBlock(bid blockid, char* recvdata, uint32_t& datasize);
     operator bool()const;
-    int32 findDataBlock(bid id)const;
+    int32_t findDataBlock(bid id)const;
     bool existsDataBlock(bid id)const{return findDataBlock(id) != -1;}
     void initEmpty();
     DataBlockFile(const std::wstring& file);
@@ -43,16 +43,16 @@ private:
     bool isEmpty();
     void releaseResource();
     void loadData();
-    int32 calcNextUsedFileDataOffset()const;
+    int32_t calcNextUsedFileDataOffset()const;
     struct DataBlockItem{
         bid blockid = 0;
-        uint32 offset = 0; // from data zone start position
-        uint32 size = 0;
+        uint32_t offset = 0; // from data zone start position
+        uint32_t size = 0;
     };
     struct DbkFileHeader{
         char filetype[4]; //dbk
-        uint32 maxreservblockcnt = 0;
-        uint32 useditemcnt = 0;
+        uint32_t maxreservblockcnt = 0;
+        uint32_t useditemcnt = 0;
     };
     struct DbkFileInfo{
         DbkFileHeader header;

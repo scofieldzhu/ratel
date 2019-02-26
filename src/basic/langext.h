@@ -14,6 +14,15 @@ CreateTime: 2018-12-16 22:01
 
 RATEL_NAMESPACE_BEGIN
 
+typedef void* vptr_t;
+
+constexpr const double kZeroValue = 1e-6;
+
+template <typename T>
+bool ValueEqual(const T& t1, const T& t2){ return t1 == t2; }
+template <> inline bool ValueEqual<double>(const double& t1, const double& t2){ return fabs(t1 - t2) < kZeroValue; }
+template <> inline bool ValueEqual<const char*>(const char* const& t1, const char* const& t2){return strcmp(t1, t2) == 0;}
+
 template<typename T>
 void CheckedDelete(T* p)
 {

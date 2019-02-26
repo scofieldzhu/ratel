@@ -69,7 +69,7 @@ const DirNode* DirTree::locateDir(const Path& dirpath)const
     RStrings splitdirstrs = dirpath.rstring().split(PATH_SEPARATOR);
     DirNode* targetnode = nullptr;
     DirNode* curnode = rootnode_;
-    for(int32 i = 0; i < splitdirstrs.size(); ++i){
+    for(int32_t i = 0; i < splitdirstrs.size(); ++i){
         const RString kCurDirName = splitdirstrs[i];
         while(curnode){
             if(curnode->name == kCurDirName)
@@ -144,7 +144,7 @@ bool DirTree::renameFile(const RString& filepath, const RString& newfilename)
         slog_warn(pkglogger) << "cannot rename to newfilename[" << newfilename.cstr() << "] already existed!" << endl;
         return false;
     }
-    int32 fidx = dirnode->findFile(filename);
+    int32_t fidx = dirnode->findFile(filename);
     dirnode->allfiles[fidx].filename = newfilename;    
     return true;    
 }
@@ -160,7 +160,7 @@ void DirTree::deleteFile(const RString& filepath)
         slog_warn(pkglogger) << "dir[" << dirpath.cstr() << "] not exists" << endl;
         return;
     }
-    int32 fileidx = dirnode->findFile(filename);
+    int32_t fileidx = dirnode->findFile(filename);
     if(fileidx)
         dirnode->allfiles.erase(dirnode->allfiles.begin() + fileidx);
 }
@@ -174,7 +174,7 @@ bool DirTree::findFile(const RString& filepath, FileNode& outfn)
     DirNode* dirnode = locateDir(dirpath);
     if(!dirnode)
         return false;
-    int32 fileidx = dirnode->findFile(filename);
+    int32_t fileidx = dirnode->findFile(filename);
     if(fileidx){
         outfn = dirnode->allfiles[fileidx];
         return true;

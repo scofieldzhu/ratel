@@ -32,24 +32,24 @@ int32_t Statement::stepExec()
     return sqlite3_step((sqlite3_stmt*)stmthandle_);
 }
 
-int32 Statement::fetchDataCount()
+int32_t Statement::fetchDataCount()
 {
     return sqlite3_data_count((sqlite3_stmt*)stmthandle_);
 }
 
-int32 Statement::fetchIntColumn(int32 col)
+int32_t Statement::fetchIntColumn(int32_t col)
 {
     return sqlite3_column_int((sqlite3_stmt*)stmthandle_, col);
 }
 
-int64 Statement::fetchInt64Column(int32 col)
+int64_t Statement::fetchInt64Column(int32_t col)
 {
     return sqlite3_column_int64((sqlite3_stmt*)stmthandle_, col);
 }
 
-RString Statement::fetchTextColumn(int32 col)
+RString Statement::fetchTextColumn(int32_t col)
 {
-    const int32 bytenum = sqlite3_column_bytes((sqlite3_stmt*)stmthandle_, col);
+    const int32_t bytenum = sqlite3_column_bytes((sqlite3_stmt*)stmthandle_, col);
     const unsigned char* textbuf = sqlite3_column_text((sqlite3_stmt*)stmthandle_, col);
     char* content = new char[bytenum + 1];
     memcpy(content, textbuf, bytenum);
@@ -59,12 +59,12 @@ RString Statement::fetchTextColumn(int32 col)
     return restext;
 }
 
-double Statement::fetchDoubleColumn(int32 col)
+double Statement::fetchDoubleColumn(int32_t col)
 {
     return sqlite3_column_double((sqlite3_stmt*)stmthandle_, col);
 }
 
-int32 Statement::reset()
+int32_t Statement::reset()
 {
     return sqlite3_reset((sqlite3_stmt*)stmthandle_);
 }

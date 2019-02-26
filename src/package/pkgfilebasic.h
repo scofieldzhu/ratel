@@ -14,14 +14,14 @@ CreateTime: 2018-9-2 21:01
 
 RATEL_NAMESPACE_BEGIN
 
-const uint32 kPkgTypeCharNum = 6;
+const uint32_t kPkgTypeCharNum = 6;
 
 struct PkgInfo
 {
     char pkgtypecode[kPkgTypeCharNum]; //rtlpkg
-    int32 compressor; //
-    int32 compressrate;
-    uint32 dbdatasize;
+    int32_t compressor; //
+    int32_t compressrate;
+    uint32_t dbdatasize;
     char dbdata[1]; //datasize
 };
 

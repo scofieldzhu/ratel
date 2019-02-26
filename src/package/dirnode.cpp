@@ -21,7 +21,7 @@ bool DirNode::existFile(const RString& filename) const
     return findFile(filename) >= 0;
 }
 
-int32 DirNode::findFile(const RString& filename)const
+int32_t DirNode::findFile(const RString& filename)const
 {
     auto it = find_if(allfiles.begin(), allfiles.end(), [&filename](const FileNode& fn){return fn.filename == filename;});
     if(it == allfiles.end())

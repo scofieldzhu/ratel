@@ -1,11 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.271
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ratel.basic", "ratel.basic\ratel.basic.vcxproj", "{1B5F67E6-5EB7-4628-96F1-FD98CF26318C}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ratel.kernel", "ratel.kernel\ratel.kernel.vcxproj", "{ADEC7427-4B28-447A-9EB0-E76E2DF34F68}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1B5F67E6-5EB7-4628-96F1-FD98CF26318C} = {1B5F67E6-5EB7-4628-96F1-FD98CF26318C}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ratel.package", "ratel.package\ratel.package.vcxproj", "{7DBF8B5E-94AC-4FA1-A5A6-2B0943CDD441}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -122,5 +125,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {542EB252-3D47-45F5-B5A3-7C7F5E7DC73D}
 	EndGlobalSection
 EndGlobal

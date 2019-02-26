@@ -20,9 +20,9 @@ class RATEL_PACKAGE_API PkgFileReader
 public:
     bool open();
     bool isopened()const { return fs_.is_open(); }
-    bool readDBFileData(char*& filedata, uint32& datasize);
+    bool readDBFileData(char*& filedata, uint32_t& datasize);
     bool readDBDataToFile(std::ofstream& os);
-    bool readFileData(int32 offset, uint32 size, char*& outdata);
+    bool readFileData(int32_t offset, uint32_t size, char*& outdata);
     void close();
     PkgFileReader(const Path& filepath);
     ~PkgFileReader();
@@ -33,7 +33,7 @@ private:
     bool readDBDataSize();
     Path pkgpath_;
     std::ifstream fs_;
-    int32 dbdatasize_ = -1;
+    int32_t dbdatasize_ = -1;
 };
 RATEL_NAMESPACE_END
 #endif

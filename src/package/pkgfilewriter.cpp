@@ -54,18 +54,18 @@ bool PkgFileWriter::writeFileData(const Path& thefile)
     }
     //write filesize field 
     ifs_.seekg(0, ios_base::end);
-    uint32 filesize = ifs_.tellg();
+    uint32_t filesize = ifs_.tellg();
     ifs_.seekg(0, ios_base::beg);
-    ofs_.write((const char*)&filesize, sizeof(uint32));
+    ofs_.write((const char*)&filesize, sizeof(uint32_t));
     //write file content
-    const uint32 kBufSize = 512;
+    const uint32_t kBufSize = 512;
     char buffer[kBufSize] = {'\0'};
     while(true){
         if(ifs_.read(buffer, kBufSize)){
             ofs_.write(buffer, kBufSize);
             continue;
         }
-        uint32 actualreadbytes = ifs_.gcount();
+        uint32_t actualreadbytes = ifs_.gcount();
         if(actualreadbytes > 0)
             ofs_.write(buffer, actualreadbytes);
         break;

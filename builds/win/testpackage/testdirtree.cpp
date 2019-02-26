@@ -15,7 +15,7 @@ CreateTime: 2018-9-26 21:09
 using namespace std;
 USING_RATEL
 
-void TestCase_PrintTree(const DirNode& rootnode, int32& layer)
+void TestCase_PrintTree(const DirNode& rootnode, int32_t& layer)
 {
     cout << "******Layer" << layer << "******" << endl;
     const DirNode* nextlayer_child = nullptr;
@@ -42,7 +42,7 @@ void TestCase_CreateDir(DirTree& tree)
     tree.createDir("dir4", "*/ratel");
 
     cout << "________________________after TestCase_CreateDir:" << endl;
-    int32 layer = 0;
+    int32_t layer = 0;
     TestCase_PrintTree(*tree.rootNode(), layer);
 }
 
@@ -56,7 +56,7 @@ void TestCase_CreateFile(DirTree& tree)
     tree.createFile("*/ratel/dir4/", "file41.py");
 
     cout << "________________________after TestCase_CreateFile:" << endl;
-    int32 layer = 0;
+    int32_t layer = 0;
     TestCase_PrintTree(*tree.rootNode(), layer);
 }
 
@@ -67,7 +67,7 @@ void TestCase_RenameFile(DirTree& tree)
     tree.renameFile("*/ratel/dir3/file32.html", "file32_x.html");
 
     cout << "________________________after TestCase_RenameFile:" << endl;
-    int32 layer = 0;
+    int32_t layer = 0;
     TestCase_PrintTree(*tree.rootNode(), layer);
 }
 
@@ -81,7 +81,7 @@ void TestCase_RenameDir(DirTree& tree)
     tree.renameDir("*/ratel/newdir3/dir31", "dir31");
     tree.renameDir("*/ratel/newdir3/dir31", "newdir31");
     cout << "________________________after TestCase_RenameDir:" << endl;
-    int32 layer = 0;
+    int32_t layer = 0;
     TestCase_PrintTree(*tree.rootNode(), layer);
 }
 
@@ -90,7 +90,7 @@ void TestCase_DeleteDir(DirTree& tree)
 {
     tree.deleteDir("*/ratel/newdir3");
     cout << "________________________after TestCase_DeleteDir:" << endl;
-    int32 layer = 0;
+    int32_t layer = 0;
     TestCase_PrintTree(*tree.rootNode(), layer);
 }
 

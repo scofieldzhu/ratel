@@ -19,10 +19,10 @@ DB::DB(void* conn)
     :dbconn_(conn)
 {}
 
-DB * DB::OpenDB(const Path& dbfile, int32 flags, const char* zvfs)
+DB* DB::OpenDB(const Path& dbfile, int32_t flags, const char* zvfs)
 {
     sqlite3* conn = nullptr;
-    int32 err = sqlite3_open_v2(dbfile.rstring().cstr(), &conn, flags, zvfs);
+    int32_t err = sqlite3_open_v2(dbfile.rstring().cstr(), &conn, flags, zvfs);
     if(err != SQLITE_OK){
         slog_err(sqlitelogger) << "sqlite3_open_v2 error:" << sqlite3_errmsg(conn) << std::endl;
         return nullptr;
@@ -33,7 +33,7 @@ DB * DB::OpenDB(const Path& dbfile, int32 flags, const char* zvfs)
 Statement* DB::createStatement(const RString& sql, const char** pztail /*= nullptr*/)
 {
     sqlite3_stmt* res_stmt = nullptr;
-    int32 err = sqlite3_prepare_v2((sqlite3*)dbconn_, sql.cstr(), (int)sql.size(), &res_stmt, pztail);
+    int32_t err = sqlite3_prepare_v2((sqlite3*)dbconn_, sql.cstr(), (int)sql.size(), &res_stmt, pztail);
     if(err != SQLITE_OK){
         slog_err(sqlitelogger) << "sqlite3_prepare_v2 error:" << sqlite3_errmsg((sqlite3*)dbconn_) << std::endl;
         return nullptr;

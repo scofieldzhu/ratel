@@ -15,8 +15,8 @@ RATEL_NAMESPACE_BEGIN
 
 namespace{
     const char kFileTypes[] = {'d', 'b', 'k', '\0'};
-    const uint32 kDefaultMaxReservedFileCnt = 512;
-    const uint32 kMaxRWBlockItemCount = 80;
+    const uint32_t kDefaultMaxReservedFileCnt = 512;
+    const uint32_t kMaxRWBlockItemCount = 80;
 }
 
 DataBlockFile::DataBlockFile(const wstring& file)
@@ -30,8 +30,8 @@ void DataBlockFile::fflushHeaderData(bool onlyvaliditems)
 {
     agfileop_.rewind();
     agfileop_.writeData((const char*)header_, sizeof(header_));
-    const uint32 kTargetOpFileCnt = onlyvaliditems ? header_->useditemcnt : header_->maxreservblockcnt;
-    uint32 cureatitemcnt = 0, leftitemcnt = 0, nextreaditemcnt = 0;
+    const uint32_t kTargetOpFileCnt = onlyvaliditems ? header_->useditemcnt : header_->maxreservblockcnt;
+    uint32_t cureatitemcnt = 0, leftitemcnt = 0, nextreaditemcnt = 0;
     while(cureatitemcnt < kTargetOpFileCnt){
         leftitemcnt = kTargetOpFileCnt - cureatitemcnt;
         if(leftitemcnt <= 0)
@@ -45,7 +45,7 @@ void DataBlockFile::fflushHeaderData(bool onlyvaliditems)
 
 bool DataBlockFile::isEmpty() 
 {
-    uint32 filesize = 0;
+    uint32_t filesize = 0;
     return agfileop_.getSize(filesize) && filesize == 0;
 }
 
@@ -81,7 +81,7 @@ void DataBlockFile::loadData()
     }    
 }
 
-int32 DataBlockFile::calcNextUsedFileDataOffset() const
+int32_t DataBlockFile::calcNextUsedFileDataOffset() const
 {
     const DataBlockItem* preitem = header_->useditemcnt ? (const DataBlockItem*)nullptr : &blockitems_[header_->useditemcnt - 1];
     return preitem ? 0 : preitem->offset + preitem->size;      
@@ -106,7 +106,7 @@ void DataBlockFile::removeDataBlock(bid blockid)
         slog_err(pkglogger) << "invalid file!" << endl;
         return;
     }
-    int32 blockindex = findDataBlock(blockid);
+    int32_t blockindex = findDataBlock(blockid);
     if(blockindex == -1){
         slog_err(pkglogger) << "invalid block id:" << blockid << endl;
         return;
@@ -117,13 +117,13 @@ void DataBlockFile::removeDataBlock(bid blockid)
         return;
     }
     //translate forward items started from the item next to block index
-    for(uint32 i = blockindex + 1; i < header_->useditemcnt; ++i)
+    for(uint32_t i = blockindex + 1; i < header_->useditemcnt; ++i)
         blockitems_[i - 1] = blockitems_[i];
     --header_->useditemcnt;
     fflushHeaderData(true);
 }
 
-void DataBlockFile::appendDataBlock(bid blockid, const char* data, uint32 size)
+void DataBlockFile::appendDataBlock(bid blockid, const char* data, uint32_t size)
 {
     if(!*this){
         slog_err(pkglogger) << "invalid file!" << endl;
@@ -138,16 +138,16 @@ void DataBlockFile::appendDataBlock(bid blockid, const char* data, uint32 size)
         return;
     }
     agfileop_.setEndPos();
-    uint32 oldfilesize = 0;
+    uint32_t oldfilesize = 0;
     agfileop_.getSize(oldfilesize);
-    uint32 finishedbytes = 0;
+    uint32_t finishedbytes = 0;
     if(!agfileop_.writeData(data, size, &finishedbytes)){
         slog_err(pkglogger) << "write data failed!";
         if(finishedbytes > 0) //abandon modified data
             agfileop_.trunc(oldfilesize);
         return;
     }
-    const uint32 kNewBlockItemIndex = header_->useditemcnt;
+    const uint32_t kNewBlockItemIndex = header_->useditemcnt;
     blockitems_[kNewBlockItemIndex].blockid = blockid;
     blockitems_[kNewBlockItemIndex].offset = oldfilesize - 1;
     blockitems_[kNewBlockItemIndex].size = size;
@@ -155,13 +155,13 @@ void DataBlockFile::appendDataBlock(bid blockid, const char* data, uint32 size)
     fflushHeaderData(true);
 }
 
-bool DataBlockFile::fetchDataBlock(bid blockid, char* recvdata, uint32& datasize)
+bool DataBlockFile::fetchDataBlock(bid blockid, char* recvdata, uint32_t& datasize)
 {
     if(!*this){
         slog_err(pkglogger) << "invalid file!" << endl;
         return false;
     }
-    int32 blockindex = findDataBlock(blockid);
+    int32_t blockindex = findDataBlock(blockid);
     if(blockindex == -1){
         slog_err(pkglogger) << "invalid block id:" << blockid << endl;
         return false;
@@ -184,11 +184,11 @@ DataBlockFile::operator bool() const
     return agfileop_ && header_ && blockitems_;
 }
 
-int32 DataBlockFile::findDataBlock(bid id) const
+int32_t DataBlockFile::findDataBlock(bid id) const
 {
     if(!*this)
         return -1;
-    for(uint32 i = 0; i < header_->useditemcnt; ++i){
+    for(uint32_t i = 0; i < header_->useditemcnt; ++i){
         if(id == blockitems_[i].blockid)
             return i;
     }
