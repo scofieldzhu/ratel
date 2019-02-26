@@ -17,21 +17,23 @@ RATEL_NAMESPACE_BEGIN
 class RATEL_SQLITE_API DbTableRecord
 {
 public:
-	bool existColumn(const RString& key)const;
-	void setColumnValue(const RString& key, const Variant& result);
-	Variant getColumnValue(const RString& key) const;
-	Variant& operator[](const RString& key);
-	const Variant& operator[](const RString& key)const;
+	void reset();
+	bool existColumn(const RString& colkey)const;
+	DbTableRecord& addColumn(const RString& colkey, const Variant& value);	
+	DbTableRecord& setColumnValue(const RString& colkey, const Variant& result);
+	Variant getColumnValue(const RString& colkey) const;
+	Variant& operator[](const RString& colkey);
+	const Variant& operator[](const RString& colkey)const;
 	std::vector<RString> allColumns()const;
-	std::size_t columnCount()const { return colvals_.size(); }
-	DbTableRecord(const std::vector<RString>& colkeys);
+	std::size_t columnCount()const { return columnvalues_.size(); }
+	DbTableRecord();
 	DbTableRecord(const std::map<RString, Variant>& colvals);
 	DbTableRecord(const DbTableRecord&);
 	DbTableRecord& operator=(const DbTableRecord&);
 	~DbTableRecord();
 
 private:
-	std::map<RString, Variant> colvals_;
+	std::map<RString, Variant> columnvalues_;
 };
 
 RATEL_NAMESPACE_END
