@@ -24,6 +24,7 @@ public:
 	static const RString kFileUIDKey;
 	static const RString kStatusKey;	
 	int32_t queryFileId(const RString& filename, int32_t dirid);
+	bool existsFile(const RString& filename, int32_t dirid);
     FileTable();
     ~FileTable();
 };

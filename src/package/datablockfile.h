@@ -27,13 +27,14 @@ RATEL_NAMESPACE_BEGIN
 class RATEL_PACKAGE_API DataBlockFile
 {
 public:
-    using bid = uint32_t;
-    void removeDataBlock(bid blockid);
-    void appendDataBlock(bid blockid, const char* data, uint32_t size);
-    bool fetchDataBlock(bid blockid, char* recvdata, uint32_t& datasize);
+    using UID = std::string;
+	static UID NewUID();
+    void removeDataBlock(const UID& blockid);
+    void appendDataBlock(const UID& blockid, const char* data, uint32_t size);
+    bool fetchDataBlock(const UID& blockid, char* recvdata, uint32_t& datasize);
     operator bool()const;
-    int32_t findDataBlock(bid id)const;
-    bool existsDataBlock(bid id)const{return findDataBlock(id) != -1;}
+    int32_t findDataBlock(const UID& id)const;
+    bool existsDataBlock(const UID& id)const{return findDataBlock(id) != -1;}
     void initEmpty();
     DataBlockFile(const std::wstring& file);
     ~DataBlockFile();
@@ -44,17 +45,20 @@ private:
     void releaseResource();
     void loadData();
     int32_t calcNextUsedFileDataOffset()const;
-    struct DataBlockItem{
-        bid blockid = 0;
+    struct DataBlockItem
+	{
+        UID blockid;
         uint32_t offset = 0; // from data zone start position
         uint32_t size = 0;
     };
-    struct DbkFileHeader{
+    struct DbkFileHeader
+	{
         char filetype[4]; //dbk
         uint32_t maxreservblockcnt = 0;
         uint32_t useditemcnt = 0;
     };
-    struct DbkFileInfo{
+    struct DbkFileInfo
+	{
         DbkFileHeader header;
         DataBlockItem itemarray[1]; //only placeholder
     };

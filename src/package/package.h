@@ -16,6 +16,7 @@ CreateTime: 2018-9-9 21:41
 
 RATEL_NAMESPACE_BEGIN
 class DB;
+class DataBlockFile;
 class RATEL_PACKAGE_API Package 
 {
 public:
@@ -52,6 +53,7 @@ private:
     FileTable filetab_;
     Path tmpdatafile_;
     std::ofstream* tmpdatafilewriter_ = nullptr;
+	DataBlockFile* filedatastream_ = nullptr;
 };
 
 RATEL_NAMESPACE_END

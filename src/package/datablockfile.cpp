@@ -100,7 +100,12 @@ void DataBlockFile::initEmpty()
     fflushHeaderData(true);
 }
 
-void DataBlockFile::removeDataBlock(bid blockid)
+DataBlockFile::UID DataBlockFile::NewUID()
+{
+	return RString::NewUID().cstr();
+}
+
+void DataBlockFile::removeDataBlock(const UID& blockid)
 {
     if(!*this){
         slog_err(pkglogger) << "invalid file!" << endl;
@@ -108,7 +113,7 @@ void DataBlockFile::removeDataBlock(bid blockid)
     }
     int32_t blockindex = findDataBlock(blockid);
     if(blockindex == -1){
-        slog_err(pkglogger) << "invalid block id:" << blockid << endl;
+        slog_err(pkglogger) << "invalid block id:" << blockid.c_str() << endl;
         return;
     }
     const DataBlockItem& kTheBlock = blockitems_[blockindex];
@@ -123,18 +128,18 @@ void DataBlockFile::removeDataBlock(bid blockid)
     fflushHeaderData(true);
 }
 
-void DataBlockFile::appendDataBlock(bid blockid, const char* data, uint32_t size)
+void DataBlockFile::appendDataBlock(const UID& blockid, const char* data, uint32_t size)
 {
     if(!*this){
         slog_err(pkglogger) << "invalid file!" << endl;
         return;
     }
     if(existsDataBlock(blockid)){
-        slog_err(pkglogger) << "invalid block id:" << blockid << endl;
+        slog_err(pkglogger) << "invalid block id:" << blockid.c_str() << endl;
         return;
     }    
     if(header_->useditemcnt >= header_->maxreservblockcnt){
-        slog_err(pkglogger) << "no extra item for this block!" << blockid << endl;
+        slog_err(pkglogger) << "no extra item for this block!" << blockid.c_str() << endl;
         return;
     }
     agfileop_.setEndPos();
@@ -155,7 +160,7 @@ void DataBlockFile::appendDataBlock(bid blockid, const char* data, uint32_t size
     fflushHeaderData(true);
 }
 
-bool DataBlockFile::fetchDataBlock(bid blockid, char* recvdata, uint32_t& datasize)
+bool DataBlockFile::fetchDataBlock(const UID& blockid, char* recvdata, uint32_t& datasize)
 {
     if(!*this){
         slog_err(pkglogger) << "invalid file!" << endl;
@@ -163,7 +168,7 @@ bool DataBlockFile::fetchDataBlock(bid blockid, char* recvdata, uint32_t& datasi
     }
     int32_t blockindex = findDataBlock(blockid);
     if(blockindex == -1){
-        slog_err(pkglogger) << "invalid block id:" << blockid << endl;
+        slog_err(pkglogger) << "invalid block id:" << blockid.c_str() << endl;
         return false;
     }
     const DataBlockItem& kTheBlock = blockitems_[blockindex];
@@ -184,7 +189,7 @@ DataBlockFile::operator bool() const
     return agfileop_ && header_ && blockitems_;
 }
 
-int32_t DataBlockFile::findDataBlock(bid id) const
+int32_t DataBlockFile::findDataBlock(const UID& id) const
 {
     if(!*this)
         return -1;

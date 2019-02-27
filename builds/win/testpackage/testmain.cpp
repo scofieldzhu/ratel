@@ -84,6 +84,10 @@ void TestCase_TestPackage_Load()
 	if(!pkg.createDir("test31", "./testdir3")){
 		slog_err(g_AppLogger) << "createDir same directory failed!" << endl;
 	}
+	if(!pkg.importFile("./testdir3/test31", "c:/TDownload/hihi+song+mymo.mp3")){
+		slog_err(g_AppLogger) << "importFile hihi+song+mymo.mp3 failed!" << endl;
+		return;
+	}
 
     slog_err(g_AppLogger) << "load package ok!" << endl;
 }

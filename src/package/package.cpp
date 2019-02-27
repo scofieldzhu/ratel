@@ -23,6 +23,7 @@ CreateTime: 2018-9-16 21:54
 #include "statement.h"
 #include "dbtablecol.h"
 #include "dbtablerecord.h"
+#include "datablockfile.h"
 using namespace std;
 
 RATEL_NAMESPACE_BEGIN
@@ -218,25 +219,45 @@ bool Package::exportDir(const Path& sourcedir, const Path& local_targetdir)
 
 bool Package::importFile(const Path& dirlocation, const Path& sourcefile)
 {
+	if(!sourcefile.exists() || !sourcefile.isRegularFile()){
+		slog_err(pkglogger) << "source file[" << sourcefile.cstr() << "] is invalid file!" << endl;
+		return false;
+	}
+	const RString srcfn = sourcefile.filename().rstring();
     if(!opened()){
         slog_err(pkglogger) << "package not opened yet!" << endl;
         return false;
-    }
-    if(!sourcefile.exists() || !sourcefile.isRegularFile()){
-        slog_err(pkglogger) << "source file[" << sourcefile.cstr() << "] is invalid file!" << endl;
-        return false;
-    }
-    const RString sourcefilename = sourcefile.filename().rstring();
-//     FileNode* filenode = dirtree_->createFile(dirlocation, sourcefilename);
-//     if(filenode == nullptr) {
-//         slog_err(pkglogger) << "create file:" << sourcefilename.cstr() << " at dir:" << dirlocation.cstr() << " failed!" << endl;
-//         return false;
-//     }
-//     int32_t newfileid = writeNewFileData(sourcefile);
-//     filenode->datafileid = newfileid;
-//     filenode->init = 1;    
-//     filenode->dbid = addFileRecordToDB(sourcefilename, dirtree_->locateDir(dirlocation)->dbid);
-    return true;
+    }  
+	int32_t dirid = dirtab_.queryDirId(dirlocation.rstring());
+	if(dirid == -1){
+		slog_err(pkglogger) << "dirlocation(" << dirlocation.cstr() << ") not exists!" << endl;
+		return false;
+	}
+	if(filetab_.existsFile(srcfn, dirid)){
+		slog_err(pkglogger) << "same file(" << srcfn.cstr() << ") already exists in location directory(" << dirlocation.cstr() << ")!" << endl;
+		return false;
+	}
+	AgileFileOperator filereader(sourcefile.toWString());
+	uint32_t wholedatasize = 0;
+	char* wholedata = filereader.readWholeData(wholedatasize);
+	if(wholedata == nullptr){
+		slog_err(pkglogger) << "read whole data from source file failed!" << endl;
+		return false;
+	}
+	DataBlockFile::UID newfileuid = DataBlockFile::NewUID();	
+	filedatastream_->appendDataBlock(newfileuid, wholedata, wholedatasize);
+	DbTableRecord newrow({
+		{FileTable::kNameKey, srcfn.cstr()},
+		{FileTable::kDirIdKey, dirid},
+		{FileTable::kFileUIDKey, newfileuid.c_str()},
+		{FileTable::kStatusKey, FileTable::NORMAL}
+		});
+	if(!filetab_.insertRow(newrow)){
+		filedatastream_->removeDataBlock(newfileuid); //rollback data
+		slog_err(pkglogger) << "insert new row data to FileTable failed!" << endl;
+		return false;
+	}
+	return true;
 }
 
 bool Package::removeFile(const Path& filepath)
@@ -290,7 +311,10 @@ bool Package::createNew(const Path& newpkgpath)
 		log_err(pkglogger, "init created db(%s) failed!", dbfile_.cstr());
         releaseDB();
         return false;
-    }    
+    }  
+	tmpdatafile_ = generateTmpDataFilePath();
+	filedatastream_ = new DataBlockFile(tmpdatafile_.toWString());
+	filedatastream_->initEmpty();
     return true;
 }
 

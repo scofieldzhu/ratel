@@ -31,7 +31,7 @@ FileTable::FileTable()
 	colpropdict.setPropStatusOn(kPrimaryKey).setPropStatusOn(kUnique).setPropStatusOn(kNotNull);
 	addNewColumn(kNameKey).setDataMeta(StrSqlDataMeta(100)).propDict().setPropStatusOn(kNotNull);
 	addNewColumn(kDirIdKey).setDataMeta(IntSqlDataMeta()).propDict().setPropStatusOn(kNotNull);
-	addNewColumn(kFileUIDKey).setDataMeta(IntSqlDataMeta()).propDict().setPropStatusOn(kNotNull);
+	addNewColumn(kFileUIDKey).setDataMeta(StrSqlDataMeta(32)).propDict().setPropStatusOn(kNotNull);
 	addNewColumn(kStatusKey).setDataMeta(IntSqlDataMeta(NORMAL)).propDict().setPropStatusOn(kDefault);    
 }
 
@@ -42,6 +42,11 @@ int32_t FileTable::queryFileId(const RString& filename, int32_t dirid)
 {	
 	RString sql = makeQueryRowWhenSql("%s='%s' and %s=%d", kNameKey.cstr(), filename.cstr(), kDirIdKey.cstr(), dirid);	
 	return queryPrimaryKeyId(sql);
+}
+
+bool FileTable::existsFile(const RString& filename, int32_t dirid) 
+{
+	return queryFileId(filename, dirid) != -1;
 }
 
 RATEL_NAMESPACE_END

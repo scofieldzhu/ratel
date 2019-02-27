@@ -116,6 +116,22 @@ bool AgileFileOperator::readData(char* recvdata, uint32_t datasize, uint32_t* by
     return false;
 }
 
+char* AgileFileOperator::readWholeData(uint32_t& datasize)
+{
+	if(!isOpened())
+		return nullptr;
+	getSize(datasize);		
+	rewind();
+	char* wholedata = new char[datasize];
+	if(wholedata == nullptr)
+		return nullptr;
+	if(!readData(wholedata, datasize, nullptr)){
+		delete[] wholedata;
+		return nullptr;
+	}
+	return wholedata;	
+}
+
 void AgileFileOperator::rewind()
 {
     if(isOpened())
@@ -186,11 +202,16 @@ bool AgileFileOperator::getSize(uint32_t& size)
 {
     if(!isOpened())
         return false;
-    DWORD dsize = size;
-    if(::GetFileSize(fhandle_, &dsize) == 0){
+	LARGE_INTEGER li;
+    if(::GetFileSizeEx(fhandle_, &li) == 0){
         slog_err(kernellogger) << "GetFileSizeEx failed! errcode=" << ::GetLastError() << endl;
         return false;
     }
+	if(li.QuadPart > UINT_MAX){
+		slog_err(kernellogger) << "File size is too large!" << endl;
+		return false;
+	}
+	size = (uint32_t)li.QuadPart;
     return true;
 }
 
