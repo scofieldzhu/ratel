@@ -19,13 +19,21 @@ void TestRString_ConvNum()
 	xxd1 = xxd1;
 }
 
-int main()
+void TestRString_NewUID()
 {
-    
-	TestRString_ConvNum();
-    RString x = "ff";
-    RStrings result =  x.split('&');
-    for(int i = 0; i < result.size(); ++i)
-        cout << result[i].cstr() << endl;        
+	RString uid = RString::NewUID();
+	cout << uid.cstr() << endl;
+	uid = RString::NewUID();
+	cout << uid.cstr() << endl;
+	uid = RString::NewUID();
+	cout << uid.cstr() << endl;
+	uid = RString::NewUID();
+	cout << uid.cstr() << endl;
+}
+
+int main()
+{    
+	//TestRString_ConvNum();  
+	TestRString_NewUID();
     return 0;
 }

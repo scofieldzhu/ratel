@@ -10,7 +10,13 @@ Module: rstring.cpp
 #include <cstdarg>
 #include <codecvt>
 #include <locale>
-
+extern "C"{
+#ifdef WIN32
+#include <objbase.h>
+#else
+#include <uuid/uuid.h>
+#endif
+}
 using namespace std;
 
 RATEL_NAMESPACE_BEGIN
@@ -1052,6 +1058,32 @@ RString& RString::encodeFromWString(const std::wstring& srcstr)
     std::wstring_convert<std::codecvt_utf8<wchar_t>> cvt;
     std::string utf8str = cvt.to_bytes(srcstr);
     return assign(utf8str.c_str());
+}
+
+RString RString::NewUID()
+{
+#ifdef WIN32
+	GUID guid;
+	::CoCreateGuid(&guid);
+	return RString::FormatString("%0x-%0x-%0x-%0x-%0x%0x%0x%0x%0x%0x%0x", 
+								guid.Data1, 
+								guid.Data2, 
+								guid.Data3, 
+								guid.Data4[0],
+								guid.Data4[1],
+								guid.Data4[2],
+								guid.Data4[3],
+								guid.Data4[4],
+								guid.Data4[5],
+								guid.Data4[6],
+								guid.Data4[7]);	
+#else
+	uuid_t uuid;
+	uuid_generate_random(uuid);
+	char s[37];
+	uuid_unparse(uuid, s);
+	return s;
+#endif	
 }
 
 RString& RString::format(const char * format, ...)

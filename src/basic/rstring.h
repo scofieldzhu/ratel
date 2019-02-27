@@ -331,7 +331,9 @@ public:
     std::string decodeToLocale()const;
     std::wstring decodeToWString()const;
     RString& encodeFromLocale(const char* localestr);
-    RString& encodeFromWString(const std::wstring& srcstr);       
+    RString& encodeFromWString(const std::wstring& srcstr);    
+
+	static RString NewUID();
 
     // assign [strptr, <null>)
     RString& operator=(const char* strptr);
