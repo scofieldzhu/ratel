@@ -9,6 +9,7 @@ CreateTime: 2018-11-7 21:05
 =========================================================================*/
 #include "statement.h"
 #include "db.h"
+#include "rowdatadict.h"
 #include "sqlite3.h"
 #include "sqlitelogger.h"
 
@@ -32,22 +33,17 @@ int32_t Statement::stepExec()
     return sqlite3_step((sqlite3_stmt*)stmthandle_);
 }
 
-int32_t Statement::fetchDataCount()
+int32_t Statement::fetchColumnCount()
 {
     return sqlite3_data_count((sqlite3_stmt*)stmthandle_);
 }
 
-int32_t Statement::fetchIntColumn(int32_t col)
+int32_t Statement::fetchIntColumnData(int32_t col)
 {
     return sqlite3_column_int((sqlite3_stmt*)stmthandle_, col);
 }
 
-int64_t Statement::fetchInt64Column(int32_t col)
-{
-    return sqlite3_column_int64((sqlite3_stmt*)stmthandle_, col);
-}
-
-RString Statement::fetchTextColumn(int32_t col)
+RString Statement::fetchTextColumnData(int32_t col)
 {
     const int32_t bytenum = sqlite3_column_bytes((sqlite3_stmt*)stmthandle_, col);
     const unsigned char* textbuf = sqlite3_column_text((sqlite3_stmt*)stmthandle_, col);
@@ -59,9 +55,52 @@ RString Statement::fetchTextColumn(int32_t col)
     return restext;
 }
 
-double Statement::fetchDoubleColumn(int32_t col)
+double Statement::fetchDoubleColumnData(int32_t col)
 {
     return sqlite3_column_double((sqlite3_stmt*)stmthandle_, col);
+}
+
+void Statement::fetchColumnData(const RString& columnname, Variant& resultdata)
+{
+	sqlite3_stmt* sthandle = static_cast<sqlite3_stmt*>(stmthandle_);
+	for(auto i = 0; i < sqlite3_data_count(sthandle); ++i){
+		if(columnname == sqlite3_column_name(sthandle, i)){
+			fetchColumnData(i, resultdata);
+			return;
+		}
+	}
+	resultdata.setNull();
+}
+
+void Statement::fetchColumnData(int32_t column, Variant& data)
+{
+	sqlite3_stmt* sthandle = static_cast<sqlite3_stmt*>(stmthandle_);
+	switch(data.dataType()){
+		case Variant::kIntType:
+			data.setInt32(sqlite3_column_int(sthandle, column));
+			break;
+		case Variant::kDoubleType:
+			data.setDouble(sqlite3_column_double(sthandle, column));
+			break;
+		case Variant::kStringType:
+			data.setStr(fetchTextColumnData(column));
+			break;
+		default:
+			slog_err(sqlitelogger) << "unsupported data type[" << data.dataType() << "]!" << endl;
+			break;
+	}
+}
+
+void Statement::fetchDataDict(RowDataDict& dd)
+{
+	sqlite3_stmt* sthandle = static_cast<sqlite3_stmt*>(stmthandle_);
+	for(auto i = 0; i < sqlite3_data_count(sthandle); ++i){
+		RString colname = sqlite3_column_name(sthandle, i);
+		if(dd.existKey(colname))
+			fetchColumnData(i, dd[colname]);
+		if(dd.isIntegrity())
+			break;
+	}
 }
 
 int32_t Statement::reset()

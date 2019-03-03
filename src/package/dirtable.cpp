@@ -38,13 +38,23 @@ DirTable::~DirTable()
 int32_t DirTable::queryDirId(const RString& path)
 {	
 	RString sql = makeQueryRowWhenSql("%s='%s'", kPathKey.cstr(), path.cstr());
-	return queryPrimaryKeyId(sql);
+	if(db_ == nullptr){
+		slog_err(pkglogger) << "no any db instance connected!" << endl;
+		return -1;
+	}
+	Variant data(Variant::kIntType);
+	return db_->queryColumnValueOfFirstResultRow(sql, 0, data) ? data.convertToInt32() : -1;
 }
 
 int32_t DirTable::queryDirId(const RString& dirname, int32_t parentdirid)
 {
 	RString sql = makeQueryRowWhenSql("%s LIKE '%%/%s' and %s=%d", kPathKey.cstr(), dirname.cstr(), kParentKey.cstr(), parentdirid);
-	return queryPrimaryKeyId(sql);
+	if(db_ == nullptr){
+		slog_err(pkglogger) << "no any db instance connected!" << endl;
+		return -1;
+	}
+	Variant data(Variant::kIntType);
+	return db_->queryColumnValueOfFirstResultRow(sql, 0, data) ? data.convertToInt32() : -1;
 }
 
 RATEL_NAMESPACE_END

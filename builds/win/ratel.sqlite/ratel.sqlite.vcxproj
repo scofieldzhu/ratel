@@ -163,7 +163,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\src\sqlite\db.h" />
     <ClInclude Include="..\..\..\src\sqlite\dbglo.h" />
-    <ClInclude Include="..\..\..\src\sqlite\dbtablerecord.h" />
+    <ClInclude Include="..\..\..\src\sqlite\rowdatadict.h" />
     <ClInclude Include="..\..\..\src\sqlite\sqldatameta.h" />
     <ClInclude Include="..\..\..\src\sqlite\sqlite3.h" />
     <ClInclude Include="..\..\..\src\sqlite\sqlite3ext.h" />
@@ -180,7 +180,7 @@
     <ClCompile Include="..\..\..\src\sqlite\db.cpp" />
     <ClCompile Include="..\..\..\src\sqlite\dbglo.cpp" />
     <ClCompile Include="..\..\..\src\sqlite\dbtablecol.cpp" />
-    <ClCompile Include="..\..\..\src\sqlite\dbtablerecord.cpp" />
+    <ClCompile Include="..\..\..\src\sqlite\rowdatadict.cpp" />
     <ClCompile Include="..\..\..\src\sqlite\shell.c" />
     <ClCompile Include="..\..\..\src\sqlite\sqlite3.c" />
     <ClCompile Include="..\..\..\src\sqlite\sqlitelogger.cpp" />

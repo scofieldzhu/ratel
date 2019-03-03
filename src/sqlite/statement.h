@@ -10,20 +10,23 @@ CreateTime: 2018-11-7 20:55
 #ifndef __statement_h__
 #define __statement_h__
 
-#include "sqlitepublic.h"
+#include "sqlitelogger.h"
 
 RATEL_NAMESPACE_BEGIN
 
+class RowDataDict;
 class RATEL_SQLITE_API Statement
 {
 public:    
     DB* db() { return dbinst_; }
     int32_t stepExec();
-    int32_t fetchDataCount();
-    int32_t fetchIntColumn(int32_t col);
-    int64_t fetchInt64Column(int32_t col);
-    RString fetchTextColumn(int32_t col);
-    double fetchDoubleColumn(int32_t col);
+    int32_t fetchColumnCount();
+    int32_t fetchIntColumnData(int32_t col);
+    RString fetchTextColumnData(int32_t col);
+    double fetchDoubleColumnData(int32_t col);
+	void fetchColumnData(int32_t column, Variant& data);
+	void fetchColumnData(const RString& columnname, Variant& dt);
+	void fetchDataDict(RowDataDict& dd);
     int32_t reset();
     RString errMsg();
     ~Statement();

@@ -22,7 +22,7 @@ CreateTime: 2018-9-16 21:54
 #include "sqlite3.h"
 #include "statement.h"
 #include "dbtablecol.h"
-#include "dbtablerecord.h"
+#include "rowdatadict.h"
 #include "datablockfile.h"
 using namespace std;
 
@@ -95,22 +95,6 @@ int32_t Package::writeNewFileData(const Path& sourcefile)
     return newfileid;
 }
 
-// int32_t Package::addFileRecordToDB(const RString& filename, int32_t dirid, int32_t fuid)
-// {
-// 	DbTableRecord record;
-// 	record.addColumn(FileTable::kNameKey, filename.cstr()).addColumn(FileTable::kDirIdKey, dirid);
-// 	bool isok = filetab_.insertRow(*db_, record);
-// 	logverify(pkglogger, isok);
-//     RString sql = filetab_.makeQueryRowWhenSql("%s='%s' and %s=%d", FileTable::kNameKey, filename.cstr(), FileTable::kDirIdKey, dirid);
-//     Statement* stat = db_->createStatement(sql);
-//     logverify(pkglogger, stat);
-//     int32_t rc = stat->stepExec();
-//     logverify(pkglogger, rc == SQLITE_ROW);
-//     int32_t newrecordid = stat->fetchIntColumn(0);
-//     delete stat;
-//     return newrecordid;
-// }
-
 Path Package::generateDBFilePath() const
 {
     return workdir_.join(rstrutil::NewGuid()+".db");
@@ -124,16 +108,8 @@ Path Package::generateTmpDataFilePath() const
 bool Package::initDB()
 {
     logverify(pkglogger, db_);
-	dirtab_.setDB(db_);
-    if(!dirtab_.create()){
-		slog_err(pkglogger) << "create dirtable failed!" << endl;
-		return false;
-	}
-	filetab_.setDB(db_);
-	if(!filetab_.create()){
-		slog_err(pkglogger) << "create filetable failed!" << endl;
-		return false;
-	}    
+	dirtab_.connectDB(*db_);    
+	filetab_.connectDB(*db_);	
     return true;
 }
 
@@ -160,7 +136,7 @@ bool Package::createDir(const RString& name, const Path& location)
 		}
 	}
 	Path newdirpath = location.join(name);
-	if(!dirtab_.insertRow(DbTableRecord({
+	if(!dirtab_.insertRow(RowDataDict({
 							{DirTable::kPathKey, newdirpath.cstr()},
 							{DirTable::kParentKey, parentid},
 							{DirTable::kStatusKey, DirTable::NORMAL}
@@ -246,7 +222,7 @@ bool Package::importFile(const Path& dirlocation, const Path& sourcefile)
 	}
 	DataBlockFile::UID newfileuid = DataBlockFile::NewUID();	
 	filedatastream_->appendDataBlock(newfileuid, wholedata, wholedatasize);
-	DbTableRecord newrow({
+	RowDataDict newrow({
 		{FileTable::kNameKey, srcfn.cstr()},
 		{FileTable::kDirIdKey, dirid},
 		{FileTable::kFileUIDKey, newfileuid.c_str()},
@@ -262,6 +238,11 @@ bool Package::importFile(const Path& dirlocation, const Path& sourcefile)
 
 bool Package::removeFile(const Path& filepath)
 {
+	if(!filepath.isRegularFile()){
+		slog_err(pkglogger) << "filepath[" << filepath.cstr() <<"] is not regular file!" << endl;
+		return false;
+	}
+
     return false;
 }
 

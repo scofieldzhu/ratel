@@ -16,37 +16,49 @@ CreateTime: 2019-1-26 12:16
 
 RATEL_NAMESPACE_BEGIN
 Variant::Variant()
-	:type_(kNullType)
+	:type_(kNoneType),
+	isnull_(true)
+{}
+
+Variant::Variant(DataType dt)
+	:type_(dt),
+	isnull_(true)
 {}
 
 Variant::Variant(int32_t val)
 	:strvalue_(RString::FromInt32(val)),
-	type_(kIntType)
+	type_(kIntType),
+	isnull_(false)
 {}
 
 Variant::Variant(uint32_t val)
 	:strvalue_(RString::FromUInt32(val)),
-	type_(kUIntType)
+	type_(kUIntType),
+	isnull_(false)
 {}
 
 Variant::Variant(double val)
 	:strvalue_(RString::FromDouble(val)),
-	type_(kDoubleType)
+	type_(kDoubleType),
+	isnull_(false)
 {}
 
 Variant::Variant(vptr_t ptr)
 	:strvalue_(RString::FromInt64(int64_t(ptr))),
-	type_(kVoidPtrType)
+	type_(kVoidPtrType),
+	isnull_(false)
 {}
 
 Variant::Variant(const char* str)
 	:strvalue_(str),
-	type_(kStringType)
+	type_(kStringType),
+	isnull_(false)
 {}
 
 Variant::Variant(const Variant& rhs)
 	:strvalue_(rhs.strvalue_),
-	type_(rhs.type_)
+	type_(rhs.type_),
+	isnull_(rhs.isnull_)
 {}
 
 Variant::~Variant()
@@ -59,13 +71,14 @@ bool Variant::operator!=(const Variant& rhs) const
 
 bool Variant::operator==(const Variant& rhs) const
 {
-	return strvalue_ == rhs.strvalue_ && type_ == rhs.type_;
+	return strvalue_ == rhs.strvalue_ && type_ == rhs.type_ && isnull_ == rhs.isnull_;
 }
 
 Variant& Variant::operator=(const Variant& rhs)
 {
 	strvalue_ = rhs.strvalue_;
 	type_ = rhs.type_;
+	isnull_ = rhs.isnull_;
 	return *this;
 }
 
@@ -73,6 +86,7 @@ void Variant::setVoidPtr(vptr_t ptr)
 {
 	strvalue_.FromInt64(int64_t(ptr));
 	type_ = kVoidPtrType;
+	isnull_ = false;
 }
 
 vptr_t Variant::convertToVoidPtr() const
@@ -92,6 +106,7 @@ void Variant::setStr(const RString& str)
 {
 	strvalue_ = str;
 	type_ = kStringType;
+	isnull_ = false;
 }
 
 RString Variant::convertToStr() const
@@ -111,6 +126,7 @@ void Variant::setInt32(int32_t val)
 {
 	strvalue_.fromInt32(val);
 	type_ = kIntType;
+	isnull_ = false;
 }
 
 int32_t Variant::convertToInt32() const
@@ -130,6 +146,7 @@ void Variant::setUInt32(uint32_t val)
 {
 	strvalue_.fromUInt32(val);
 	type_ = kUIntType;
+	isnull_ = false;
 }
 
 bool Variant::convertToUInt32(uint32_t& result) const
@@ -149,6 +166,7 @@ void Variant::setDouble(double val)
 {
 	strvalue_.fromDouble(val);
 	type_ = kDoubleType;
+	isnull_ = false;
 }
 
 bool Variant::convertToDouble(double& result) const
@@ -166,7 +184,15 @@ double Variant::convertToDouble() const
 
 void Variant::setNull()
 {
-	type_ = kNullType;
+	isnull_ = true;
+}
+
+void Variant::setDataType(DataType t)
+{
+	type_ = t;
+	isnull_ = true;
 }
 
 RATEL_NAMESPACE_END
+
+

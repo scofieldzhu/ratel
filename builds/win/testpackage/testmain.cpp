@@ -88,6 +88,10 @@ void TestCase_TestPackage_Load()
 		slog_err(g_AppLogger) << "importFile hihi+song+mymo.mp3 failed!" << endl;
 		return;
 	}
+	if(!pkg.importDir("./testdir3", "C:/Qt/Qt5.6.1/Examples/Qt-5.6/activeqt/comapp")){
+		slog_err(g_AppLogger) << "importDir C:/Qt/Qt5.6.1/Examples/Qt-5.6/activeqt/comapp failed!" << endl;
+		return;
+	}
 
     slog_err(g_AppLogger) << "load package ok!" << endl;
 }

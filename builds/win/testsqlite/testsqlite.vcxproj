@@ -110,7 +110,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>../../../src/basic;../../../src/filesys;../../../src/sqlite;../../../src/kernel</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../src/basic;../../../src/filesys;../../../src/sqlite;../../../src/kernel;../../../3rd\sflogger\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

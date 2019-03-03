@@ -6,7 +6,7 @@
 #include "dbtable.h"
 #include "dbtablecol.h"
 #include "sqldatameta.h"
-#include "dbtablerecord.h"
+#include "rowdatadict.h"
 using namespace std;
 USING_RATEL
 
@@ -50,7 +50,7 @@ int main()
     rescode = stat->stepExec();
     delete stat;
 
-	DbTableRecord record({
+	RowDataDict record({
 		{dircols::kDirId, Variant(1)},
 		{dircols::kName, Variant("testdir")},
 		{dircols::kFileId, Variant(1)}, 

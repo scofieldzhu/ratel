@@ -21,7 +21,14 @@ public:
     Statement* createStatement(const RString& sql, const char** pztail = nullptr);
     typedef int(*StatCallback)(void*, int, char**, char**);
     bool exec(const RString& sql, StatCallback func, void* firstpara);
+	bool queryFirstRowResultData(const RString& sql, RowDataDict& resultdata);
+	bool queryColumnValueOfFirstResultRow(const RString& sql, int32_t columnindex, Variant& result);
+	bool queryColumnValueOfFirstResultRow(const RString& sql, const RString& columnkey, Variant& result);
     RString errMsg();
+	void joinTable(DbTable& t);
+	void dismissTable(const RString& tablename);
+	bool existTable(const RString& tablename)const;
+	DbTable* fetchTable(const RString& name);
     ~DB();
 
 private:
@@ -30,6 +37,7 @@ private:
     DB(const DB&) = delete;
     const DB& operator=(const DB&) = delete;
     void* dbconn_;
+	std::vector<DbTable*> alltables_;
 };
 
 RATEL_NAMESPACE_END

@@ -29,24 +29,30 @@ public:
     DbTableCol* getColumn(int32_t colidx)const;	
 	bool existsColumn(const RString& key)const { return getColumn(key) != nullptr; }
     RString makeCreateSql(bool ifexists = true);   
-	RString makeInsertRowSql(const DbTableRecord& row);    
+	RString makeInsertRowSql(const RowDataDict& row);    
     RString makeDelRowWhenSql(const char* whenfmt, ...);
     RString makeQueryRowWhenSql(const char* whenfmt, ...);
-    RString makeDropSql();
+    RString makeDropSql();	
 	bool create();
-	bool insertRow(const DbTableRecord& record);
-	int32_t queryPrimaryKeyId(const RString& sql);
+	bool isCreated()const;
+	bool insertRow(const RowDataDict& record);
+	Variant queryColumnValueOfFirstResultRow(const RString& sql, const RString& columnkey);	
 	void drop();
-	void setDB(DB* db) { db_ = db; }
-	DB* db(){ return db_; }
+	void connectDB(DB& db);
+	void disconnectDB();
+	bool isConnected()const { return db_ != nullptr; }
+	DB* connectedDB(){ return db_; }
+	const RString& name()const { return name_; }
     DbTable(const RString& name, DB* db = nullptr);
     virtual ~DbTable();
 
-protected:
-	bool checkTableRecordValidity(const DbTableRecord&)const;
+protected:	
+	bool queryTableExistence();
+	bool checkTableRecordValidity(const RowDataDict&)const;
     const RString name_;
     std::vector<DbTableCol*> columns_;
 	DB* db_;
+	bool iscreated_ = false;
 };
 
 RATEL_NAMESPACE_END

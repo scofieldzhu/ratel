@@ -21,9 +21,10 @@ CreateTime: 2018-7-14 10:36
 RATEL_NAMESPACE_BEGIN
 class DB;
 class DbTable;
+using DbTableSPtr = std::shared_ptr<DbTable>;
 class DbTableCol;
-class DbTableRecord;
-typedef std::vector<DbTableRecord*> DbTableRowSet;
+class RowDataDict;
+typedef std::vector<RowDataDict*> DbTableRowSet;
 class Statement;
 class SqlDataMeta;
 RATEL_NAMESPACE_END

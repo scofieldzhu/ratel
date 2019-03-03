@@ -42,10 +42,10 @@
     <ClInclude Include="..\..\..\src\sqlite\dbtablecol.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\sqlite\dbtablerecord.h">
+    <ClInclude Include="..\..\..\src\sqlite\dbglo.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\sqlite\dbglo.h">
+    <ClInclude Include="..\..\..\src\sqlite\rowdatadict.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -74,10 +74,10 @@
     <ClCompile Include="..\..\..\src\sqlite\dbtablecol.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\sqlite\dbtablerecord.cpp">
+    <ClCompile Include="..\..\..\src\sqlite\dbglo.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\sqlite\dbglo.cpp">
+    <ClCompile Include="..\..\..\src\sqlite\rowdatadict.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

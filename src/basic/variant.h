@@ -17,6 +17,15 @@ RATEL_NAMESPACE_BEGIN
 class RATEL_BASIC_API Variant
 {
 public:
+	enum DataType
+	{
+		kNoneType,
+		kIntType,
+		kUIntType,
+		kDoubleType,
+		kStringType,
+		kVoidPtrType
+	};
 	void setVoidPtr(vptr_t ptr);
 	bool convertToVoidPtr(vptr_t& ptr)const;
 	vptr_t convertToVoidPtr()const;
@@ -34,9 +43,12 @@ public:
 	double convertToDouble()const;	
 	bool operator==(const Variant& rhs)const;
 	bool operator!=(const Variant& rhs)const;
-	bool isNull()const{return type_ == kNullType;}
+	bool isNull()const { return isnull_; }
 	void setNull();
+	void setDataType(DataType t);
+	DataType dataType()const { return type_; }
 	Variant();
+	Variant(DataType dt);
 	Variant(int32_t val);
 	Variant(uint32_t val);
     Variant(double val);
@@ -48,16 +60,8 @@ public:
 
 private:    
     RString strvalue_;
-	enum DataType
-	{
-		kNullType,
-		kIntType,
-		kUIntType,
-		kDoubleType,
-		kStringType,
-		kVoidPtrType
-	};
 	DataType type_;
+	bool isnull_;
 };
 
 RATEL_NAMESPACE_END

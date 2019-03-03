@@ -13,6 +13,7 @@ CreateTime: 2019-1-13 20:28
 #include "sqldatameta.h"
 #include "statement.h"
 #include "sqlite3.h"
+#include "path.h"
 #include "pkglogger.h"
 
 RATEL_NAMESPACE_BEGIN
@@ -41,7 +42,19 @@ FileTable::~FileTable()
 int32_t FileTable::queryFileId(const RString& filename, int32_t dirid)
 {	
 	RString sql = makeQueryRowWhenSql("%s='%s' and %s=%d", kNameKey.cstr(), filename.cstr(), kDirIdKey.cstr(), dirid);	
-	return queryPrimaryKeyId(sql);
+	if(db_ == nullptr){
+		slog_err(pkglogger) << "no any db instance connected!" << endl;
+		return -1;
+	}
+	Variant data(Variant::kIntType);
+	return db_->queryColumnValueOfFirstResultRow(sql, 0, data) ? data.convertToInt32() : -1;
+}
+
+int32_t FileTable::queryFileId(const Path& filepath)
+{
+	RString fn = filepath.filename().rstring();
+	Path location = filepath.parentPath();
+	return -1;
 }
 
 bool FileTable::existsFile(const RString& filename, int32_t dirid) 

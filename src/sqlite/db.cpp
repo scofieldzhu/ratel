@@ -8,6 +8,7 @@ Module: sqlitedb.cpp
 CreateTime: 2018-7-28 10:49
 =========================================================================*/
 #include "db.h"
+#include "dbtable.h"
 #include "path.h"
 #include "statement.h"
 #include "sqlite3.h"
@@ -18,6 +19,12 @@ RATEL_NAMESPACE_BEGIN
 DB::DB(void* conn)
     :dbconn_(conn)
 {}
+
+DB::~DB()
+{
+	sqlite3_close_v2((sqlite3*)dbconn_);
+	dbconn_ = nullptr;
+}
 
 DB* DB::OpenDB(const Path& dbfile, int32_t flags, const char* zvfs)
 {
@@ -53,15 +60,97 @@ bool DB::exec(const RString& sql, StatCallback func, void* firstpara)
     return true;
 }
 
+bool DB::queryFirstRowResultData(const RString& sql, RowDataDict& resultdata)
+{
+	Statement* stat = createStatement(sql);
+	if(stat == nullptr){
+		slog_err(sqlitelogger) << "create statement failed! sql:" << sql.cstr() << " err:" << errMsg().cstr() << endl;
+		return false;
+	}
+	int32_t rc = stat->stepExec();
+	if(rc != SQLITE_ROW){
+		slog_err(sqlitelogger) << "stepExec failed! sql:" << sql.cstr() << " err:" << stat->errMsg().cstr() << endl;
+		delete stat;
+		return false;
+	}
+	stat->fetchDataDict(resultdata); 
+	delete stat;
+	return true;
+}
+
+bool DB::queryColumnValueOfFirstResultRow(const RString& sql, int32_t columnindex, Variant& result)
+{
+	Statement* stat = createStatement(sql);
+	if(stat == nullptr){
+		slog_err(sqlitelogger) << "create statement failed! sql:" << sql.cstr() << " err:" << errMsg().cstr() << endl;
+		return false;
+	}
+	int32_t rc = stat->stepExec();
+	if(rc != SQLITE_ROW){
+		slog_err(sqlitelogger) << "stepExec failed! sql:" << sql.cstr() << " err:" << stat->errMsg().cstr() << endl;
+		delete stat;
+		return false;
+	}
+	stat->fetchColumnData(columnindex, result);
+	delete stat;
+	return true;
+}
+
+bool DB::queryColumnValueOfFirstResultRow(const RString& sql, const RString& columnkey, Variant& result)
+{
+	Statement* stat = createStatement(sql);
+	if(stat == nullptr){
+		slog_err(sqlitelogger) << "create statement failed! sql:" << sql.cstr() << " err:" << errMsg().cstr() << endl;
+		return false;
+	}
+	int32_t rc = stat->stepExec();
+	if (rc != SQLITE_ROW){
+		slog_err(sqlitelogger) << "stepExec failed! sql:" << sql.cstr() << " err:" << stat->errMsg().cstr() << endl;
+		delete stat;
+		return false;
+	}
+	stat->fetchColumnData(columnkey, result);
+	delete stat;
+	return true;
+}
+
 RString DB::errMsg()
 {
     return sqlite3_errmsg((sqlite3*)dbconn_);
 }
 
-DB::~DB()
+void DB::joinTable(DbTable& t)
 {
-    sqlite3_close_v2((sqlite3*)dbconn_);
-    dbconn_ = nullptr;
+	if(existTable(t.name())){
+		slog_err(sqlitelogger) << "The table(" << t.name().cstr() << ") already exists!" << endl;
+		return;
+	}
+	alltables_.push_back(&t);
+}
+
+void DB::dismissTable(const RString& tablename)
+{
+	auto it = std::find_if(alltables_.begin(),
+						   alltables_.end(),
+						   [&tablename](DbTable* t){return t->name() == tablename;});
+	if(it != alltables_.end())
+		alltables_.erase(it);
+}
+
+bool DB::existTable(const RString& tablename) const
+{
+	return std::find_if(alltables_.begin(), 
+						alltables_.end(), 
+						[&tablename](DbTable* t){return t->name() == tablename;}
+						) != alltables_.end();
+}
+
+DbTable* DB::fetchTable(const RString& name)
+{
+	auto it = std::find_if(alltables_.begin(),
+						   alltables_.end(),
+						   [&name](DbTable* t){return t->name() == name;});
+	return it != alltables_.end() ? *it : nullptr;
 }
 
 RATEL_NAMESPACE_END
