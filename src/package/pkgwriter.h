@@ -16,19 +16,21 @@ CreateTime: 2018-9-9 17:57
 
 RATEL_NAMESPACE_BEGIN
 
-class RATEL_PACKAGE_API PkgFileWriter
+class RATEL_PACKAGE_API PKGWriter
 {
-public:
-    bool beginWrite();
-    bool writeFileData(const Path& file);
-    void end();
-    bool inWritting()const;
-    PkgFileWriter(const Path& filepath);
-    ~PkgFileWriter();
+public:    	
+	bool write();
+    PKGWriter(const Path& filepath, const Path& dbfile, const Path& datafile);
+    ~PKGWriter();
 
 private:
-    std::ofstream ofs_;
-    const Path& filepath_;
+	void close();
+	bool prepare();    
+	bool writeFileData(const Path& file);
+	Path pkgfilepath_;
+	Path dbfilepath_;
+	Path datafilepath_;
+    std::ofstream ofs_;    
 };
 
 RATEL_NAMESPACE_END

@@ -15,25 +15,19 @@ CreateTime: 2018-9-1 14:25
 #include "path.h"
 
 RATEL_NAMESPACE_BEGIN
-class RATEL_PACKAGE_API PkgFileReader
+class RATEL_PACKAGE_API PKGReader
 {
 public:
-    bool open();
-    bool isopened()const { return fs_.is_open(); }
-    bool readDBFileData(char*& filedata, uint32_t& datasize);
-    bool readDBDataToFile(std::ofstream& os);
-    bool readFileData(int32_t offset, uint32_t size, char*& outdata);
-    void close();
-    PkgFileReader(const Path& filepath);
-    ~PkgFileReader();
+	bool loadFile(const Path& pkgfile, const Path& outputdbfile, const Path& outputdatafile);
+    PKGReader();
+    ~PKGReader();
 
 private:
-    void locateDBDataPos();
+	void close();
+	bool open(const Path& pkgfile);	
+	bool loadNextFileData(std::ofstream& os);	
     bool readTypeId();
-    bool readDBDataSize();
-    Path pkgpath_;
     std::ifstream fs_;
-    int32_t dbdatasize_ = -1;
 };
 RATEL_NAMESPACE_END
 #endif

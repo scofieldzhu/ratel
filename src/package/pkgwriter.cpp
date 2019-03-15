@@ -7,42 +7,46 @@ Project: ratel.package
 Module: pkgfilewriter.cpp 
 CreateTime: 2018-9-9 17:57
 =========================================================================*/
-#include "pkgfilewriter.h"
+#include "pkgwriter.h"
 #include "pkgfilebasic.h"
 #include "pkglogger.h"
 using namespace std;
 
 RATEL_NAMESPACE_BEGIN
-PkgFileWriter::PkgFileWriter(const Path& filepath)
-    :filepath_(filepath)
+PKGWriter::PKGWriter(const Path& pkgfile, const Path& dbfile, const Path& datafile)
+    :pkgfilepath_(pkgfile),
+	dbfilepath_(dbfile),
+	datafilepath_(datafile)
 {}
 
-PkgFileWriter::~PkgFileWriter()
+PKGWriter::~PKGWriter()
 {
-    end();
+	close();
 }
 
-bool PkgFileWriter::beginWrite()
+void PKGWriter::close()
 {
-    if(!filepath_.parentPath().exists()){
-        slog_err(pkglogger) << "invalid filepath(" << filepath_.rstring().cstr() << ")!" << endl;
+	if(ofs_.is_open())
+		ofs_.close();
+}
+
+bool PKGWriter::prepare()
+{
+    if(!pkgfilepath_.parentPath().exists()){
+        slog_err(pkglogger) << "invalid filepath(" << pkgfilepath_.rstring().cstr() << ")!" << endl;
         return false;
     }
-    ofs_.open(filepath_.rstring().cstr(), ios_base::binary | ios_base::out);
+    ofs_.open(pkgfilepath_.rstring().cstr(), ios_base::binary | ios_base::out);
     if(!ofs_.is_open()){
-        slog_err(pkglogger) << "open filepath(" << filepath_.rstring().cstr() << ") failed for write!" << endl;
+        slog_err(pkglogger) << "open filepath(" << pkgfilepath_.rstring().cstr() << ") failed for write!" << endl;
         return false;
     }
     ofs_.write(PKGTYPE_CODE, strlen(PKGTYPE_CODE));
     return true;    
 }
 
-bool PkgFileWriter::writeFileData(const Path& thefile)
+bool PKGWriter::writeFileData(const Path& thefile)
 {
-    if(!inWritting()) {
-        slog_err(pkglogger) << "writer is not in writting mode at present!" << endl;
-        return false;
-    }
     if(!thefile.exists() || !thefile.isRegularFile()) {
         slog_err(pkglogger) << "invalid filepath(" << thefile.rstring().cstr() << ")!" << endl;
         return false;
@@ -54,7 +58,7 @@ bool PkgFileWriter::writeFileData(const Path& thefile)
     }
     //write filesize field 
     ifs_.seekg(0, ios_base::end);
-    uint32_t filesize = ifs_.tellg();
+    std::streampos filesize = ifs_.tellg();
     ifs_.seekg(0, ios_base::beg);
     ofs_.write((const char*)&filesize, sizeof(uint32_t));
     //write file content
@@ -65,7 +69,7 @@ bool PkgFileWriter::writeFileData(const Path& thefile)
             ofs_.write(buffer, kBufSize);
             continue;
         }
-        uint32_t actualreadbytes = ifs_.gcount();
+        std::streamsize actualreadbytes = ifs_.gcount();
         if(actualreadbytes > 0)
             ofs_.write(buffer, actualreadbytes);
         break;
@@ -74,15 +78,26 @@ bool PkgFileWriter::writeFileData(const Path& thefile)
     return true;
 }
 
-void PkgFileWriter::end()
+bool PKGWriter::write()
 {
-    if(inWritting())
-        ofs_.close();
-}
-
-bool PkgFileWriter::inWritting() const
-{
-    return ofs_.is_open();
+	do{
+		if(!prepare()){
+			slog_err(pkglogger) << " prepare failed!" << endl;
+			break;
+		}
+		if(!writeFileData(dbfilepath_)){
+			slog_err(pkglogger) << " write db file content failed!" << endl;
+			break;
+		}
+		if(!writeFileData(datafilepath_)){
+			slog_err(pkglogger) << " write data file content failed!" << endl;
+			break;
+		}
+		close();	
+		return true;
+	}while(0);	
+	close();	
+	return false;
 }
 
 RATEL_NAMESPACE_END
