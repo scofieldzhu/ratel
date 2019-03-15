@@ -22,6 +22,7 @@ public:
 	static const RString kPathKey;
 	static const RString kParentKey;
 	static const RString kStatusKey;
+	bool queryDir(const RString& path, RowDataDict& resultdata);
 	int32_t queryDirId(const RString& path);
 	int32_t queryDirId(const RString& dirname, int32_t parentdirid);
     DirTable();

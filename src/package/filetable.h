@@ -23,9 +23,10 @@ public:
 	static const RString kDirIdKey;
 	static const RString kFileUIDKey;
 	static const RString kStatusKey;	
-	int32_t queryFileId(const Path& filepath);
+	bool queryFile(const RString& filename, int32_t dirid, RowDataDict& resultdata);
 	int32_t queryFileId(const RString& filename, int32_t dirid);
 	bool existsFile(const RString& filename, int32_t dirid);
+	bool removeFile(int32_t id);
     FileTable();
     ~FileTable();
 };

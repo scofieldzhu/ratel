@@ -108,12 +108,12 @@ RString DbTable::makeInsertRowSql(const RowDataDict& record)
 RString DbTable::makeDelRowWhenSql(const char* whenfmt, ...)
 {
     static const int32_t kMaxBufSize = 400;
-    char buffer[kMaxBufSize] = { '\0' };
+    char buffer[kMaxBufSize] = {'\0'};
     va_list vl;
     va_start(vl, whenfmt);
     vsprintf_s(buffer, kMaxBufSize - 1, whenfmt, vl);
     va_end(vl);
-    return "delete * from " + name_ + " where " + buffer + ";";
+    return "DELETE FROM " + name_ + " WHERE " + buffer + ";";
 }
 
 RString DbTable::makeQueryRowWhenSql(const char* whenfmt, ...)

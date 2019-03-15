@@ -17,10 +17,10 @@ CreateTime: 2019-1-13 20:19
 
 RATEL_NAMESPACE_BEGIN
 using namespace sqlkw;
-const RString DirTable::kIdKey = "id";
-const RString DirTable::kPathKey = "path";
-const RString DirTable::kParentKey = "parent";
-const RString DirTable::kStatusKey = "status";
+const RString DirTable::kIdKey = "dir_id";
+const RString DirTable::kPathKey = "dir_path";
+const RString DirTable::kParentKey = "dir_parent";
+const RString DirTable::kStatusKey = "dir_status";
 
 DirTable::DirTable()
     :DbTable("Directory")
@@ -44,6 +44,16 @@ int32_t DirTable::queryDirId(const RString& path)
 	}
 	Variant data(Variant::kIntType);
 	return db_->queryColumnValueOfFirstResultRow(sql, 0, data) ? data.convertToInt32() : -1;
+}
+
+bool DirTable::queryDir(const RString& path, RowDataDict& resultdata)
+{
+	RString sql = makeQueryRowWhenSql("%s='%s'", kPathKey.cstr(), path.cstr());
+	if(db_ == nullptr){
+		slog_err(pkglogger) << "no any db instance connected!" << endl;
+		return false;
+	}
+	return db_->queryFirstRowResultData(sql, resultdata);
 }
 
 int32_t DirTable::queryDirId(const RString& dirname, int32_t parentdirid)

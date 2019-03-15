@@ -47,6 +47,14 @@ RowDataDict& RowDataDict::insertPair(const RString& key, const Variant& value)
 	return *this;
 }
 
+RowDataDict& RowDataDict::remove(const RString& key)
+{
+	auto it = datadict_.find(key);
+	if(it != datadict_.end())
+		datadict_.erase(it);
+	return *this;
+}
+
 RowDataDict& RowDataDict::setValue(const RString& key, const Variant& result)
 {
 	auto it = datadict_.find(key);
@@ -110,6 +118,12 @@ bool RowDataDict::isIntegrity() const
 			return false;
 	}
 	return true;
+}
+
+void RowDataDict::combine(const RowDataDict& other)
+{
+	for(auto it = other.datadict_.begin(); it != other.datadict_.end(); ++it)
+		insertPair(it->first, it->second);
 }
 
 RATEL_NAMESPACE_END

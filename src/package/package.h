@@ -10,12 +10,10 @@ CreateTime: 2018-9-9 21:41
 #ifndef __package_h__
 #define __package_h__
 
-#include "dirtable.h"
-#include "filetable.h"
+#include "pkgdb.h"
 #include "path.h"
 
 RATEL_NAMESPACE_BEGIN
-class DB;
 class DataBlockFile;
 class RATEL_PACKAGE_API Package 
 {
@@ -39,21 +37,14 @@ public:
 
 private:
     void releaseResources();
-    bool initDB();
     void releaseDB();
     int32_t writeNewFileData(const Path& sourcefile);
-    //int32_t addFileRecordToDB(const RString& filename, int32_t dirid);   
     Path generateDBFilePath()const;
     Path generateTmpDataFilePath()const;
     Path workdir_;
-    Path dbfile_;
-    DB* db_ = nullptr;
     Path pkgfile_;    
-    DirTable dirtab_;
-    FileTable filetab_;
-    Path tmpdatafile_;
-    std::ofstream* tmpdatafilewriter_ = nullptr;
-	DataBlockFile* filedatastream_ = nullptr;
+    PKGDB* pkgdb_ = nullptr;    
+	DataBlockFile* filedatastorage_ = nullptr;
 };
 
 RATEL_NAMESPACE_END

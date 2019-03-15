@@ -16,8 +16,8 @@ CreateTime: 2018-9-16 21:54
 #include "path.h"
 #include "pathremover.h"
 #include "pkglogger.h"
-#include "pkgfilereader.h"
-#include "pkgfilewriter.h"
+#include "pkgreader.h"
+#include "pkgwriter.h"
 #include "rstrutil.h"
 #include "sqlite3.h"
 #include "statement.h"
@@ -51,49 +51,49 @@ Package::~Package()
 void Package::releaseResources()
 {
     releaseDB();
-    if(tmpdatafilewriter_){
-        tmpdatafilewriter_->close();
-        rtdelete(tmpdatafilewriter_);
-    }
-    tmpdatafilewriter_ = nullptr;    
-    if(dbfile_.exists())
-        PathRemover().perform(dbfile_);
-    if(tmpdatafile_.exists())
-        PathRemover().perform(tmpdatafile_);
+//     if(tmpdatafilewriter_){
+//         tmpdatafilewriter_->close();
+//         rtdelete(tmpdatafilewriter_);
+//     }
+//     tmpdatafilewriter_ = nullptr;    
+//     if(dbfile_.exists())
+//         PathRemover().perform(dbfile_);
+//     if(tmpdatafile_.exists())
+//         PathRemover().perform(tmpdatafile_);
 }
 
 void Package::releaseDB()
 {
-    if(db_)
-        rtdelete(db_);
-    db_ = nullptr;
+    if(pkgdb_)
+        rtdelete(pkgdb_);
+	pkgdb_ = nullptr;
 }
 
-int32_t Package::writeNewFileData(const Path& sourcefile)
-{
-    if(tmpdatafilewriter_ == nullptr){
-        tmpdatafile_ = generateTmpDataFilePath();
-        std::string localefn = tmpdatafile_.rstring().decodeToLocale();
-        tmpdatafilewriter_ = new ofstream(localefn.c_str(), ios::out | ios::binary);
-        bool ok = tmpdatafilewriter_->is_open();
-        logverify(pkglogger, ok);
-    }
-    tmpdatafilewriter_->seekp(0, ios_base::end);
-    int32_t newfileid = g_DataFileIdSeed++;
-    (*tmpdatafilewriter_) << newfileid; //write 'file_id' value
-    ifstream ifs(sourcefile.cstr(), ios::in | ios::binary);
-    ifs.seekg(0, ios_base::beg);
-    (*tmpdatafilewriter_) << ifs.tellg(); //write 'file_data_size' value
-    while(ifs){
-        char databuffer[kReadBufferSize + 1] = {'\0'};
-        ifs.read(databuffer, kReadBufferSize);
-        tmpdatafilewriter_->write(databuffer, ifs.gcount());
-        if(ifs.gcount() < kReadBufferSize)
-            break; //it's eof
-    }
-    ifs.close();
-    return newfileid;
-}
+// int32_t Package::writeNewFileData(const Path& sourcefile)
+// {
+//     if(tmpdatafilewriter_ == nullptr){
+//         tmpdatafile_ = generateTmpDataFilePath();
+//         std::string localefn = tmpdatafile_.rstring().decodeToLocale();
+//         tmpdatafilewriter_ = new ofstream(localefn.c_str(), ios::out | ios::binary);
+//         bool ok = tmpdatafilewriter_->is_open();
+//         logverify(pkglogger, ok);
+//     }
+//     tmpdatafilewriter_->seekp(0, ios_base::end);
+//     int32_t newfileid = g_DataFileIdSeed++;
+//     (*tmpdatafilewriter_) << newfileid; //write 'file_id' value
+//     ifstream ifs(sourcefile.cstr(), ios::in | ios::binary);
+//     ifs.seekg(0, ios_base::beg);
+//     (*tmpdatafilewriter_) << ifs.tellg(); //write 'file_data_size' value
+//     while(ifs){
+//         char databuffer[kReadBufferSize + 1] = {'\0'};
+//         ifs.read(databuffer, kReadBufferSize);
+//         tmpdatafilewriter_->write(databuffer, ifs.gcount());
+//         if(ifs.gcount() < kReadBufferSize)
+//             break; //it's eof
+//     }
+//     ifs.close();
+//     return newfileid;
+// }
 
 Path Package::generateDBFilePath() const
 {
@@ -103,14 +103,6 @@ Path Package::generateDBFilePath() const
 Path Package::generateTmpDataFilePath() const
 {
     return workdir_.join(rstrutil::NewGuid()+".DAT");
-}
-
-bool Package::initDB()
-{
-    logverify(pkglogger, db_);
-	dirtab_.connectDB(*db_);    
-	filetab_.connectDB(*db_);	
-    return true;
 }
 
 bool Package::createDir(const RString& name, const Path& location)
@@ -124,24 +116,26 @@ bool Package::createDir(const RString& name, const Path& location)
 	if(location.rstring() == "./")
 		parentid = -1; //root dir
 	else{
-		parentid = dirtab_.queryDirId(location.cstr());
+		parentid = pkgdb_->dirTable().queryDirId(location.cstr());
 		if(parentid == -1){
 			slog_err(pkglogger) << "dir(" << location.cstr() << ") not exists!" << endl;
 			return false;
 		}
 		//check if exists redundant dir
-		if(dirtab_.queryDirId(name, parentid) != -1){
+		if(pkgdb_->dirTable().queryDirId(name, parentid) != -1){
 			slog_err(pkglogger) << "sub dir(" << name.cstr() << ") already exists!" << endl;
 			return false;
 		}
 	}
 	Path newdirpath = location.join(name);
-	if(!dirtab_.insertRow(RowDataDict({
-							{DirTable::kPathKey, newdirpath.cstr()},
-							{DirTable::kParentKey, parentid},
-							{DirTable::kStatusKey, DirTable::NORMAL}
-						  })
-						 )){
+	if(!pkgdb_->dirTable().insertRow(
+							RowDataDict({
+											{DirTable::kPathKey, newdirpath.cstr()},
+											{DirTable::kParentKey, parentid},
+											{DirTable::kStatusKey, DirTable::NORMAL}
+										})
+									)
+	){
 		slog_err(pkglogger) << "insertRow(newdir:" << newdirpath.cstr() << " parentid:" << parentid << ") failed!" << endl;
 		return false;
 	}    
@@ -198,18 +192,18 @@ bool Package::importFile(const Path& dirlocation, const Path& sourcefile)
 	if(!sourcefile.exists() || !sourcefile.isRegularFile()){
 		slog_err(pkglogger) << "source file[" << sourcefile.cstr() << "] is invalid file!" << endl;
 		return false;
-	}
-	const RString srcfn = sourcefile.filename().rstring();
+	}	
     if(!opened()){
         slog_err(pkglogger) << "package not opened yet!" << endl;
         return false;
     }  
-	int32_t dirid = dirtab_.queryDirId(dirlocation.rstring());
+	int32_t dirid = pkgdb_->dirTable().queryDirId(dirlocation.rstring());
 	if(dirid == -1){
 		slog_err(pkglogger) << "dirlocation(" << dirlocation.cstr() << ") not exists!" << endl;
 		return false;
 	}
-	if(filetab_.existsFile(srcfn, dirid)){
+	const RString srcfn = sourcefile.filename().rstring();
+	if(pkgdb_->fileTable().existsFile(srcfn, dirid)){
 		slog_err(pkglogger) << "same file(" << srcfn.cstr() << ") already exists in location directory(" << dirlocation.cstr() << ")!" << endl;
 		return false;
 	}
@@ -221,15 +215,15 @@ bool Package::importFile(const Path& dirlocation, const Path& sourcefile)
 		return false;
 	}
 	DataBlockFile::UID newfileuid = DataBlockFile::NewUID();	
-	filedatastream_->appendDataBlock(newfileuid, wholedata, wholedatasize);
+	filedatastorage_->appendDataBlock(newfileuid, wholedata, wholedatasize);
 	RowDataDict newrow({
 		{FileTable::kNameKey, srcfn.cstr()},
 		{FileTable::kDirIdKey, dirid},
 		{FileTable::kFileUIDKey, newfileuid.c_str()},
 		{FileTable::kStatusKey, FileTable::NORMAL}
 		});
-	if(!filetab_.insertRow(newrow)){
-		filedatastream_->removeDataBlock(newfileuid); //rollback data
+	if(!pkgdb_->fileTable().insertRow(newrow)){
+		filedatastorage_->removeDataBlock(newfileuid); //rollback data
 		slog_err(pkglogger) << "insert new row data to FileTable failed!" << endl;
 		return false;
 	}
@@ -237,13 +231,23 @@ bool Package::importFile(const Path& dirlocation, const Path& sourcefile)
 }
 
 bool Package::removeFile(const Path& filepath)
-{
-	if(!filepath.isRegularFile()){
-		slog_err(pkglogger) << "filepath[" << filepath.cstr() <<"] is not regular file!" << endl;
+{	
+	if(!opened()){
+		slog_err(pkglogger) << "package not opened yet!" << endl;
 		return false;
 	}
-
-    return false;
+	RowDataDict resultdata({
+		{FileTable::kIdKey, Variant(Variant::kIntType)},
+		{DirTable::kIdKey, Variant(Variant::kIntType)},
+		{FileTable::kFileUIDKey, Variant(Variant::kStringType)},
+		});
+	if(!pkgdb_->queryFile(filepath, resultdata)){
+		slog_err(pkglogger) << "filepath(" << filepath.cstr() <<") is invalid!" << endl;
+		return false;
+	}
+	DataBlockFile::UID fid = resultdata[FileTable::kFileUIDKey].convertToStr().cstr();
+	filedatastorage_->removeDataBlock(fid);
+	return pkgdb_->fileTable().removeFile(resultdata[FileTable::kIdKey].convertToInt32());
 }
 
 bool Package::exportFile(const Path& sourcefilepath, const Path& local_targetfilepath)
@@ -257,14 +261,14 @@ bool Package::load(const Path& pkgpath)
 		log_err(pkglogger, "pkg file(%s) not exists!", pkgpath.cstr());
         return false;
     }
-    PkgFileReader pkgreader(pkgpath);
+    PKGReader pkgreader(pkgpath);
     if(!pkgreader.open()){
 		log_err(pkglogger, "pkg file(%s) isn't well-formed!", pkgpath.cstr());
         return false;
     }
-    dbfile_ = generateDBFilePath();
-    ofstream ofs(dbfile_.toLocale().c_str(), ios::out | ios::binary);
-    if(pkgreader.readDBDataToFile(ofs)){
+    Path dbfilepath = generateDBFilePath();
+    ofstream ofs(dbfilepath.toLocale().c_str(), ios::out | ios::binary);
+    if(pkgreader.loadNextFileData(ofs)){
         ofs.close();
         return true;
     }    
@@ -273,6 +277,10 @@ bool Package::load(const Path& pkgpath)
 
 bool Package::createNew(const Path& newpkgpath)
 {
+	if(opened()){
+		slog_err(pkglogger) <<"package is already opened!" << endl;
+		return false;
+	}
     if(!workdir_.isDirectory()){
 		log_err(pkglogger, "workdir(%s) is not valid directory!", workdir_.cstr());
         return false;
@@ -282,20 +290,11 @@ bool Package::createNew(const Path& newpkgpath)
 		log_err(pkglogger, "new package filepath(%s) is invalid!", pkgfile_.cstr());
         return false;
     }
-    dbfile_ = generateDBFilePath();
-    db_ = DB::OpenDB(dbfile_, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
-    if(db_ == nullptr){
-		log_err(pkglogger, "create db file(%s) failed!", dbfile_.cstr());
-        return false;
-    }
-    if(!initDB()){
-		log_err(pkglogger, "init created db(%s) failed!", dbfile_.cstr());
-        releaseDB();
-        return false;
-    }  
-	tmpdatafile_ = generateTmpDataFilePath();
-	filedatastream_ = new DataBlockFile(tmpdatafile_.toWString());
-	filedatastream_->initEmpty();
+    Path dbfilepath = generateDBFilePath();
+    pkgdb_ = new PKGDB(dbfilepath, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);    
+	Path datafilepath = generateTmpDataFilePath();
+	filedatastorage_ = new DataBlockFile(datafilepath.toWString());
+	filedatastorage_->initEmpty();
     return true;
 }
 
@@ -305,14 +304,17 @@ void Package::commit()
         slog_err(pkglogger) << "not opened yet!" << endl;
         return;
     }    
+	if(!pkgdb_->execCommitData()){
+		slog_err(pkglogger) << "commit data failed!" << endl;
+		return;
+	}
     tmpdatafilewriter_->flush();
-    PkgFileWriter pkgwriter(pkgfile_);
-    if(!pkgwriter.beginWrite()){
+    PKGWriter pkgwriter(pkgfile_);
+    if(!pkgwriter.prepare()){
         slog_err(pkglogger) << "PkgFileWriter(" << pkgfile_.cstr() << ") beginWrite failed!" << endl;
         return;
     }
-    logverify(pkglogger, dbfile_.exists());
-    if(!pkgwriter.writeFileData(dbfile_)){
+    if(!pkgwriter.writeFileData(pkgdb_->dbFilePath())){
         slog_err(pkglogger) << "PkgFileWriter writeFileData " << pkgfile_.cstr() << " failed!" << endl;
         //do cleanup
         return;
@@ -328,14 +330,14 @@ void Package::commit()
 
 bool Package::opened() const
 {
-    return db_ != nullptr;
+    return pkgdb_ != nullptr;
 }
 
 void Package::close()
 {
     if(opened()){
-        rtdelete(db_);
-        db_ = nullptr;
+        rtdelete(pkgdb_);
+		pkgdb_ = nullptr;
     }
 }
 

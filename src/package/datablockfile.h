@@ -31,11 +31,13 @@ public:
 	static UID NewUID();
     void removeDataBlock(const UID& blockid);
     void appendDataBlock(const UID& blockid, const char* data, uint32_t size);
+	void appendDataBlock(const UID& blockid, const Path& sourcefile);
     bool fetchDataBlock(const UID& blockid, char* recvdata, uint32_t& datasize);
     operator bool()const;
     int32_t findDataBlock(const UID& id)const;
     bool existsDataBlock(const UID& id)const{return findDataBlock(id) != -1;}
     void initEmpty();
+	const std::wstring& filePath()const { return agfileop_.filePath(); }
     DataBlockFile(const std::wstring& file);
     ~DataBlockFile();
 

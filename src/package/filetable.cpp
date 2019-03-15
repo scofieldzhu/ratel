@@ -19,11 +19,11 @@ CreateTime: 2019-1-13 20:28
 RATEL_NAMESPACE_BEGIN
 using namespace sqlkw;
 
-const RString FileTable::kIdKey("id");
-const RString FileTable::kNameKey("name");
-const RString FileTable::kDirIdKey("dir");
-const RString FileTable::kFileUIDKey("fileuid");
-const RString FileTable::kStatusKey("status");
+const RString FileTable::kIdKey("file_id");
+const RString FileTable::kNameKey("file_name");
+const RString FileTable::kDirIdKey("file_dir");
+const RString FileTable::kFileUIDKey("file_fileuid");
+const RString FileTable::kStatusKey("file_status");
 
 FileTable::FileTable()
     :DbTable("File")
@@ -50,16 +50,28 @@ int32_t FileTable::queryFileId(const RString& filename, int32_t dirid)
 	return db_->queryColumnValueOfFirstResultRow(sql, 0, data) ? data.convertToInt32() : -1;
 }
 
-int32_t FileTable::queryFileId(const Path& filepath)
-{
-	RString fn = filepath.filename().rstring();
-	Path location = filepath.parentPath();
-	return -1;
+bool FileTable::queryFile(const RString& filename, int32_t dirid, RowDataDict& resultdata)
+{	
+	if(db_ == nullptr){
+		slog_err(pkglogger) << "no any db instance connected!" << endl;
+		return false;
+	}
+	RString sql = makeQueryRowWhenSql("%s='%s' and %s=%d", kNameKey.cstr(), filename.cstr(), kDirIdKey.cstr(), dirid);
+	return db_->queryFirstRowResultData(sql, resultdata);
 }
 
 bool FileTable::existsFile(const RString& filename, int32_t dirid) 
 {
 	return queryFileId(filename, dirid) != -1;
+}
+
+bool FileTable::removeFile(int32_t id)
+{
+	if(db_ == nullptr){
+		slog_err(pkglogger) << "no any db instance connected!" << endl;
+		return false;
+	}
+	return db_->execUpdateData(makeDelRowWhenSql("%s=%d", kIdKey, id));
 }
 
 RATEL_NAMESPACE_END

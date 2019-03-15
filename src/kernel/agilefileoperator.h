@@ -37,7 +37,7 @@ public:
     bool open(const std::wstring& filename);
     void close();
     bool getSize(uint32_t& size);
-    const std::wstring& filepath()const{ return filepath_; }
+    const std::wstring& filePath()const{ return filepath_; }
     bool ignore(uint32_t bytecnt);    
     AgileFileOperator(const std::wstring& filepath);
     ~AgileFileOperator();   

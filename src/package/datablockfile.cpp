@@ -160,6 +160,11 @@ void DataBlockFile::appendDataBlock(const UID& blockid, const char* data, uint32
     fflushHeaderData(true);
 }
 
+void DataBlockFile::appendDataBlock(const UID& blockid, const Path& sourcefile)
+{
+
+}
+
 bool DataBlockFile::fetchDataBlock(const UID& blockid, char* recvdata, uint32_t& datasize)
 {
     if(!*this){
