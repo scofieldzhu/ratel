@@ -20,7 +20,7 @@ namespace dircols{
 
 int main()
 {    
-    DB* db = DB::OpenDB("test.db", SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
+    DB* db = new DB("test.db", SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
     if (db == nullptr) {
         cout << "Open test.db failed!" << endl;
         return 0;

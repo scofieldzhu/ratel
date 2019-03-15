@@ -14,6 +14,7 @@ CreateTime: 2018-7-28 10:49
 #include "path.h"
 
 RATEL_NAMESPACE_BEGIN
+
 class RATEL_SQLITE_API DB
 {
 public:
@@ -21,7 +22,9 @@ public:
     typedef int(*StatCallback)(void*, int, char**, char**);
     bool exec(const RString& sql, StatCallback func, void* firstpara);
 	bool execUpdateData(const RString& sql);
-	bool execCommitData();
+	void beginTransaction();
+	bool commit();
+	void rollback();
 	bool queryFirstRowResultData(const RString& sql, RowDataDict& resultdata);
 	bool queryColumnValueOfFirstResultRow(const RString& sql, int32_t columnindex, Variant& result);
 	bool queryColumnValueOfFirstResultRow(const RString& sql, const RString& columnkey, Variant& result);

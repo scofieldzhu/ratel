@@ -261,17 +261,17 @@ bool Package::load(const Path& pkgpath)
 		log_err(pkglogger, "pkg file(%s) not exists!", pkgpath.cstr());
         return false;
     }
-    PKGReader pkgreader(pkgpath);
-    if(!pkgreader.open()){
-		log_err(pkglogger, "pkg file(%s) isn't well-formed!", pkgpath.cstr());
-        return false;
-    }
-    Path dbfilepath = generateDBFilePath();
-    ofstream ofs(dbfilepath.toLocale().c_str(), ios::out | ios::binary);
-    if(pkgreader.loadNextFileData(ofs)){
-        ofs.close();
-        return true;
-    }    
+//     PKGReader pkgreader(pkgpath);
+//     if(!pkgreader.open()){
+// 		log_err(pkglogger, "pkg file(%s) isn't well-formed!", pkgpath.cstr());
+//         return false;
+//     }
+//     Path dbfilepath = generateDBFilePath();
+//     ofstream ofs(dbfilepath.toLocale().c_str(), ios::out | ios::binary);
+//     if(pkgreader.loadNextFileData(ofs)){
+//         ofs.close();
+//         return true;
+//     }    
     return false;
 }
 
@@ -303,29 +303,13 @@ void Package::commit()
     if(!opened()){
         slog_err(pkglogger) << "not opened yet!" << endl;
         return;
-    }    
-	if(!pkgdb_->execCommitData()){
-		slog_err(pkglogger) << "commit data failed!" << endl;
+    }    	
+	Path datafilepath = filedatastorage_->filePath();
+    PKGWriter pkgwriter(pkgfile_, pkgdb_->dbFilePath(), datafilepath);
+	if(!pkgwriter.write()){
+		slog_err(pkglogger) << "write data to package file failed!" << endl;
 		return;
 	}
-    tmpdatafilewriter_->flush();
-    PKGWriter pkgwriter(pkgfile_);
-    if(!pkgwriter.prepare()){
-        slog_err(pkglogger) << "PkgFileWriter(" << pkgfile_.cstr() << ") beginWrite failed!" << endl;
-        return;
-    }
-    if(!pkgwriter.writeFileData(pkgdb_->dbFilePath())){
-        slog_err(pkglogger) << "PkgFileWriter writeFileData " << pkgfile_.cstr() << " failed!" << endl;
-        //do cleanup
-        return;
-    }
-    if(tmpdatafile_.exists()){
-        if(!pkgwriter.writeFileData(tmpdatafile_)){
-            slog_err(pkglogger) << "PkgFileWriter writeFileData " << tmpdatafile_.cstr() << " failed!" << endl;
-            //do cleanup
-            return;
-        }        
-    }
 }
 
 bool Package::opened() const

@@ -72,9 +72,19 @@ bool DB::execUpdateData(const RString& sql)
 	return true;
 }
 
-bool DB::execCommitData()
+void DB::beginTransaction()
+{
+	execUpdateData("BEGIN;");
+}
+
+bool DB::commit()
 {
 	return execUpdateData("COMMIT;");
+}
+
+void DB::rollback()
+{
+	execUpdateData("ROLLBACK;");
 }
 
 bool DB::queryFirstRowResultData(const RString& sql, RowDataDict& resultdata)

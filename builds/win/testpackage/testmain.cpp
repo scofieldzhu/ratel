@@ -43,7 +43,7 @@ void InitLogger()
 void TestCase_TestPackage_Create()
 {
     Package pkg("./temp");
-    Path pkgpath("./temp/y.tcf");
+    Path pkgpath("y.tcf");
     if (!pkg.createNew(pkgpath))
         return;
     if (!pkg.createDir("testdir1", "*/")) 
@@ -96,7 +96,7 @@ void TestCase_TestPackage_Load()
 		slog_err(g_AppLogger) << "removeFile ./testdir3/doc/src/comapp.qdoc failed!" << endl;
 		return;
 	}
-
+	pkg.commit();
     slog_err(g_AppLogger) << "load package ok!" << endl;
 }
 
