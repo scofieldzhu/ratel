@@ -16,25 +16,20 @@ CreateTime: 2018-7-28 10:49
 
 RATEL_NAMESPACE_BEGIN
 
-DB::DB(void* conn)
-    :dbconn_(conn)
-{}
+DB::DB(const Path& dbfile, int32_t flags, const char* zvfs)
+	:dbfilepath_(dbfile)
+{
+	sqlite3* conn = nullptr;
+	int32_t err = sqlite3_open_v2(dbfile.rstring().cstr(), &conn, flags, zvfs);
+	if(err != SQLITE_OK)
+		slog_err(sqlitelogger) << "sqlite3_open_v2 error:" << sqlite3_errmsg(conn) << std::endl;
+	dbconn_ = conn;
+}
 
 DB::~DB()
 {
 	sqlite3_close_v2((sqlite3*)dbconn_);
 	dbconn_ = nullptr;
-}
-
-DB* DB::OpenDB(const Path& dbfile, int32_t flags, const char* zvfs)
-{
-    sqlite3* conn = nullptr;
-    int32_t err = sqlite3_open_v2(dbfile.rstring().cstr(), &conn, flags, zvfs);
-    if(err != SQLITE_OK){
-        slog_err(sqlitelogger) << "sqlite3_open_v2 error:" << sqlite3_errmsg(conn) << std::endl;
-        return nullptr;
-    }
-    return new DB(conn);
 }
 
 Statement* DB::createStatement(const RString& sql, const char** pztail /*= nullptr*/)
@@ -58,6 +53,28 @@ bool DB::exec(const RString& sql, StatCallback func, void* firstpara)
         return false;
     }
     return true;
+}
+
+bool DB::execUpdateData(const RString& sql)
+{
+	Statement* stat = createStatement(sql);
+	if(stat == nullptr){
+		slog_err(sqlitelogger) << "create statement failed! sql:" << sql.cstr() << " err:" << errMsg().cstr() << endl;
+		return false;
+	}
+	int32_t rc = stat->stepExec();
+	if(rc != SQLITE_DONE){
+		slog_err(sqlitelogger) << "stepExec failed! sql:" << sql.cstr() << " err:" << stat->errMsg().cstr() << endl;
+		delete stat;
+		return false;
+	}
+	delete stat;
+	return true;
+}
+
+bool DB::execCommitData()
+{
+	return execUpdateData("COMMIT;");
 }
 
 bool DB::queryFirstRowResultData(const RString& sql, RowDataDict& resultdata)

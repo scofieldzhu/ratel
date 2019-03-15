@@ -11,16 +11,17 @@ CreateTime: 2018-7-28 10:49
 #define __db_h__
 
 #include "sqlitepublic.h"
+#include "path.h"
 
 RATEL_NAMESPACE_BEGIN
-
 class RATEL_SQLITE_API DB
 {
 public:
-    static DB* OpenDB(const Path& dbfile, int32_t flags, const char* zvfs = nullptr);
     Statement* createStatement(const RString& sql, const char** pztail = nullptr);
     typedef int(*StatCallback)(void*, int, char**, char**);
     bool exec(const RString& sql, StatCallback func, void* firstpara);
+	bool execUpdateData(const RString& sql);
+	bool execCommitData();
 	bool queryFirstRowResultData(const RString& sql, RowDataDict& resultdata);
 	bool queryColumnValueOfFirstResultRow(const RString& sql, int32_t columnindex, Variant& result);
 	bool queryColumnValueOfFirstResultRow(const RString& sql, const RString& columnkey, Variant& result);
@@ -29,13 +30,13 @@ public:
 	void dismissTable(const RString& tablename);
 	bool existTable(const RString& tablename)const;
 	DbTable* fetchTable(const RString& name);
-    ~DB();
+	const Path& dbFilePath()const { return dbfilepath_; }
+	DB(const Path& dbfile, int32_t flags, const char* zvfs = nullptr);
+    virtual ~DB();
 
 private:
-    friend class Statement;
-    DB(void* conn);
-    DB(const DB&) = delete;
-    const DB& operator=(const DB&) = delete;
+    friend class Statement;    
+	const Path dbfilepath_;
     void* dbconn_;
 	std::vector<DbTable*> alltables_;
 };
