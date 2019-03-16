@@ -58,7 +58,7 @@ bool PKGWriter::writeFileData(const Path& thefile)
     }
     //write filesize field 
     ifs_.seekg(0, ios_base::end);
-    std::streampos filesize = ifs_.tellg();
+    uint32_t filesize = ifs_.tellg();
     ifs_.seekg(0, ios_base::beg);
     ofs_.write((const char*)&filesize, sizeof(uint32_t));
     //write file content
@@ -69,7 +69,7 @@ bool PKGWriter::writeFileData(const Path& thefile)
             ofs_.write(buffer, kBufSize);
             continue;
         }
-        std::streamsize actualreadbytes = ifs_.gcount();
+		uint32_t actualreadbytes = ifs_.gcount();
         if(actualreadbytes > 0)
             ofs_.write(buffer, actualreadbytes);
         break;

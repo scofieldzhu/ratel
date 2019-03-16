@@ -234,16 +234,13 @@ void DbTable::drop()
 void DbTable::connectDB(DB& db)
 {
 	db_ = &db;
-	bool existed = queryTableExistence();
-	if(!existed){
-		RString sql = makeCreateSql();
-		Statement* stat = db_->createStatement(sql);
-		int32_t rc = stat->stepExec();
-		if(rc != SQLITE_DONE){
-			slog_err(sqlitelogger) << "stepExec failed! sql:" << sql.cstr() << " err:" << stat->errMsg().cstr() << endl;
-			db_ = nullptr;
-		}
-	}	
+	RString sql = makeCreateSql();
+	Statement* stat = db_->createStatement(sql);
+	int32_t rc = stat->stepExec();
+	if(rc != SQLITE_DONE){
+		slog_err(sqlitelogger) << "stepExec failed! sql:" << sql.cstr() << " err:" << stat->errMsg().cstr() << endl;
+		db_ = nullptr;
+	}
 }
 
 bool DbTable::queryTableExistence()

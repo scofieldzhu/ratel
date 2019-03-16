@@ -8,101 +8,46 @@ Module: package.cpp
 CreateTime: 2018-9-16 21:54
 =========================================================================*/
 #include "package.h"
-#include <fstream>
-#include "db.h"
-#include "dirtree.h"
-#include "dirnode.h"
 #include "dirwalker.h"
-#include "path.h"
-#include "pathremover.h"
+#include "datablockstorage.h"
 #include "pkglogger.h"
 #include "pkgreader.h"
 #include "pkgwriter.h"
-#include "rstrutil.h"
-#include "sqlite3.h"
-#include "statement.h"
-#include "dbtablecol.h"
 #include "rowdatadict.h"
-#include "datablockfile.h"
+#include "sqlite3.h"
 using namespace std;
 
 RATEL_NAMESPACE_BEGIN
-
-#define RESET_LASTERR() lasterr_ = "noerr";
-
-const int32_t kReadBufferSize = 1024 * 10; //10K
-
-int32_t g_DataFileIdSeed = 0x0000000010000000;
 
 Package::Package(const Path& workdir)    
 {
     if(workdir.isDirectory())
         workdir_ = workdir;
-
-
-
 }
 
 Package::~Package()
 {
-   // releaseResources();
+    releaseResources();
 }
 
 void Package::releaseResources()
 {
-    releaseDB();
-//     if(tmpdatafilewriter_){
-//         tmpdatafilewriter_->close();
-//         rtdelete(tmpdatafilewriter_);
-//     }
-//     tmpdatafilewriter_ = nullptr;    
-//     if(dbfile_.exists())
-//         PathRemover().perform(dbfile_);
-//     if(tmpdatafile_.exists())
-//         PathRemover().perform(tmpdatafile_);
-}
-
-void Package::releaseDB()
-{
-    if(pkgdb_)
-        rtdelete(pkgdb_);
+	if(pkgdb_)
+		rtdelete(pkgdb_);
 	pkgdb_ = nullptr;
+	if(filedatastorage_)
+		rtdelete(filedatastorage_);
+	filedatastorage_ = nullptr;
 }
 
-// int32_t Package::writeNewFileData(const Path& sourcefile)
-// {
-//     if(tmpdatafilewriter_ == nullptr){
-//         tmpdatafile_ = generateTmpDataFilePath();
-//         std::string localefn = tmpdatafile_.rstring().decodeToLocale();
-//         tmpdatafilewriter_ = new ofstream(localefn.c_str(), ios::out | ios::binary);
-//         bool ok = tmpdatafilewriter_->is_open();
-//         logverify(pkglogger, ok);
-//     }
-//     tmpdatafilewriter_->seekp(0, ios_base::end);
-//     int32_t newfileid = g_DataFileIdSeed++;
-//     (*tmpdatafilewriter_) << newfileid; //write 'file_id' value
-//     ifstream ifs(sourcefile.cstr(), ios::in | ios::binary);
-//     ifs.seekg(0, ios_base::beg);
-//     (*tmpdatafilewriter_) << ifs.tellg(); //write 'file_data_size' value
-//     while(ifs){
-//         char databuffer[kReadBufferSize + 1] = {'\0'};
-//         ifs.read(databuffer, kReadBufferSize);
-//         tmpdatafilewriter_->write(databuffer, ifs.gcount());
-//         if(ifs.gcount() < kReadBufferSize)
-//             break; //it's eof
-//     }
-//     ifs.close();
-//     return newfileid;
-// }
-
-Path Package::generateDBFilePath() const
+Path Package::obtainDBFilePath() const
 {
-    return workdir_.join(rstrutil::NewGuid()+".db");
+    return workdir_.join(RString::NewUID() + ".db");
 }
 
-Path Package::generateTmpDataFilePath() const
+Path Package::obtainDataStorageFilePath() const
 {
-    return workdir_.join(rstrutil::NewGuid()+".DAT");
+    return workdir_.join(RString::NewUID() + ".DAT");
 }
 
 bool Package::createDir(const RString& name, const Path& location)
@@ -214,7 +159,7 @@ bool Package::importFile(const Path& dirlocation, const Path& sourcefile)
 		slog_err(pkglogger) << "read whole data from source file failed!" << endl;
 		return false;
 	}
-	DataBlockFile::UID newfileuid = DataBlockFile::NewUID();	
+	DataBlockStorage::UID newfileuid = DataBlockStorage::NewUID();	
 	filedatastorage_->appendDataBlock(newfileuid, wholedata, wholedatasize);
 	RowDataDict newrow({
 		{FileTable::kNameKey, srcfn.cstr()},
@@ -245,7 +190,7 @@ bool Package::removeFile(const Path& filepath)
 		slog_err(pkglogger) << "filepath(" << filepath.cstr() <<") is invalid!" << endl;
 		return false;
 	}
-	DataBlockFile::UID fid = resultdata[FileTable::kFileUIDKey].convertToStr().cstr();
+	DataBlockStorage::UID fid = resultdata[FileTable::kFileUIDKey].convertToStr().cstr();
 	filedatastorage_->removeDataBlock(fid);
 	return pkgdb_->fileTable().removeFile(resultdata[FileTable::kIdKey].convertToInt32());
 }
@@ -257,22 +202,22 @@ bool Package::exportFile(const Path& sourcefilepath, const Path& local_targetfil
 
 bool Package::load(const Path& pkgpath)
 {
-    if(!pkgpath.exists()){
-		log_err(pkglogger, "pkg file(%s) not exists!", pkgpath.cstr());
-        return false;
-    }
-//     PKGReader pkgreader(pkgpath);
-//     if(!pkgreader.open()){
-// 		log_err(pkglogger, "pkg file(%s) isn't well-formed!", pkgpath.cstr());
-//         return false;
-//     }
-//     Path dbfilepath = generateDBFilePath();
-//     ofstream ofs(dbfilepath.toLocale().c_str(), ios::out | ios::binary);
-//     if(pkgreader.loadNextFileData(ofs)){
-//         ofs.close();
-//         return true;
-//     }    
-    return false;
+    Path dbfilepath = obtainDBFilePath();
+	Path storagefilepath = obtainDataStorageFilePath();
+	PKGReader reader;
+	if(!reader.loadFile(pkgpath, dbfilepath, storagefilepath)){
+		slog_err(pkglogger) << "load pkg path(" << pkgpath.cstr() << ") failed and it's invalid package file!";
+		return false;
+	}
+	pkgdb_ = new PKGDB(dbfilepath, SQLITE_OPEN_READWRITE);    
+	filedatastorage_ = new DataBlockStorage(storagefilepath.toWString());
+	if(!filedatastorage_->loadData()){
+		releaseResources();
+		slog_err(pkglogger) << "invalid data storage file(" << storagefilepath.cstr() << ")!" << endl;
+		return false;
+	}
+	pkgfile_ = pkgpath;
+    return true;
 }
 
 bool Package::createNew(const Path& newpkgpath)
@@ -290,10 +235,10 @@ bool Package::createNew(const Path& newpkgpath)
 		log_err(pkglogger, "new package filepath(%s) is invalid!", pkgfile_.cstr());
         return false;
     }
-    Path dbfilepath = generateDBFilePath();
+    Path dbfilepath = obtainDBFilePath();
     pkgdb_ = new PKGDB(dbfilepath, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);    
-	Path datafilepath = generateTmpDataFilePath();
-	filedatastorage_ = new DataBlockFile(datafilepath.toWString());
+	Path datafilepath = obtainDataStorageFilePath();
+	filedatastorage_ = new DataBlockStorage(datafilepath.toWString());
 	filedatastorage_->initEmpty();
     return true;
 }
@@ -323,12 +268,6 @@ void Package::close()
         rtdelete(pkgdb_);
 		pkgdb_ = nullptr;
     }
-}
-
-void Package::setWorkDir(const Path & dir)
-{
-    if(dir.isDirectory())
-        workdir_ = dir;
 }
 
 RATEL_NAMESPACE_END

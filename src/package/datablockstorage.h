@@ -4,11 +4,11 @@ for for those c++ developers pursuing fast-developement.
 Copyright (c) scofieldzhu. All rights reserved.
 
 Project: ratel.package
-Module: datablockfile.h
+Module: datablockstorage.h
 CreateTime: 2018-12-30 20:09
 =========================================================================*/
-#ifndef __datablockfile_h__
-#define __datablockfile_h__
+#ifndef __datablockstorage_h__
+#define __datablockstorage_h__
 
 /***********************************************************************
 FileType                    // dbk 4 bytes
@@ -24,10 +24,11 @@ BlockIDn DataOffset DataSize //4 * 3 = 12bytes
 #include "agilefileoperator.h"
 
 RATEL_NAMESPACE_BEGIN
-class RATEL_PACKAGE_API DataBlockFile
+class RATEL_PACKAGE_API DataBlockStorage
 {
 public:
     using UID = std::string;
+	enum {UID_LEN = 36};
 	static UID NewUID();
     void removeDataBlock(const UID& blockid);
     void appendDataBlock(const UID& blockid, const char* data, uint32_t size);
@@ -37,19 +38,19 @@ public:
     int32_t findDataBlock(const UID& id)const;
     bool existsDataBlock(const UID& id)const{return findDataBlock(id) != -1;}
     void initEmpty();
+	bool loadData();
 	const std::wstring& filePath()const { return agfileop_.filePath(); }
-    DataBlockFile(const std::wstring& file);
-    ~DataBlockFile();
+    DataBlockStorage(const std::wstring& file);
+    ~DataBlockStorage();
 
 private:
     void fflushHeaderData(bool onlyvaliditems);
     bool isEmpty();
-    void releaseResource();
-    void loadData();
+    void releaseResource();    
     int32_t calcNextUsedFileDataOffset()const;
     struct DataBlockItem
 	{
-        UID blockid;
+        char blockid[UID_LEN]; 
         uint32_t offset = 0; // from data zone start position
         uint32_t size = 0;
     };

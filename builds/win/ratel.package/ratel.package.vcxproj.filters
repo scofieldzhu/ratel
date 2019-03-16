@@ -36,9 +36,6 @@
     <ClInclude Include="..\..\..\src\package\pkglogger.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\package\datablockfile.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\package\dirtable.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -52,6 +49,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\package\pkgreader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\package\datablockstorage.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -71,9 +71,6 @@
     <ClCompile Include="..\..\..\src\package\pkglogger.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\package\datablockfile.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\package\dirtable.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -87,6 +84,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\package\pkgreader.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\package\datablockstorage.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

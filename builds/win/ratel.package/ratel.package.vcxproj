@@ -158,7 +158,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\src\package\datablockfile.h" />
+    <ClInclude Include="..\..\..\src\package\datablockstorage.h" />
     <ClInclude Include="..\..\..\src\package\dirnode.h" />
     <ClInclude Include="..\..\..\src\package\dirtable.h" />
     <ClInclude Include="..\..\..\src\package\dirtree.h" />
@@ -176,7 +176,7 @@
     <None Include="..\ratel.licenseheader" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\package\datablockfile.cpp" />
+    <ClCompile Include="..\..\..\src\package\datablockstorage.cpp" />
     <ClCompile Include="..\..\..\src\package\dirnode.cpp" />
     <ClCompile Include="..\..\..\src\package\dirtable.cpp" />
     <ClCompile Include="..\..\..\src\package\dirtree.cpp" />

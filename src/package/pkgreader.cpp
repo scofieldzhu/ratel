@@ -70,12 +70,12 @@ bool PKGReader::open(const Path& filepath)
 bool PKGReader::loadNextFileData(std::ofstream& os)
 {
 	logverify(pkglogger, fs_ && os);
-	int32_t totalfilesize = 0;
-	fs_ >> totalfilesize;
+	uint32_t filesize = 0;
+	fs_.read((char*)&filesize, sizeof(uint32_t));
     char databuffer[kReadBufferSize] = {'\0'};
     int32_t curdigestion = 0, leftover = 0, needreadbytes = 0;
-    while(curdigestion < totalfilesize){        
-        leftover = totalfilesize - curdigestion;
+    while(curdigestion < filesize){        
+        leftover = filesize - curdigestion;
         if(leftover <= 0) //realdy finished!
             break;
         needreadbytes = (leftover >= kReadBufferSize ? kReadBufferSize : leftover);

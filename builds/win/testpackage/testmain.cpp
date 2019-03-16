@@ -43,24 +43,6 @@ void InitLogger()
 void TestCase_TestPackage_Create()
 {
     Package pkg("./temp");
-    Path pkgpath("y.tcf");
-    if (!pkg.createNew(pkgpath))
-        return;
-    if (!pkg.createDir("testdir1", "*/")) 
-        return;    
-    if (!pkg.createDir("testdir11", "*/testdir1"))
-        return;
-    if(!pkg.createDir("testdir2", "*/"))
-        return;
-    if(!pkg.importDir("*/testdir2", "C:\\work\\github\\ratel\\ratel\\src"))
-        return; 
-    pkg.commit();
-
-}
-
-void TestCase_TestPackage_Load()
-{
-    Package pkg("./temp");
 	if(!pkg.createNew("./xx.tcf")){
 		slog_err(g_AppLogger) << "createNew failed!" << endl;
 		return;
@@ -97,7 +79,16 @@ void TestCase_TestPackage_Load()
 		return;
 	}
 	pkg.commit();
-    slog_err(g_AppLogger) << "load package ok!" << endl;
+    slog_info(g_AppLogger) << "load package ok!" << endl;
+}
+
+void TestCase_TestPackage_Load()
+{
+	Package pkg("./temp");
+	if(!pkg.load("./xx.tcf")){
+		slog_err(g_AppLogger) << "load package(./xx.tcf) failed!" << endl;
+		return;
+	}
 }
 
 int main() 
@@ -106,7 +97,7 @@ int main()
     slog_info(g_AppLogger) << "enter main..." << endl;
 
     //TestCase_TestPackage_Create();
-    TestCase_TestPackage_Load();
+	TestCase_TestPackage_Load();
 
 
     return 0;

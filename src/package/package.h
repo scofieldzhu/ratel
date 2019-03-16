@@ -14,7 +14,7 @@ CreateTime: 2018-9-9 21:41
 #include "path.h"
 
 RATEL_NAMESPACE_BEGIN
-class DataBlockFile;
+class DataBlockStorage;
 class RATEL_PACKAGE_API Package 
 {
 public:
@@ -30,21 +30,18 @@ public:
     void commit();
     bool opened()const;
     void close();
-    void setWorkDir(const Path& dir);
-    const Path& workDir()const{ return workdir_; }
+    const Path& workDir()const { return workdir_; }
     Package(const Path& workdir);
     ~Package();
 
 private:
-    void releaseResources();
-    void releaseDB();
-    int32_t writeNewFileData(const Path& sourcefile);
-    Path generateDBFilePath()const;
-    Path generateTmpDataFilePath()const;
+    void releaseResources();    
+    Path obtainDBFilePath()const;
+    Path obtainDataStorageFilePath()const;
     Path workdir_;
     Path pkgfile_;    
     PKGDB* pkgdb_ = nullptr;    
-	DataBlockFile* filedatastorage_ = nullptr;
+	DataBlockStorage* filedatastorage_ = nullptr;
 };
 
 RATEL_NAMESPACE_END

@@ -4,10 +4,10 @@ for for those c++ developers pursuing fast-developement.
 Copyright (c) scofieldzhu. All rights reserved.
 
 Project: ratel.package
-Module: datablockfile.cpp
+Module: datablockstorage.cpp
 CreateTime: 2018-12-30 20:09
 =========================================================================*/
-#include "datablockfile.h"
+#include "datablockstorage.h"
 #include "pkglogger.h"
 using namespace std;
 
@@ -19,17 +19,19 @@ namespace{
     const uint32_t kMaxRWBlockItemCount = 80;
 }
 
-DataBlockFile::DataBlockFile(const wstring& file)
+DataBlockStorage::DataBlockStorage(const wstring& file)
     :agfileop_(file)
 {}
 
-DataBlockFile::~DataBlockFile()
-{}
+DataBlockStorage::~DataBlockStorage()
+{
+	releaseResource();
+}
 
-void DataBlockFile::fflushHeaderData(bool onlyvaliditems)
+void DataBlockStorage::fflushHeaderData(bool onlyvaliditems)
 {
     agfileop_.rewind();
-    agfileop_.writeData((const char*)header_, sizeof(header_));
+    agfileop_.writeData((const char*)header_, sizeof(DbkFileHeader));
     const uint32_t kTargetOpFileCnt = onlyvaliditems ? header_->useditemcnt : header_->maxreservblockcnt;
     uint32_t cureatitemcnt = 0, leftitemcnt = 0, nextreaditemcnt = 0;
     while(cureatitemcnt < kTargetOpFileCnt){
@@ -43,13 +45,13 @@ void DataBlockFile::fflushHeaderData(bool onlyvaliditems)
     agfileop_.flush();
 }
 
-bool DataBlockFile::isEmpty() 
+bool DataBlockStorage::isEmpty() 
 {
     uint32_t filesize = 0;
     return agfileop_.getSize(filesize) && filesize == 0;
 }
 
-void DataBlockFile::releaseResource()
+void DataBlockStorage::releaseResource()
 {
     if(header_){
         rtdelete(header_);
@@ -61,33 +63,32 @@ void DataBlockFile::releaseResource()
     }
 }
 
-void DataBlockFile::loadData()
+bool DataBlockStorage::loadData()
 {
-    if(!agfileop_.isOpened())
-        return;
-    header_ = new DbkFileHeader();
-    if(!agfileop_.readData((char*)header_, sizeof(DbkFileHeader))){
-        releaseResource();
-        return;
-    }
-    if(string(header_->filetype) != kFileTypes){
-        releaseResource();
-        return;
-    }    
-    blockitems_ = new DataBlockItem[header_->maxreservblockcnt];
-    if(!agfileop_.readData((char*)blockitems_,header_->maxreservblockcnt * sizeof(DataBlockItem))){
-        releaseResource();
-        return;
-    }    
+	do{
+		if(!agfileop_.isOpened())
+			break;
+		header_ = new DbkFileHeader();
+		if(!agfileop_.readData((char*)header_, sizeof(DbkFileHeader)))
+			break;
+		if(string(header_->filetype) != kFileTypes)
+			break;
+		blockitems_ = new DataBlockItem[header_->maxreservblockcnt];
+		if(!agfileop_.readData((char*)blockitems_, header_->maxreservblockcnt * sizeof(DataBlockItem)))
+			break;
+		return true;
+	}while(0);
+	releaseResource();
+	return false;
 }
 
-int32_t DataBlockFile::calcNextUsedFileDataOffset() const
+int32_t DataBlockStorage::calcNextUsedFileDataOffset() const
 {
     const DataBlockItem* preitem = header_->useditemcnt ? (const DataBlockItem*)nullptr : &blockitems_[header_->useditemcnt - 1];
     return preitem ? 0 : preitem->offset + preitem->size;      
 }
 
-void DataBlockFile::initEmpty()
+void DataBlockStorage::initEmpty()
 {
     releaseResource();
     if(!isEmpty())
@@ -100,12 +101,12 @@ void DataBlockFile::initEmpty()
     fflushHeaderData(true);
 }
 
-DataBlockFile::UID DataBlockFile::NewUID()
+DataBlockStorage::UID DataBlockStorage::NewUID()
 {
 	return RString::NewUID().cstr();
 }
 
-void DataBlockFile::removeDataBlock(const UID& blockid)
+void DataBlockStorage::removeDataBlock(const UID& blockid)
 {
     if(!*this){
         slog_err(pkglogger) << "invalid file!" << endl;
@@ -128,7 +129,7 @@ void DataBlockFile::removeDataBlock(const UID& blockid)
     fflushHeaderData(true);
 }
 
-void DataBlockFile::appendDataBlock(const UID& blockid, const char* data, uint32_t size)
+void DataBlockStorage::appendDataBlock(const UID& blockid, const char* data, uint32_t size)
 {
     if(!*this){
         slog_err(pkglogger) << "invalid file!" << endl;
@@ -153,19 +154,19 @@ void DataBlockFile::appendDataBlock(const UID& blockid, const char* data, uint32
         return;
     }
     const uint32_t kNewBlockItemIndex = header_->useditemcnt;
-    blockitems_[kNewBlockItemIndex].blockid = blockid;
+	memcpy(blockitems_[kNewBlockItemIndex].blockid, blockid.c_str(), UID_LEN);
     blockitems_[kNewBlockItemIndex].offset = oldfilesize - 1;
     blockitems_[kNewBlockItemIndex].size = size;
     ++header_->useditemcnt;
     fflushHeaderData(true);
 }
 
-void DataBlockFile::appendDataBlock(const UID& blockid, const Path& sourcefile)
+void DataBlockStorage::appendDataBlock(const UID& blockid, const Path& sourcefile)
 {
 
 }
 
-bool DataBlockFile::fetchDataBlock(const UID& blockid, char* recvdata, uint32_t& datasize)
+bool DataBlockStorage::fetchDataBlock(const UID& blockid, char* recvdata, uint32_t& datasize)
 {
     if(!*this){
         slog_err(pkglogger) << "invalid file!" << endl;
@@ -189,12 +190,12 @@ bool DataBlockFile::fetchDataBlock(const UID& blockid, char* recvdata, uint32_t&
     return agfileop_.readData(recvdata, kTheBlock.size, &datasize);;
 }
 
-DataBlockFile::operator bool() const
+DataBlockStorage::operator bool() const
 {
     return agfileop_ && header_ && blockitems_;
 }
 
-int32_t DataBlockFile::findDataBlock(const UID& id) const
+int32_t DataBlockStorage::findDataBlock(const UID& id) const
 {
     if(!*this)
         return -1;
