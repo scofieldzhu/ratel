@@ -24,6 +24,7 @@ public:
     operator bool()const;
     bool digest(uint32_t off, uint32_t size);
     bool readData(char* recvdata, uint32_t datasize, uint32_t* bytestoread = nullptr);
+	bool readDataBlock(HANDLE outfs, uint32_t datasize);
 	char* readWholeData(uint32_t& datasize); //returned data is not free unless you use 'delete[]' operator to destroy it explicitly!
     void rewind();
     void setEndPos();

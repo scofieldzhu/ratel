@@ -26,6 +26,7 @@ Module: basicpublic.h
 #include <memory>
 #include <functional>
 #include <sstream>
+#include <fstream>
 #include "langext.h"
 
 #endif

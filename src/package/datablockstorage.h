@@ -28,12 +28,13 @@ class RATEL_PACKAGE_API DataBlockStorage
 {
 public:
     using UID = std::string;
-	enum {UID_LEN = 36};
+	enum {UID_LEN = 37};
 	static UID NewUID();
     void removeDataBlock(const UID& blockid);
     void appendDataBlock(const UID& blockid, const char* data, uint32_t size);
 	void appendDataBlock(const UID& blockid, const Path& sourcefile);
     bool fetchDataBlock(const UID& blockid, char* recvdata, uint32_t& datasize);
+	bool exportDataBlock(const UID& blockid, const Path& targetfile);
     operator bool()const;
     int32_t findDataBlock(const UID& id)const;
     bool existsDataBlock(const UID& id)const{return findDataBlock(id) != -1;}
@@ -50,7 +51,7 @@ private:
     int32_t calcNextUsedFileDataOffset()const;
     struct DataBlockItem
 	{
-        char blockid[UID_LEN]; 
+        char blockid[UID_LEN]; //terminator is '\0'
         uint32_t offset = 0; // from data zone start position
         uint32_t size = 0;
     };

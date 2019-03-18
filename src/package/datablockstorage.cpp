@@ -8,6 +8,7 @@ Module: datablockstorage.cpp
 CreateTime: 2018-12-30 20:09
 =========================================================================*/
 #include "datablockstorage.h"
+#include "path.h"
 #include "pkglogger.h"
 using namespace std;
 
@@ -188,6 +189,36 @@ bool DataBlockStorage::fetchDataBlock(const UID& blockid, char* recvdata, uint32
     }
     agfileop_.setOpPos(kTheBlock.offset, AgileFileOperator::kBeginPos);    
     return agfileop_.readData(recvdata, kTheBlock.size, &datasize);;
+}
+
+bool DataBlockStorage::exportDataBlock(const UID& blockid, const Path& targetfile)
+{
+	if(!*this){
+		slog_err(pkglogger) << "invalid file!" << endl;
+		return false;
+	}
+	HANDLE outfh = ::CreateFileW(targetfile.toWString().c_str(),
+								GENERIC_WRITE,
+								0,
+								nullptr,
+								CREATE_ALWAYS, 
+								FILE_ATTRIBUTE_NORMAL,
+								nullptr);
+	if(outfh == INVALID_HANDLE_VALUE){
+		slog_err(pkglogger) << "CreateFileW(" << targetfile.toLocale().c_str() <<") lasterror= " << ::GetLastError() <<"." << endl;
+		return false;
+	}
+	int32_t blockindex = findDataBlock(blockid);
+	if(blockindex == -1){
+		::CloseHandle(outfh);
+		slog_err(pkglogger) << "invalid block id:" << blockid.c_str() << endl;
+		return false;
+	}
+	const DataBlockItem& kTheBlock = blockitems_[blockindex];
+	agfileop_.setOpPos(kTheBlock.offset, AgileFileOperator::kBeginPos);
+	bool result = agfileop_.readDataBlock(outfh, kTheBlock.size);
+	::CloseHandle(outfh);
+	return result;
 }
 
 DataBlockStorage::operator bool() const

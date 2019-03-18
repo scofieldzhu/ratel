@@ -89,6 +89,10 @@ void TestCase_TestPackage_Load()
 		slog_err(g_AppLogger) << "load package(./xx.tcf) failed!" << endl;
 		return;
 	}
+	if(!pkg.exportFile("./testdir3/comapp/main.cpp", "./x.cpp")){
+		slog_err(g_AppLogger) << "export file(./testdir3/comapp/main.cpp) failed!" << endl;
+		return;
+	}
 }
 
 int main() 

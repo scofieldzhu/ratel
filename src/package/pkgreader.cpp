@@ -8,6 +8,7 @@ Module: rtlpkgfile.cpp
 CreateTime: 2018-9-1 19:34
 =========================================================================*/
 #include "pkgreader.h"
+#include "fsutil.h"
 #include "pkgfilebasic.h"
 #include "pkglogger.h"
 using namespace std;
@@ -67,31 +68,12 @@ bool PKGReader::open(const Path& filepath)
     return false;    
 }
 
-bool PKGReader::loadNextFileData(std::ofstream& os)
+bool PKGReader::loadNextFileData(ofstream& os)
 {
 	logverify(pkglogger, fs_ && os);
 	uint32_t filesize = 0;
 	fs_.read((char*)&filesize, sizeof(uint32_t));
-    char databuffer[kReadBufferSize] = {'\0'};
-    int32_t curdigestion = 0, leftover = 0, needreadbytes = 0;
-    while(curdigestion < filesize){        
-        leftover = filesize - curdigestion;
-        if(leftover <= 0) //realdy finished!
-            break;
-        needreadbytes = (leftover >= kReadBufferSize ? kReadBufferSize : leftover);
-        fs_.read(databuffer, needreadbytes);
-        if(fs_.gcount() < needreadbytes){//some exception error            
-            if(fs_.eof())
-                slog_err(pkglogger) << "db file data is not integrated!" << endl;
-            os.write(databuffer, fs_.gcount());
-            os.flush();
-            return false;
-        }
-        os.write(databuffer, needreadbytes);
-        os.flush();
-        curdigestion += needreadbytes;
-    };
-    return true;
+    return fsutil::TransformDataBlock(fs_, os, filesize, kReadBufferSize);
 }
 
 void PKGReader::close()

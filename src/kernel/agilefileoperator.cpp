@@ -10,6 +10,7 @@ CreateTime: 2018-12-30 10:33
 #pragma warning(disable:4273 4251)
 #include "agilefileoperator.h"
 #include "kernellogger.h"
+#include "fsutil.h"
 using namespace std;
 
 RATEL_NAMESPACE_BEGIN
@@ -114,6 +115,15 @@ bool AgileFileOperator::readData(char* recvdata, uint32_t datasize, uint32_t* by
     if(isOpened())
         return ::ReadFile(fhandle_, recvdata, datasize, (LPDWORD)bytestoread, nullptr);    
     return false;
+}
+
+bool AgileFileOperator::readDataBlock(HANDLE outfs, uint32_t datasize)
+{
+	if(isOpened()){
+		if(outfs && datasize)
+			return fsutil::TransformDataBlock(fhandle_, outfs, datasize, 1024);
+	}
+	return false;
 }
 
 char* AgileFileOperator::readWholeData(uint32_t& datasize)

@@ -103,7 +103,7 @@ bool Package::importDir(const Path& location, const Path& localdir)
         return false;
     }
     Path rootdir = location.join(dirname);
-    std::vector<Path> subfiles, subdirs;
+    vector<Path> subfiles, subdirs;
     auto pathmeetfunc = [&subfiles, &subdirs](const Path& p) { p.isRegularFile() ? subfiles.push_back(p) : subdirs.push_back(p); };
     DirWalker walker(localdir);
     walker.walk(pathmeetfunc);
@@ -127,7 +127,7 @@ bool Package::removeDir(const Path& dir)
     return false;
 }
 
-bool Package::exportDir(const Path& sourcedir, const Path& local_targetdir)
+bool Package::exportDir(const Path& sourcedir, const Path& localdir)
 {
     return false;
 }
@@ -195,9 +195,21 @@ bool Package::removeFile(const Path& filepath)
 	return pkgdb_->fileTable().removeFile(resultdata[FileTable::kIdKey].convertToInt32());
 }
 
-bool Package::exportFile(const Path& sourcefilepath, const Path& local_targetfilepath)
+bool Package::exportFile(const Path& sourcefile, const Path& localfile)
 {
-    return false;
+	if(!opened()){
+		slog_err(pkglogger) << "package is not opened yet!" << endl;
+		return false;
+	}
+	Path sourcefilename = sourcefile.filename();
+	Path sourcedir = sourcefile.parentPath();
+	RowDataDict resrowdata({{FileTable::kIdKey, Variant(Variant::kIntType)}, {FileTable::kFileUIDKey, Variant(Variant::kStringType)}});
+	if(!pkgdb_->queryFile(sourcefile, resrowdata)){
+		slog_err(pkglogger) << "sourcefile(" << sourcefile.cstr() << ") not exists!" << endl;
+		return false;
+	}
+	DataBlockStorage::UID fid = resrowdata[FileTable::kFileUIDKey].convertToStr().cstr();
+	return filedatastorage_->exportDataBlock(fid, localfile);
 }
 
 bool Package::load(const Path& pkgpath)
