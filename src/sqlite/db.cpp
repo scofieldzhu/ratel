@@ -10,6 +10,7 @@ CreateTime: 2018-7-28 10:49
 #include "db.h"
 #include "dbtable.h"
 #include "path.h"
+#include "rowdatadict.h"
 #include "statement.h"
 #include "sqlite3.h"
 #include "sqlitelogger.h"
@@ -87,7 +88,7 @@ void DB::rollback()
 	execUpdateData("ROLLBACK;");
 }
 
-bool DB::queryFirstRowResultData(const RString& sql, RowDataDict& resultdata)
+bool DB::queryFirstResultRowData(const RString& sql, RowDataDict& resultdata)
 {
 	Statement* stat = createStatement(sql);
 	if(stat == nullptr){
@@ -101,6 +102,24 @@ bool DB::queryFirstRowResultData(const RString& sql, RowDataDict& resultdata)
 		return false;
 	}
 	stat->fetchDataDict(resultdata); 
+	delete stat;
+	return true;
+}
+
+bool DB::queryMultiResultRowData(const RString& sql, std::vector<RowDataDict>& resrows, const RowDataDict& reference)
+{
+	Statement* stat = createStatement(sql);
+	if(stat == nullptr){
+		slog_err(sqlitelogger) << "create statement failed! sql:" << sql.cstr() << " err:" << errMsg().cstr() << endl;
+		return false;
+	}
+	int32_t rc = stat->stepExec();
+	while(rc == SQLITE_ROW){
+		RowDataDict newrow(reference);
+		stat->fetchDataDict(newrow);
+		resrows.push_back(newrow);
+		rc = stat->stepExec();
+	};
 	delete stat;
 	return true;
 }

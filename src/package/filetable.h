@@ -24,6 +24,7 @@ public:
 	static const RString kFileUIDKey;
 	static const RString kStatusKey;	
 	bool queryFile(const RString& filename, int32_t dirid, RowDataDict& resultdata);
+	bool queryFilesOfDir(int32_t dirid, std::vector<RowDataDict>& resultrows, const RowDataDict& reference);
 	int32_t queryFileId(const RString& filename, int32_t dirid);
 	bool existsFile(const RString& filename, int32_t dirid);
 	bool removeFile(int32_t id);

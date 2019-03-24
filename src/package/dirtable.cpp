@@ -10,6 +10,7 @@ CreateTime: 2019-1-13 20:19
 #include "dirtable.h"
 #include "db.h"
 #include "dbtablecol.h"
+#include "rowdatadict.h"
 #include "sqldatameta.h"
 #include "statement.h"
 #include "sqlite3.h"
@@ -36,24 +37,46 @@ DirTable::~DirTable()
 {}
 
 int32_t DirTable::queryDirId(const RString& path)
-{	
-	RString sql = makeQueryRowWhenSql("%s='%s'", kPathKey.cstr(), path.cstr());
+{		
 	if(db_ == nullptr){
 		slog_err(pkglogger) << "no any db instance connected!" << endl;
 		return -1;
 	}
+	RString sql = makeQueryRowWhenSql("%s='%s'", kPathKey.cstr(), path.cstr());
 	Variant data(Variant::kIntType);
 	return db_->queryColumnValueOfFirstResultRow(sql, 0, data) ? data.convertToInt32() : -1;
 }
 
-bool DirTable::queryDir(const RString& path, RowDataDict& resultdata)
+bool DirTable::querySubDirIds(int32_t parentid, std::vector<int32_t>& subids)
+{	
+	RowDataDict reference({{kIdKey, Variant(Variant::kIntType)}});
+	std::vector<RowDataDict> resultrows;
+	if(querySubDirs(parentid, resultrows, reference)){
+		for(auto row : resultrows)
+			subids.push_back(row[kIdKey].convertToInt32());
+		return true;
+	}
+	return false;
+}
+
+bool DirTable::querySubDirs(int32_t parentid, std::vector<RowDataDict>& resultrows, const RowDataDict& reference)
 {
-	RString sql = makeQueryRowWhenSql("%s='%s'", kPathKey.cstr(), path.cstr());
 	if(db_ == nullptr){
 		slog_err(pkglogger) << "no any db instance connected!" << endl;
 		return false;
 	}
-	return db_->queryFirstRowResultData(sql, resultdata);
+	RString sql = makeQueryRowWhenSql("%s=%d", kParentKey.cstr(), parentid);
+	return db_->queryMultiResultRowData(sql, resultrows, reference);	
+}
+
+bool DirTable::queryDir(const RString& path, RowDataDict& resultdata)
+{	
+	if(db_ == nullptr){
+		slog_err(pkglogger) << "no any db instance connected!" << endl;
+		return false;
+	}
+	RString sql = makeQueryRowWhenSql("%s='%s'", kPathKey.cstr(), path.cstr());
+	return db_->queryFirstResultRowData(sql, resultdata);
 }
 
 int32_t DirTable::queryDirId(const RString& dirname, int32_t parentdirid)

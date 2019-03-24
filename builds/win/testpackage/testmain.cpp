@@ -74,10 +74,10 @@ void TestCase_TestPackage_Create()
 		slog_err(g_AppLogger) << "importDir C:/Qt/Qt5.6.1/Examples/Qt-5.6/activeqt/comapp failed!" << endl;
 		return;
 	}
-	if(!pkg.removeFile("./testdir3/comapp/doc/src/comapp.qdoc")){
-		slog_err(g_AppLogger) << "removeFile ./testdir3/doc/src/comapp.qdoc failed!" << endl;
-		return;
-	}
+// 	if(!pkg.removeFile("./testdir3/comapp/doc/src/comapp.qdoc")){
+// 		slog_err(g_AppLogger) << "removeFile ./testdir3/doc/src/comapp.qdoc failed!" << endl;
+// 		return;
+// 	}
 	pkg.commit();
     slog_info(g_AppLogger) << "load package ok!" << endl;
 }
@@ -89,8 +89,12 @@ void TestCase_TestPackage_Load()
 		slog_err(g_AppLogger) << "load package(./xx.tcf) failed!" << endl;
 		return;
 	}
-	if(!pkg.exportFile("./testdir3/comapp/main.cpp", "./x.cpp")){
-		slog_err(g_AppLogger) << "export file(./testdir3/comapp/main.cpp) failed!" << endl;
+// 	if(!pkg.exportFile("./testdir3/comapp/main.cpp", "./x.cpp")){
+// 		slog_err(g_AppLogger) << "export file(./testdir3/comapp/main.cpp) failed!" << endl;
+// 		return;
+// 	}
+	if(!pkg.exportDir("./testdir3/comapp", "./ff")){
+		slog_err(g_AppLogger) << "export dir(./testdir3/comapp) failed!" << endl;
 		return;
 	}
 }

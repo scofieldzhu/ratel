@@ -25,7 +25,8 @@ public:
 	void beginTransaction();
 	bool commit();
 	void rollback();
-	bool queryFirstRowResultData(const RString& sql, RowDataDict& resultdata);
+	bool queryMultiResultRowData(const RString& sql, std::vector<RowDataDict>& resrows, const RowDataDict& reference);
+	bool queryFirstResultRowData(const RString& sql, RowDataDict& resultdata);
 	bool queryColumnValueOfFirstResultRow(const RString& sql, int32_t columnindex, Variant& result);
 	bool queryColumnValueOfFirstResultRow(const RString& sql, const RString& columnkey, Variant& result);
     RString errMsg();

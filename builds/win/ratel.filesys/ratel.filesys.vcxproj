@@ -161,6 +161,7 @@
     <ClInclude Include="..\..\..\src\filesys\filesyspublic.h" />
     <ClInclude Include="..\..\..\src\filesys\fsyslogger.h" />
     <ClInclude Include="..\..\..\src\filesys\path.h" />
+    <ClInclude Include="..\..\..\src\filesys\pathop.h" />
     <ClInclude Include="..\..\..\src\filesys\pathremover.h" />
   </ItemGroup>
   <ItemGroup>
@@ -171,6 +172,7 @@
     <ClCompile Include="..\..\..\src\filesys\dirwalker.cpp" />
     <ClCompile Include="..\..\..\src\filesys\fsyslogger.cpp" />
     <ClCompile Include="..\..\..\src\filesys\path.cpp" />
+    <ClCompile Include="..\..\..\src\filesys\pathop.cpp" />
     <ClCompile Include="..\..\..\src\filesys\pathremover.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

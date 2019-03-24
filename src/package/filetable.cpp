@@ -10,6 +10,7 @@ CreateTime: 2019-1-13 20:28
 #include "filetable.h"
 #include "db.h"
 #include "dbtablecol.h"
+#include "rowdatadict.h"
 #include "sqldatameta.h"
 #include "statement.h"
 #include "sqlite3.h"
@@ -57,7 +58,17 @@ bool FileTable::queryFile(const RString& filename, int32_t dirid, RowDataDict& r
 		return false;
 	}
 	RString sql = makeQueryRowWhenSql("%s='%s' and %s=%d", kNameKey.cstr(), filename.cstr(), kDirIdKey.cstr(), dirid);
-	return db_->queryFirstRowResultData(sql, resultdata);
+	return db_->queryFirstResultRowData(sql, resultdata);
+}
+
+bool FileTable::queryFilesOfDir(int32_t dirid, std::vector<RowDataDict>& resultrows, const RowDataDict& reference)
+{
+	if(db_ == nullptr){
+		slog_err(pkglogger) << "no any db instance connected!" << endl;
+		return false;
+	}
+	RString sql = makeQueryRowWhenSql("%s=%d", kDirIdKey.cstr(), dirid);	
+	return db_->queryMultiResultRowData(sql, resultrows, reference);
 }
 
 bool FileTable::existsFile(const RString& filename, int32_t dirid) 

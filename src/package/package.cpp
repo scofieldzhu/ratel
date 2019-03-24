@@ -13,6 +13,7 @@ CreateTime: 2018-9-16 21:54
 #include "pkglogger.h"
 #include "pkgreader.h"
 #include "pkgwriter.h"
+#include "pathop.h"
 #include "rowdatadict.h"
 #include "sqlite3.h"
 using namespace std;
@@ -128,8 +129,60 @@ bool Package::removeDir(const Path& dir)
 }
 
 bool Package::exportDir(const Path& sourcedir, const Path& localdir)
+ {
+	if(!opened()){
+		slog_err(pkglogger) << "package not opened yet!" << endl;		
+		return false;
+	}
+	if(!localdir.exists()){
+		slog_err(pkglogger) << "localdir(" << localdir.cstr() << ") not exists!" << endl;
+		return false;
+	}	
+	int32_t dirid = pkgdb_->dirTable().queryDirId(sourcedir.rstring());
+	if(dirid == -1){
+		slog_err(pkglogger) << "sourcedir(" << sourcedir.cstr() << ") is invalid dirpath!" << endl;
+		return false;
+	}
+	Path dirname = sourcedir.filename();
+	Path newlocaldir = localdir.join(dirname);
+	CreateDir(newlocaldir);
+	return exportDirId(dirid, newlocaldir);
+}
+
+bool Package::exportDirId(int32_t dirid, const Path& localdir)
 {
-    return false;
+	std::vector<RowDataDict> resultrows;
+	RowDataDict referencerow({{FileTable::kIdKey, Variant(Variant::kIntType)}, 
+							{FileTable::kNameKey, Variant(Variant::kStringType)},
+							{FileTable::kFileUIDKey, Variant(Variant::kStringType)}});
+	if(!pkgdb_->fileTable().queryFilesOfDir(dirid, resultrows, referencerow)){
+		slog_err(pkglogger) << "queryFilesOfDir dirid:" << dirid << " failed!" << endl;
+		return false;
+	}
+	for(auto rowdata : resultrows){
+		RString fn = rowdata[FileTable::kNameKey].convertToStr().cstr();
+		Path localfilepath = localdir.join(fn);
+		DataBlockStorage::UID fid = rowdata[FileTable::kFileUIDKey].convertToStr().cstr();
+		if(!filedatastorage_->exportDataBlock(fid, localfilepath)){
+			slog_err(pkglogger) << "exportDataBlock fid:" << fid.c_str() << " failed!" << endl;
+			return false;
+		}
+	}	
+	resultrows.clear();
+	RowDataDict reference({{DirTable::kIdKey, Variant(Variant::kIntType)}, {DirTable::kPathKey, Variant(Variant::kStringType)}});	
+	if(!pkgdb_->dirTable().querySubDirs(dirid, resultrows, reference))
+		return false;
+	for(auto rowdata : resultrows){
+		int32_t did = rowdata[DirTable::kIdKey].convertToInt32();
+		Path pkgsubdir = rowdata[DirTable::kPathKey].convertToStr();
+		Path newsubdir = localdir.join(pkgsubdir.filename());
+		CreateDir(newsubdir);
+		if(!exportDirId(did, newsubdir)){
+			slog_err(pkglogger) << "exportDirId did:" << dirid << " to local dir:" << newsubdir.cstr() << " failed!" << endl;
+			return false;
+		}
+	}
+	return true;
 }
 
 bool Package::importFile(const Path& dirlocation, const Path& sourcefile)

@@ -25,6 +25,8 @@ public:
 	bool queryDir(const RString& path, RowDataDict& resultdata);
 	int32_t queryDirId(const RString& path);
 	int32_t queryDirId(const RString& dirname, int32_t parentdirid);
+	bool querySubDirIds(int32_t parentid, std::vector<int32_t>& subids);
+	bool querySubDirs(int32_t dirid, std::vector<RowDataDict>& resultrows, const RowDataDict& reference);
     DirTable();
     ~DirTable();
 };
