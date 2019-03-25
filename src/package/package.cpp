@@ -74,14 +74,9 @@ bool Package::createDir(const RString& name, const Path& location)
 		}
 	}
 	Path newdirpath = location.join(name);
-	if(!pkgdb_->dirTable().insertRow(
-							RowDataDict({
-											{DirTable::kPathKey, newdirpath.cstr()},
-											{DirTable::kParentKey, parentid},
-											{DirTable::kStatusKey, DirTable::NORMAL}
-										})
-									)
-	){
+	if(!pkgdb_->dirTable().insertRow(RowDataDict({{DirTable::kPathKey, newdirpath.cstr()},
+												{DirTable::kParentKey, parentid},
+												{DirTable::kStatusKey, DirTable::NORMAL}}))){
 		slog_err(pkglogger) << "insertRow(newdir:" << newdirpath.cstr() << " parentid:" << parentid << ") failed!" << endl;
 		return false;
 	}    
@@ -276,7 +271,7 @@ bool Package::load(const Path& pkgpath)
 	}
 	pkgdb_ = new PKGDB(dbfilepath, SQLITE_OPEN_READWRITE);    
 	filedatastorage_ = new DataBlockStorage(storagefilepath.toWString());
-	if(!filedatastorage_->loadData()){
+	if(!filedatastorage_->load()){
 		releaseResources();
 		slog_err(pkglogger) << "invalid data storage file(" << storagefilepath.cstr() << ")!" << endl;
 		return false;

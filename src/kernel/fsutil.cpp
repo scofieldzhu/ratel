@@ -17,12 +17,9 @@ namespace fsutil{
 		char* databuffer = new char[buffersize];
 		memset(databuffer, 0, buffersize);
 		uint32_t curdigestion = 0;
-		int32_t leftover = 0, needreadbytes = 0;
 		while(curdigestion < totalbytesize){
-			leftover = totalbytesize - curdigestion;
-			if(leftover <= 0) //realdy finished!
-				break;
-			needreadbytes = (leftover >= buffersize ? buffersize : leftover);
+			uint32_t leftover = totalbytesize - curdigestion;
+			uint32_t needreadbytes = (leftover >= buffersize ? buffersize : leftover);
 			srcfs.read(databuffer, needreadbytes);
 			if(srcfs.gcount() < needreadbytes){//some exception error            
 				if(srcfs.eof())
@@ -45,13 +42,10 @@ namespace fsutil{
 		if(srcfh == nullptr || dstfh == nullptr)
 			return false;
 		char* databuffer = new char[buffersize];
-		memset(databuffer, 0, buffersize);
-		int32_t leftover = 0;
+		memset(databuffer, 0, buffersize);		
 		DWORD curdigestion = 0, needreadbytes = 0;		
 		while(curdigestion < totalbytesize){
-			leftover = totalbytesize - curdigestion;
-			if(leftover <= 0) //realdy finished!
-				break;
+			uint32_t leftover = totalbytesize - curdigestion;
 			needreadbytes = (leftover >= buffersize ? buffersize : leftover);
 			DWORD actualbytestoread = 0;
 			::ReadFile(srcfh, databuffer, needreadbytes, &actualbytestoread, nullptr);    

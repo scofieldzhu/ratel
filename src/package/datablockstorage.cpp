@@ -36,10 +36,7 @@ void DataBlockStorage::fflushHeaderData(bool onlyvaliditems)
     const uint32_t kTargetOpFileCnt = onlyvaliditems ? header_->useditemcnt : header_->maxreservblockcnt;
     uint32_t cureatitemcnt = 0, leftitemcnt = 0, nextreaditemcnt = 0;
     while(cureatitemcnt < kTargetOpFileCnt){
-        leftitemcnt = kTargetOpFileCnt - cureatitemcnt;
-        if(leftitemcnt <= 0)
-            break;
-        nextreaditemcnt = leftitemcnt < kMaxRWBlockItemCount ? leftitemcnt : kMaxRWBlockItemCount;
+        nextreaditemcnt = leftitemcnt < kMaxRWBlockItemCount ? (kTargetOpFileCnt - cureatitemcnt) : kMaxRWBlockItemCount;
         agfileop_.writeData((const char*)&blockitems_[cureatitemcnt], nextreaditemcnt * sizeof(DataBlockItem));
         cureatitemcnt += nextreaditemcnt;
     };
@@ -64,7 +61,7 @@ void DataBlockStorage::releaseResource()
     }
 }
 
-bool DataBlockStorage::loadData()
+bool DataBlockStorage::load()
 {
 	do{
 		if(!agfileop_.isOpened())
@@ -99,7 +96,7 @@ void DataBlockStorage::initEmpty()
     header_->maxreservblockcnt = kDefaultMaxReservedFileCnt;
     header_->useditemcnt = 0;
     blockitems_ = new DataBlockItem[header_->maxreservblockcnt];
-    fflushHeaderData(true);
+    fflushHeaderData(false);
 }
 
 DataBlockStorage::UID DataBlockStorage::NewUID()
@@ -156,7 +153,7 @@ void DataBlockStorage::appendDataBlock(const UID& blockid, const char* data, uin
     }
     const uint32_t kNewBlockItemIndex = header_->useditemcnt;
 	memcpy(blockitems_[kNewBlockItemIndex].blockid, blockid.c_str(), UID_LEN);
-    blockitems_[kNewBlockItemIndex].offset = oldfilesize - 1;
+    blockitems_[kNewBlockItemIndex].offset = oldfilesize;
     blockitems_[kNewBlockItemIndex].size = size;
     ++header_->useditemcnt;
     fflushHeaderData(true);

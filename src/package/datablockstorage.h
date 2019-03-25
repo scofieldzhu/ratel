@@ -39,7 +39,7 @@ public:
     int32_t findDataBlock(const UID& id)const;
     bool existsDataBlock(const UID& id)const{return findDataBlock(id) != -1;}
     void initEmpty();
-	bool loadData();
+	bool load();
 	const std::wstring& filePath()const { return agfileop_.filePath(); }
     DataBlockStorage(const std::wstring& file);
     ~DataBlockStorage();

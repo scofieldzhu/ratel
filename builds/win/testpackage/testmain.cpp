@@ -66,6 +66,10 @@ void TestCase_TestPackage_Create()
 	if(!pkg.createDir("test31", "./testdir3")){
 		slog_err(g_AppLogger) << "createDir same directory failed!" << endl;
 	}
+// 	if(!pkg.importFile("./testdir3/test31", "C:\\Qt\\Qt5.6.1\\Examples\\Qt-5.6\\activeqt\\comapp\\main.cpp")){
+// 		slog_err(g_AppLogger) << "importFile hihi+song+mymo.mp3 failed!" << endl;
+// 		return;
+// 	}
 	if(!pkg.importFile("./testdir3/test31", "c:/TDownload/hihi+song+mymo.mp3")){
 		slog_err(g_AppLogger) << "importFile hihi+song+mymo.mp3 failed!" << endl;
 		return;
@@ -89,14 +93,10 @@ void TestCase_TestPackage_Load()
 		slog_err(g_AppLogger) << "load package(./xx.tcf) failed!" << endl;
 		return;
 	}
-// 	if(!pkg.exportFile("./testdir3/comapp/main.cpp", "./x.cpp")){
-// 		slog_err(g_AppLogger) << "export file(./testdir3/comapp/main.cpp) failed!" << endl;
-// 		return;
-// 	}
-	if(!pkg.exportDir("./testdir3/comapp", "./ff")){
-		slog_err(g_AppLogger) << "export dir(./testdir3/comapp) failed!" << endl;
-		return;
-	}
+ 	if(!pkg.exportDir("./testdir3/comapp", "./temp")){
+ 		slog_err(g_AppLogger) << "export dir(./testdir3/comapp) failed!" << endl;
+ 		return;
+ 	}
 }
 
 int main() 
@@ -104,7 +104,7 @@ int main()
     InitLogger();
     slog_info(g_AppLogger) << "enter main..." << endl;
 
-    //TestCase_TestPackage_Create();
+    TestCase_TestPackage_Create();
 	TestCase_TestPackage_Load();
 
 
