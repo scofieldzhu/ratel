@@ -27,6 +27,7 @@ class RowDataDict;
 typedef std::vector<RowDataDict*> DbTableRowSet;
 class Statement;
 class SqlDataMeta;
+using StatementSPtr = std::shared_ptr<Statement>;
 RATEL_NAMESPACE_END
 
 #endif

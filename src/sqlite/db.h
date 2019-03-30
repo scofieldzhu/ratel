@@ -18,7 +18,7 @@ RATEL_NAMESPACE_BEGIN
 class RATEL_SQLITE_API DB
 {
 public:
-    Statement* createStatement(const RString& sql, const char** pztail = nullptr);
+	StatementSPtr createStatement(const RString& sql, const char** pztail = nullptr);
     typedef int(*StatCallback)(void*, int, char**, char**);
     bool exec(const RString& sql, StatCallback func, void* firstpara);
 	bool execUpdateData(const RString& sql);

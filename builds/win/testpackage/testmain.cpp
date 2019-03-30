@@ -8,6 +8,10 @@
 #include "sqlitelogger.h"
 #include "pkglogger.h"
 
+#include "pathop.h"
+
+#include "sqlite3.h"
+
 #include "pathremover.h"
 using namespace std;
 USING_RATEL
@@ -42,11 +46,12 @@ void InitLogger()
 
 void TestCase_TestPackage_Create()
 {
-    Package pkg("./temp");
+    Package pkg("C:/work/github/ratel/ratel/builds/win/testpackage/temp");
 	if(!pkg.createNew("./xx.tcf")){
 		slog_err(g_AppLogger) << "createNew failed!" << endl;
 		return;
 	}   
+	return;
 	if(!pkg.createDir("testdir1", "./")){
 		slog_err(g_AppLogger) << "createDir failed!" << endl;
 		return;
@@ -101,11 +106,14 @@ void TestCase_TestPackage_Load()
 
 int main() 
 {    
+
+
     InitLogger();
     slog_info(g_AppLogger) << "enter main..." << endl;
 
     TestCase_TestPackage_Create();
-	TestCase_TestPackage_Load();
+ 	//TestCase_TestPackage_Load();
+
 
 
     return 0;

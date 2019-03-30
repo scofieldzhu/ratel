@@ -139,17 +139,15 @@ bool DbTable::create()
 		return false;
 	}
 	RString createsql = makeCreateSql();
-	Statement* stat = db_->createStatement(createsql);
-	if(stat == nullptr){
+	StatementSPtr stat = db_->createStatement(createsql);
+	if(stat.get() == nullptr){
 		slog_err(sqlitelogger) << "create statement failed! sql:" << createsql.cstr() << " err:" << db_->errMsg().cstr() << endl;
 		return false;
 	}
 	if(stat->stepExec() != SQLITE_DONE){		
 		slog_err(sqlitelogger) << "stepExec failed! sql:" << createsql.cstr() << " err:" << stat->errMsg().cstr() << endl;
-		delete stat;
 		return false;
 	}
-	delete stat;
 	return true;
 }
 
@@ -160,15 +158,14 @@ bool DbTable::insertRow(const RowDataDict& record)
 		return false;
 	}
 	RString sql = makeInsertRowSql(record);
-	Statement* stat = db_->createStatement(sql);
-	if(stat == nullptr){
+	StatementSPtr stat = db_->createStatement(sql);
+	if(stat.get() == nullptr){
 		slog_err(sqlitelogger) << "create statement failed! sql:" << sql.cstr() << " err:" << db_->errMsg().cstr() << endl;
 		return false;
 	}
 	int32_t rc = stat->stepExec();
 	if(rc != SQLITE_DONE){
 		slog_err(sqlitelogger) << "stepExec failed! sql:" << sql.cstr() << " err:" << stat->errMsg().cstr() << endl;
-		delete stat;
 		return false;
 	}
 	return true;	
@@ -197,19 +194,17 @@ Variant DbTable::queryColumnValueOfFirstResultRow(const RString& sql, const RStr
 			resultval.setDataType(Variant::kStringType);
 			break;
 	}		
-	Statement* stat = db_->createStatement(sql);
-	if(stat == nullptr){
+	StatementSPtr stat = db_->createStatement(sql);
+	if(stat.get() == nullptr){
 		slog_err(sqlitelogger) << "create statement failed! sql:" << sql.cstr() << " err:" << db_->errMsg().cstr() << endl;
 		return resultval;
 	}
 	int32_t rc = stat->stepExec();
 	if(rc != SQLITE_ROW){
 		slog_err(sqlitelogger) << "stepExec failed! sql:" << sql.cstr() << " err:" << stat->errMsg().cstr() << endl;
-		delete stat;
 		return resultval;
 	}
 	stat->fetchColumnData(columnkey, resultval);
-	delete stat;
 	return resultval;
 }
 
@@ -220,22 +215,21 @@ void DbTable::drop()
 		return;
 	}
 	RString sql = makeDropSql();
-	Statement* stat = db_->createStatement(sql);
-	if(stat == nullptr){
+	StatementSPtr stat = db_->createStatement(sql);
+	if(stat.get() == nullptr){
 		slog_err(sqlitelogger) << "create statement failed! sql:" << sql.cstr() << " err:" << db_->errMsg().cstr() << endl;
 		return;
 	}
 	int32_t rc = stat->stepExec();
 	if(rc != SQLITE_DONE)
 		slog_err(sqlitelogger) << "stepExec failed! sql:" << sql.cstr() << " err:" << stat->errMsg().cstr() << endl;		
-	delete stat;
 }
 
 void DbTable::connectDB(DB& db)
 {
 	db_ = &db;
 	RString sql = makeCreateSql();
-	Statement* stat = db_->createStatement(sql);
+	StatementSPtr stat = db_->createStatement(sql);
 	int32_t rc = stat->stepExec();
 	if(rc != SQLITE_DONE){
 		slog_err(sqlitelogger) << "stepExec failed! sql:" << sql.cstr() << " err:" << stat->errMsg().cstr() << endl;
@@ -246,7 +240,7 @@ void DbTable::connectDB(DB& db)
 bool DbTable::queryTableExistence()
 {
 	RString sql = "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;";
-	Statement* stat = db_->createStatement(sql);
+	StatementSPtr stat = db_->createStatement(sql);
 	logverify(sqlitelogger, stat != nullptr);	
 	int32_t rc = stat->stepExec();
 	while(rc == SQLITE_ROW){

@@ -29,11 +29,13 @@ DB::DB(const Path& dbfile, int32_t flags, const char* zvfs)
 
 DB::~DB()
 {
-	sqlite3_close_v2((sqlite3*)dbconn_);
+	int retcode = sqlite3_close_v2((sqlite3*)dbconn_);
+	if(retcode != SQLITE_OK)
+		slog_err(sqlitelogger) << "sqlite close failed! errcode:" << retcode << endl;
 	dbconn_ = nullptr;
 }
 
-Statement* DB::createStatement(const RString& sql, const char** pztail /*= nullptr*/)
+StatementSPtr DB::createStatement(const RString& sql, const char** pztail /*= nullptr*/)
 {
     sqlite3_stmt* res_stmt = nullptr;
     int32_t err = sqlite3_prepare_v2((sqlite3*)dbconn_, sql.cstr(), (int)sql.size(), &res_stmt, pztail);
@@ -41,7 +43,7 @@ Statement* DB::createStatement(const RString& sql, const char** pztail /*= nullp
         slog_err(sqlitelogger) << "sqlite3_prepare_v2 error:" << sqlite3_errmsg((sqlite3*)dbconn_) << std::endl;
         return nullptr;
     }
-    return new Statement(res_stmt, this);
+    return StatementSPtr(new Statement(res_stmt, this));
 }
 
 bool DB::exec(const RString& sql, StatCallback func, void* firstpara)
@@ -58,18 +60,16 @@ bool DB::exec(const RString& sql, StatCallback func, void* firstpara)
 
 bool DB::execUpdateData(const RString& sql)
 {
-	Statement* stat = createStatement(sql);
-	if(stat == nullptr){
+	StatementSPtr stat = createStatement(sql);
+	if(stat.get() == nullptr){
 		slog_err(sqlitelogger) << "create statement failed! sql:" << sql.cstr() << " err:" << errMsg().cstr() << endl;
 		return false;
 	}
 	int32_t rc = stat->stepExec();
 	if(rc != SQLITE_DONE){
 		slog_err(sqlitelogger) << "stepExec failed! sql:" << sql.cstr() << " err:" << stat->errMsg().cstr() << endl;
-		delete stat;
 		return false;
 	}
-	delete stat;
 	return true;
 }
 
@@ -90,26 +90,24 @@ void DB::rollback()
 
 bool DB::queryFirstResultRowData(const RString& sql, RowDataDict& resultdata)
 {
-	Statement* stat = createStatement(sql);
-	if(stat == nullptr){
+	StatementSPtr stat = createStatement(sql);
+	if(stat.get() == nullptr){
 		slog_err(sqlitelogger) << "create statement failed! sql:" << sql.cstr() << " err:" << errMsg().cstr() << endl;
 		return false;
 	}
 	int32_t rc = stat->stepExec();
 	if(rc != SQLITE_ROW){
 		slog_err(sqlitelogger) << "stepExec failed! sql:" << sql.cstr() << " err:" << stat->errMsg().cstr() << endl;
-		delete stat;
 		return false;
 	}
 	stat->fetchDataDict(resultdata); 
-	delete stat;
 	return true;
 }
 
 bool DB::queryMultiResultRowData(const RString& sql, std::vector<RowDataDict>& resrows, const RowDataDict& reference)
 {
-	Statement* stat = createStatement(sql);
-	if(stat == nullptr){
+	StatementSPtr stat = createStatement(sql);
+	if(stat.get() == nullptr){
 		slog_err(sqlitelogger) << "create statement failed! sql:" << sql.cstr() << " err:" << errMsg().cstr() << endl;
 		return false;
 	}
@@ -120,43 +118,38 @@ bool DB::queryMultiResultRowData(const RString& sql, std::vector<RowDataDict>& r
 		resrows.push_back(newrow);
 		rc = stat->stepExec();
 	};
-	delete stat;
 	return true;
 }
 
 bool DB::queryColumnValueOfFirstResultRow(const RString& sql, int32_t columnindex, Variant& result)
 {
-	Statement* stat = createStatement(sql);
-	if(stat == nullptr){
+	StatementSPtr stat = createStatement(sql);
+	if(stat.get() == nullptr){
 		slog_err(sqlitelogger) << "create statement failed! sql:" << sql.cstr() << " err:" << errMsg().cstr() << endl;
 		return false;
 	}
 	int32_t rc = stat->stepExec();
 	if(rc != SQLITE_ROW){
 		slog_err(sqlitelogger) << "stepExec failed! sql:" << sql.cstr() << " err:" << stat->errMsg().cstr() << endl;
-		delete stat;
 		return false;
 	}
 	stat->fetchColumnData(columnindex, result);
-	delete stat;
 	return true;
 }
 
 bool DB::queryColumnValueOfFirstResultRow(const RString& sql, const RString& columnkey, Variant& result)
 {
-	Statement* stat = createStatement(sql);
-	if(stat == nullptr){
+	StatementSPtr stat = createStatement(sql);
+	if(stat.get() == nullptr){
 		slog_err(sqlitelogger) << "create statement failed! sql:" << sql.cstr() << " err:" << errMsg().cstr() << endl;
 		return false;
 	}
 	int32_t rc = stat->stepExec();
 	if (rc != SQLITE_ROW){
 		slog_err(sqlitelogger) << "stepExec failed! sql:" << sql.cstr() << " err:" << stat->errMsg().cstr() << endl;
-		delete stat;
 		return false;
 	}
 	stat->fetchColumnData(columnkey, result);
-	delete stat;
 	return true;
 }
 

@@ -35,9 +35,7 @@ public:
     ~Package();
 
 private:
-	bool exportFileId(int32_t fileid, const Path& filepath);
 	bool exportDirId(int32_t dirid, const Path& localdir);
-    void releaseResources();    
     Path obtainDBFilePath()const;
     Path obtainDataStorageFilePath()const;
     Path workdir_;

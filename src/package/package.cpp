@@ -18,6 +18,17 @@ CreateTime: 2018-9-16 21:54
 #include "sqlite3.h"
 using namespace std;
 
+#define RETURN_FALSE_IFNOT_OPENED() \
+	if(!opened()){ \
+		slog_err(pkglogger) << "package not opened yet!" << endl; \
+		return false; \
+	}
+#define RETURN_IFNOT_OPENED() \
+	if(!opened()){ \
+		slog_err(pkglogger) << "package not opened yet!" << endl; \
+		return; \
+	}
+
 RATEL_NAMESPACE_BEGIN
 
 Package::Package(const Path& workdir)    
@@ -28,17 +39,7 @@ Package::Package(const Path& workdir)
 
 Package::~Package()
 {
-    releaseResources();
-}
-
-void Package::releaseResources()
-{
-	if(pkgdb_)
-		rtdelete(pkgdb_);
-	pkgdb_ = nullptr;
-	if(filedatastorage_)
-		rtdelete(filedatastorage_);
-	filedatastorage_ = nullptr;
+    close();
 }
 
 Path Package::obtainDBFilePath() const
@@ -54,10 +55,7 @@ Path Package::obtainDataStorageFilePath() const
 bool Package::createDir(const RString& name, const Path& location)
 {
 	logverify(pkglogger, !name.null());
-    if(!opened()){
-		slog_err(pkglogger) << "not opened!" << endl;
-        return false;
-    }
+	RETURN_FALSE_IFNOT_OPENED();
 	int32_t parentid = 0;
 	if(location.rstring() == "./")
 		parentid = -1; //root dir
@@ -85,10 +83,7 @@ bool Package::createDir(const RString& name, const Path& location)
 
 bool Package::importDir(const Path& location, const Path& localdir)
 {
-    if(!opened()){
-        slog_err(pkglogger) << "package not opened yet!" << endl;
-        return false;
-    }
+	RETURN_FALSE_IFNOT_OPENED();
     if(!localdir.exists() || !localdir.isDirectory()){
         slog_err(pkglogger) << "invalid local directory[" << localdir.cstr() << "]!" << endl;
         return false;
@@ -125,10 +120,7 @@ bool Package::removeDir(const Path& dir)
 
 bool Package::exportDir(const Path& sourcedir, const Path& localdir)
  {
-	if(!opened()){
-		slog_err(pkglogger) << "package not opened yet!" << endl;		
-		return false;
-	}
+	RETURN_FALSE_IFNOT_OPENED();
 	if(!localdir.exists()){
 		slog_err(pkglogger) << "localdir(" << localdir.cstr() << ") not exists!" << endl;
 		return false;
@@ -186,10 +178,7 @@ bool Package::importFile(const Path& dirlocation, const Path& sourcefile)
 		slog_err(pkglogger) << "source file[" << sourcefile.cstr() << "] is invalid file!" << endl;
 		return false;
 	}	
-    if(!opened()){
-        slog_err(pkglogger) << "package not opened yet!" << endl;
-        return false;
-    }  
+	RETURN_FALSE_IFNOT_OPENED();
 	int32_t dirid = pkgdb_->dirTable().queryDirId(dirlocation.rstring());
 	if(dirid == -1){
 		slog_err(pkglogger) << "dirlocation(" << dirlocation.cstr() << ") not exists!" << endl;
@@ -225,10 +214,7 @@ bool Package::importFile(const Path& dirlocation, const Path& sourcefile)
 
 bool Package::removeFile(const Path& filepath)
 {	
-	if(!opened()){
-		slog_err(pkglogger) << "package not opened yet!" << endl;
-		return false;
-	}
+	RETURN_FALSE_IFNOT_OPENED();
 	RowDataDict resultdata({
 		{FileTable::kIdKey, Variant(Variant::kIntType)},
 		{DirTable::kIdKey, Variant(Variant::kIntType)},
@@ -245,10 +231,7 @@ bool Package::removeFile(const Path& filepath)
 
 bool Package::exportFile(const Path& sourcefile, const Path& localfile)
 {
-	if(!opened()){
-		slog_err(pkglogger) << "package is not opened yet!" << endl;
-		return false;
-	}
+	RETURN_FALSE_IFNOT_OPENED();
 	Path sourcefilename = sourcefile.filename();
 	Path sourcedir = sourcefile.parentPath();
 	RowDataDict resrowdata({{FileTable::kIdKey, Variant(Variant::kIntType)}, {FileTable::kFileUIDKey, Variant(Variant::kStringType)}});
@@ -272,7 +255,7 @@ bool Package::load(const Path& pkgpath)
 	pkgdb_ = new PKGDB(dbfilepath, SQLITE_OPEN_READWRITE);    
 	filedatastorage_ = new DataBlockStorage(storagefilepath.toWString());
 	if(!filedatastorage_->load()){
-		releaseResources();
+		close();
 		slog_err(pkglogger) << "invalid data storage file(" << storagefilepath.cstr() << ")!" << endl;
 		return false;
 	}
@@ -305,10 +288,7 @@ bool Package::createNew(const Path& newpkgpath)
 
 void Package::commit()
 {
-    if(!opened()){
-        slog_err(pkglogger) << "not opened yet!" << endl;
-        return;
-    }    	
+	RETURN_IFNOT_OPENED(); 	
 	Path datafilepath = filedatastorage_->filePath();
     PKGWriter pkgwriter(pkgfile_, pkgdb_->dbFilePath(), datafilepath);
 	if(!pkgwriter.write()){
@@ -324,10 +304,14 @@ bool Package::opened() const
 
 void Package::close()
 {
-    if(opened()){
-        rtdelete(pkgdb_);
-		pkgdb_ = nullptr;
-    }
+	if(!opened())
+		return;
+	rtdelete(pkgdb_);
+	pkgdb_ = nullptr;
+	rtdelete(filedatastorage_);
+	filedatastorage_ = nullptr;
+	RemoveDir(workdir_);
+	CreateDir(workdir_);//clean work directory
 }
 
 RATEL_NAMESPACE_END

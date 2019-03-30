@@ -21,7 +21,10 @@ PKGDB::PKGDB(const Path& dbfile, int32_t flags, const char* zvfs /*= nullptr*/)
 }
 
 PKGDB::~PKGDB()
-{}
+{
+	dirtable_.disconnectDB();
+	filetable_.disconnectDB();
+}
 
 int32_t PKGDB::queryFileId(const RString& filename, const RString& parentdir)
 {

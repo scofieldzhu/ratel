@@ -19,7 +19,16 @@ namespace dircols{
 }
 
 int main()
-{    
+{  
+// 	sqlite3* conn = nullptr;
+// 	int32_t err = sqlite3_open_v2("test.db", &conn, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);
+// 	if (err == SQLITE_OK){
+// 		err = sqlite3_close_v2(conn);
+// 		if (err == SQLITE_OK){
+// 			cout << "ok!" << endl;
+// 		}
+// 	}
+
     DB* db = new DB("test.db", SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
     if (db == nullptr) {
         cout << "Open test.db failed!" << endl;
@@ -35,9 +44,8 @@ int main()
 
     RString cursql = t.makeCreateSql();
 	cout << "cursql:" << cursql.cstr() << endl;
-    Statement* stat = db->createStatement(cursql);
+    StatementSPtr stat = db->createStatement(cursql);
     int32_t rescode = stat->stepExec();
-    delete stat;
 
     DbTable filetable("File");
 	colprops = &(filetable.addNewColumn(dircols::kFileId).setDataMeta(IntSqlDataMeta()).propDict());
@@ -48,7 +56,6 @@ int main()
     cout << cursql.cstr() << endl;
     stat = db->createStatement(cursql);
     rescode = stat->stepExec();
-    delete stat;
 
 	RowDataDict record({
 		{dircols::kDirId, Variant(1)},
@@ -60,27 +67,23 @@ int main()
 	cout << cursql.cstr() << endl;
     stat = db->createStatement(cursql);
     rescode = stat->stepExec();
-    delete stat;
 
 //     cursql = t.makeInsertRowSql({ "name", "fileid", "childdirid" }, "'%s',%d,%d", "testdir1", 2, 111);
 //     stat = db->createStatement(cursql);
 //     rescode = stat->stepExec();
-//     delete stat;
+
 //     cursql = t.makeInsertRowSql({ "name", "fileid", "childdirid" }, "'%s',%d,%d", "testdir2", 22, 1112);
 //     stat = db->createStatement(cursql);
 //     rescode = stat->stepExec();
-//     delete stat;
 // 
 //     cursql = files.makeInsertRowSql({"name", "diskfileuid" }, "'%s','%s'", "chjj", "kkdkk-fdsf--sdf");
 //     stat = db->createStatement(cursql);
 //     rescode = stat->stepExec();
-//     delete stat;
 // 
 //     testsql = "insert into Company(id, name, manager, age, factor) values(2, \"zhhb\", \"zhucg\", 31, 1.26);" \
 //         "insert into Company(id, name, manager, age, factor) values(3, \"libing\", \"zhucg\", 32, 0.37);";
 //     stat = db->createStatement(testsql);
 //     int rsc = stat->exec(testsql, nullptr, nullptr);
-//     delete stat;
 // 
 //     cursql = "select * from Directory;";
 //     stat = db->createStatement(cursql);
@@ -91,7 +94,6 @@ int main()
 //         int32_t cfid = stat->fetchIntColumn(3);
 //         cout << "id:" << id << " name:" << name.cstr() << " fid:" << fid << " cfid:" << cfid << endl;
 //     }
-//     delete stat;
 // 
     delete db;
 
