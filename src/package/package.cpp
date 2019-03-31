@@ -49,7 +49,7 @@ Path Package::obtainDBFilePath() const
 
 Path Package::obtainDataStorageFilePath() const
 {
-    return workdir_.join(RString::NewUID() + ".DAT");
+    return workdir_.join(RString::NewUID() + ".fds");
 }
 
 bool Package::createDir(const RString& name, const Path& location)

@@ -13,7 +13,7 @@ CreateTime: 2018-7-14 10:36
 #include "filesyspublic.h"
 
 #ifdef RATEL_SQLITE_EXPORTS
-    #define RATEL_SQLITE_API __declspec(dllexport)
+	#define RATEL_SQLITE_API __declspec(dllexport)
 #else
     #define RATEL_SQLITE_API __declspec(dllimport)
 #endif
@@ -21,13 +21,11 @@ CreateTime: 2018-7-14 10:36
 RATEL_NAMESPACE_BEGIN
 class DB;
 class DbTable;
-using DbTableSPtr = std::shared_ptr<DbTable>;
 class DbTableCol;
 class RowDataDict;
-typedef std::vector<RowDataDict*> DbTableRowSet;
 class Statement;
-class SqlDataMeta;
 using StatementSPtr = std::shared_ptr<Statement>;
+class SqlDataMeta;
 RATEL_NAMESPACE_END
 
 #endif

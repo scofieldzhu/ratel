@@ -10,7 +10,7 @@
 
 #include "pathop.h"
 
-#include "sqlite3.h"
+//#include "sqlite3.h"
 
 #include "pathremover.h"
 using namespace std;
@@ -51,7 +51,6 @@ void TestCase_TestPackage_Create()
 		slog_err(g_AppLogger) << "createNew failed!" << endl;
 		return;
 	}   
-	return;
 	if(!pkg.createDir("testdir1", "./")){
 		slog_err(g_AppLogger) << "createDir failed!" << endl;
 		return;
@@ -98,23 +97,22 @@ void TestCase_TestPackage_Load()
 		slog_err(g_AppLogger) << "load package(./xx.tcf) failed!" << endl;
 		return;
 	}
- 	if(!pkg.exportDir("./testdir3/comapp", "./temp")){
+ 	if(!pkg.exportDir("./testdir3/comapp", "./temp2")){
  		slog_err(g_AppLogger) << "export dir(./testdir3/comapp) failed!" << endl;
  		return;
  	}
 }
 
 int main() 
-{    
-
-
+{   
+	::CoInitialize(nullptr);
     InitLogger();
     slog_info(g_AppLogger) << "enter main..." << endl;
 
     TestCase_TestPackage_Create();
- 	//TestCase_TestPackage_Load();
+ 	TestCase_TestPackage_Load();
 
-
+	::CoUninitialize();
 
     return 0;
 }

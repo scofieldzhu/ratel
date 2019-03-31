@@ -111,13 +111,13 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>RATEL_SQLITE_EXPORTS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../../../src/kernel;../../../src/filesys;../../../src/basic;../../../3rd/sflogger/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../src/kernel;../../../src/filesys;../../../src/basic;../../../3rd/sflogger/include;../../../3rd/sqlite3.27.2/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>../../../3rd/sflogger/bin;../_bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>ratel.basic-x64-d.lib;ratel.filesys-x64-d.lib;ratel.kernel-x64-d.lib;sflogger.core-v140-x64-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../../3rd/sflogger/bin;../../../3rd/sqlite3.27.2/x64;../_bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>ratel.basic-x64-d.lib;ratel.filesys-x64-d.lib;ratel.kernel-x64-d.lib;sflogger.core-v140-x64-d.lib;sqlite3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -149,14 +149,14 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>RATEL_SQLITE_EXPORTS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../../../src/kernel;../../../src/filesys;../../../src/basic;../../../3rd/sflogger/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../src/kernel;../../../src/filesys;../../../src/basic;../../../3rd/sflogger/include;../../../3rd/sqlite3.27.2/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>../../../3rd/sflogger/bin;../_bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../../../3rd/sflogger/bin;../../../3rd/sqlite3.27.2/x64;../_bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>ratel.basic-x64.lib;ratel.filesys-x64.lib;ratel.kernel-x64.lib;sflogger.core-v140-x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -165,8 +165,6 @@
     <ClInclude Include="..\..\..\src\sqlite\dbglo.h" />
     <ClInclude Include="..\..\..\src\sqlite\rowdatadict.h" />
     <ClInclude Include="..\..\..\src\sqlite\sqldatameta.h" />
-    <ClInclude Include="..\..\..\src\sqlite\sqlite3.h" />
-    <ClInclude Include="..\..\..\src\sqlite\sqlite3ext.h" />
     <ClInclude Include="..\..\..\src\sqlite\sqlitelogger.h" />
     <ClInclude Include="..\..\..\src\sqlite\sqlitepublic.h" />
     <ClInclude Include="..\..\..\src\sqlite\statement.h" />
@@ -181,8 +179,6 @@
     <ClCompile Include="..\..\..\src\sqlite\dbglo.cpp" />
     <ClCompile Include="..\..\..\src\sqlite\dbtablecol.cpp" />
     <ClCompile Include="..\..\..\src\sqlite\rowdatadict.cpp" />
-    <ClCompile Include="..\..\..\src\sqlite\shell.c" />
-    <ClCompile Include="..\..\..\src\sqlite\sqlite3.c" />
     <ClCompile Include="..\..\..\src\sqlite\sqlitelogger.cpp" />
     <ClCompile Include="..\..\..\src\sqlite\statement.cpp" />
     <ClCompile Include="..\..\..\src\sqlite\dbtable.cpp" />

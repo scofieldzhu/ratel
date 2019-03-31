@@ -13,7 +13,6 @@ CreateTime: 2019-1-13 20:28
 #include "rowdatadict.h"
 #include "sqldatameta.h"
 #include "statement.h"
-#include "sqlite3.h"
 #include "path.h"
 #include "pkglogger.h"
 

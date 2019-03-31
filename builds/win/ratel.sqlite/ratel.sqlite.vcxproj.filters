@@ -27,12 +27,6 @@
     <ClInclude Include="..\..\..\src\sqlite\statement.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\sqlite\sqlite3.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\sqlite\sqlite3ext.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\sqlite\dbtable.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -60,12 +54,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\sqlite\statement.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\sqlite\shell.c">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\sqlite\sqlite3.c">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\sqlite\dbtable.cpp">

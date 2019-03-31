@@ -110,7 +110,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>PACKAGE_EXPORTS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../../../3rd/sflogger/include;../../../src/basic;../../../src/package;../../../src/kernel;../../../src/filesys;../../../src/sqlite;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../3rd/sflogger/include;../../../3rd/sqlite3.27.2/include;../../../src/basic;../../../src/package;../../../src/kernel;../../../src/filesys;../../../src/sqlite;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -147,7 +147,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>PACKAGE_EXPORTS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../../../3rd/sflogger/include;../../../src/basic;../../../src/package;../../../src/kernel;../../../src/filesys;../../../src/sqlite;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../3rd/sflogger/include;../../../3rd/sqlite3.27.2/include;../../../src/basic;../../../src/package;../../../src/kernel;../../../src/filesys;../../../src/sqlite;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
