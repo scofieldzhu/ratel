@@ -28,7 +28,10 @@ class RATEL_PACKAGE_API DataBlockStorage
 {
 public:
     using UID = std::string;
-	enum {UID_LEN = 37};
+	enum{
+		UID_LEN = 37, 
+		MAX_BLOCK_NUM = 512
+	};
 	static UID NewUID();
     void removeDataBlock(const UID& blockid);
     void appendDataBlock(const UID& blockid, const char* data, uint32_t size);
@@ -38,7 +41,7 @@ public:
     operator bool()const;
     int32_t findDataBlock(const UID& id)const;
     bool existsDataBlock(const UID& id)const{return findDataBlock(id) != -1;}
-    void initEmpty();
+    void initEmpty(uint32_t maxnumofblocks = MAX_BLOCK_NUM);
 	bool load();
 	const std::wstring& filePath()const { return agfileop_.filePath(); }
     DataBlockStorage(const std::wstring& file);

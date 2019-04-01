@@ -150,7 +150,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="testdirtree.cpp" />
     <ClCompile Include="testmain.cpp" />
   </ItemGroup>
   <ItemGroup>

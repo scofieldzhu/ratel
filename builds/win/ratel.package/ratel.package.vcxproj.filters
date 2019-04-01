@@ -18,15 +18,6 @@
     <ClInclude Include="..\..\..\src\package\packagepublic.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\package\dirtree.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\package\filenode.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\package\dirnode.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\package\pkgfilebasic.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -59,12 +50,6 @@
     <None Include="..\ratel.licenseheader" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\package\dirtree.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\package\dirnode.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\package\package.cpp">
       <Filter>源文件</Filter>
     </ClCompile>

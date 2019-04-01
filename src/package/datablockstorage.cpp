@@ -15,9 +15,7 @@ using namespace std;
 RATEL_NAMESPACE_BEGIN
 
 namespace{
-    const char kFileTypes[] = {'d', 'b', 'k', '\0'};
-    const uint32_t kDefaultMaxReservedFileCnt = 512;
-    const uint32_t kMaxRWBlockItemCount = 80;
+    const char kFileTypes[] = {'d', 'b', 'k', '\0'};    
 }
 
 DataBlockStorage::DataBlockStorage(const wstring& file)
@@ -35,8 +33,9 @@ void DataBlockStorage::fflushHeaderData(bool onlyvaliditems)
     agfileop_.writeData((const char*)header_, sizeof(DbkFileHeader));
     const uint32_t kTargetOpFileCnt = onlyvaliditems ? header_->useditemcnt : header_->maxreservblockcnt;
     uint32_t cureatitemcnt = 0, leftitemcnt = 0, nextreaditemcnt = 0;
+	const uint32_t KMaxItemsCountOfEachFlush = 80;
     while(cureatitemcnt < kTargetOpFileCnt){
-        nextreaditemcnt = leftitemcnt < kMaxRWBlockItemCount ? (kTargetOpFileCnt - cureatitemcnt) : kMaxRWBlockItemCount;
+        nextreaditemcnt = leftitemcnt < KMaxItemsCountOfEachFlush ? (kTargetOpFileCnt - cureatitemcnt) : KMaxItemsCountOfEachFlush;
         agfileop_.writeData((const char*)&blockitems_[cureatitemcnt], nextreaditemcnt * sizeof(DataBlockItem));
         cureatitemcnt += nextreaditemcnt;
     };
@@ -86,14 +85,14 @@ int32_t DataBlockStorage::calcNextUsedFileDataOffset() const
     return preitem ? 0 : preitem->offset + preitem->size;      
 }
 
-void DataBlockStorage::initEmpty()
+void DataBlockStorage::initEmpty(uint32_t maxnumofblocks)
 {
     releaseResource();
     if(!isEmpty())
         agfileop_.truncEmpty();
     header_ = new DbkFileHeader();
     memcpy(header_->filetype, kFileTypes, sizeof(kFileTypes));
-    header_->maxreservblockcnt = kDefaultMaxReservedFileCnt;
+    header_->maxreservblockcnt = maxnumofblocks;
     header_->useditemcnt = 0;
     blockitems_ = new DataBlockItem[header_->maxreservblockcnt];
     fflushHeaderData(false);

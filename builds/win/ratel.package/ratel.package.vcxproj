@@ -159,15 +159,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\package\datablockstorage.h" />
-    <ClInclude Include="..\..\..\src\package\dirnode.h" />
     <ClInclude Include="..\..\..\src\package\dirtable.h" />
-    <ClInclude Include="..\..\..\src\package\dirtree.h" />
     <ClInclude Include="..\..\..\src\package\filetable.h" />
     <ClInclude Include="..\..\..\src\package\package.h" />
     <ClInclude Include="..\..\..\src\package\pkgdb.h" />
     <ClInclude Include="..\..\..\src\package\pkgfilebasic.h" />
     <ClInclude Include="..\..\..\src\package\pkgreader.h" />
-    <ClInclude Include="..\..\..\src\package\filenode.h" />
     <ClInclude Include="..\..\..\src\package\packagepublic.h" />
     <ClInclude Include="..\..\..\src\package\pkglogger.h" />
     <ClInclude Include="..\..\..\src\package\pkgwriter.h" />
@@ -177,9 +174,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\package\datablockstorage.cpp" />
-    <ClCompile Include="..\..\..\src\package\dirnode.cpp" />
     <ClCompile Include="..\..\..\src\package\dirtable.cpp" />
-    <ClCompile Include="..\..\..\src\package\dirtree.cpp" />
     <ClCompile Include="..\..\..\src\package\filetable.cpp" />
     <ClCompile Include="..\..\..\src\package\package.cpp" />
     <ClCompile Include="..\..\..\src\package\pkgdb.cpp" />
