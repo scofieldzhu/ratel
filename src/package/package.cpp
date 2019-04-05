@@ -248,10 +248,10 @@ bool Package::load(const Path& pkgpath)
     Path dbfilepath = obtainDBFilePath();
 	Path storagefilepath = obtainDataStorageFilePath();
 	PKGReader reader;
-	if(!reader.loadFile(pkgpath, dbfilepath, storagefilepath)){
-		slog_err(pkglogger) << "load pkg path(" << pkgpath.cstr() << ") failed and it's invalid package file!";
-		return false;
-	}
+// 	if(!reader.loadFile(pkgpath, dbfilepath, storagefilepath)){
+// 		slog_err(pkglogger) << "load pkg path(" << pkgpath.cstr() << ") failed and it's invalid package file!";
+// 		return false;
+// 	}
 	pkgdb_ = new PKGDB(dbfilepath, SQLITE_OPEN_READWRITE);    
 	filedatastorage_ = new DataBlockStorage(storagefilepath.toWString());
 	if(!filedatastorage_->load()){
@@ -290,11 +290,11 @@ void Package::commit()
 {
 	RETURN_IFNOT_OPENED(); 	
 	Path datafilepath = filedatastorage_->filePath();
-    PKGWriter pkgwriter(pkgfile_, pkgdb_->dbFilePath(), datafilepath);
-	if(!pkgwriter.write()){
-		slog_err(pkglogger) << "write data to package file failed!" << endl;
-		return;
-	}
+//     PKGWriter pkgwriter(pkgfile_, pkgdb_->dbFilePath(), datafilepath);
+// 	if(!pkgwriter.write()){
+// 		slog_err(pkglogger) << "write data to package file failed!" << endl;
+// 		return;
+// 	}
 }
 
 bool Package::opened() const

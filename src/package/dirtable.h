@@ -21,6 +21,7 @@ public:
 	static const RString kIdKey;
 	static const RString kPathKey;
 	static const RString kParentKey;
+	static const RString kDataFileUIDKey;
 	static const RString kStatusKey;
 	bool queryDir(const RString& path, RowDataDict& resultdata);
 	int32_t queryDirId(const RString& path);

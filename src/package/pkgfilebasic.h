@@ -27,6 +27,28 @@ struct PkgInfo
 
 #define PKGTYPE_CODE "rtlpkg"
 
+/*
+pkg file structure as following:
+----------Start Of File----------------
+--------Type Code----------------------
+--------DB File Name-------------------
+--------DB File Data Size--------------
+--------DB File Data-------------------
+--------Dir Data Block File UID(1)-----
+--------Dir Data Block File Size(1)----
+--------Dir Data Block File Content(1)-
+--------Dir Data Block File UID(2)-----
+--------Dir Data Block File Size(2)----
+--------Dir Data Block File Content(2)-
+-
+-
+-
+--------Dir Data Block File UID(n)-----
+--------Dir Data Block File Size(n)----
+--------Dir Data Block File Content(n)-
+----------End Of File------------------
+*/
+
 RATEL_NAMESPACE_END
 
 #endif

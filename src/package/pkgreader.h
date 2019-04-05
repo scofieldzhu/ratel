@@ -15,17 +15,18 @@ CreateTime: 2018-9-1 14:25
 #include "path.h"
 
 RATEL_NAMESPACE_BEGIN
+
 class RATEL_PACKAGE_API PKGReader
 {
 public:
-	bool loadFile(const Path& pkgfile, const Path& outputdbfile, const Path& outputdatafile);
+	bool load(const Path& pkgfile, const Path& targetdir);
     PKGReader();
     ~PKGReader();
 
 private:
 	void close();
 	bool open(const Path& pkgfile);	
-	bool loadNextFileData(std::ofstream& os);	
+	bool loadNextFile(const Path& targetdir);	
     bool readTypeId();
     std::ifstream fs_;
 };

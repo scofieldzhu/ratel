@@ -20,6 +20,7 @@ using namespace sqlkw;
 const RString DirTable::kIdKey = "dir_id";
 const RString DirTable::kPathKey = "dir_path";
 const RString DirTable::kParentKey = "dir_parent";
+const RString DirTable::kDataFileUIDKey = "dir_datafileuid";
 const RString DirTable::kStatusKey = "dir_status";
 
 DirTable::DirTable()
@@ -29,6 +30,7 @@ DirTable::DirTable()
 	colpropdict.setPropStatusOn(kPrimaryKey).setPropStatusOn(kUnique).setPropStatusOn(kNotNull);
 	addNewColumn(kPathKey).setDataMeta(StrSqlDataMeta(50)).propDict().setPropStatusOn(kNotNull);
     addNewColumn(kParentKey).setDataMeta(IntSqlDataMeta()).propDict().setPropStatusOn(kNotNull);
+	addNewColumn(kDataFileUIDKey).setDataMeta(StrSqlDataMeta(50)).propDict().setPropStatusOn(kNotNull);
 	addNewColumn(kStatusKey).setDataMeta(IntSqlDataMeta(NORMAL)).propDict().setPropStatusOn(kDefault);    
 }
 
