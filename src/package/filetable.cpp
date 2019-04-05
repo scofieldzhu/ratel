@@ -47,7 +47,7 @@ int32_t FileTable::queryFileId(const RString& filename, int32_t dirid)
 		return -1;
 	}
 	Variant data(Variant::kIntType);
-	return db_->queryColumnValueOfFirstResultRow(sql, 0, data) ? data.convertToInt32() : -1;
+	return db_->queryColumnValueOfFirstResultRow(sql, 0, data) ? data.toInt32() : -1;
 }
 
 bool FileTable::queryFile(const RString& filename, int32_t dirid, RowDataDict& resultdata)

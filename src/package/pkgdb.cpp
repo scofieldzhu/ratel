@@ -46,7 +46,7 @@ int32_t PKGDB::queryFileId(const RString& filename, const RString& parentdir)
 								filetable_.name().cstr(),
 								FileTable::kNameKey.cstr());		
 	Variant data(Variant::kIntType);
-	return queryColumnValueOfFirstResultRow(sql, 0, data) ? data.convertToInt32() : -1;
+	return queryColumnValueOfFirstResultRow(sql, 0, data) ? data.toInt32() : -1;
 }
 
 bool PKGDB::queryFile(const Path& absfilepath, RowDataDict& resultdata)
@@ -58,7 +58,7 @@ bool PKGDB::queryFile(const Path& absfilepath, RowDataDict& resultdata)
 		resultdata.insertPair(DirTable::kIdKey, Variant(Variant::kIntType));
 	if(!dirtable_.queryDir(parentpath, resultdata))
 		return false;
-	int32_t dirid = resultdata.getValue(DirTable::kIdKey).convertToInt32();
+	int32_t dirid = resultdata.getValue(DirTable::kIdKey).toInt32();
 	if(!existidkey)
 		resultdata.remove(DirTable::kIdKey);
 	return filetable_.queryFile(filename, dirid, resultdata);

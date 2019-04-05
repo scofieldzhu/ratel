@@ -35,9 +35,10 @@ public:
     ~Package();
 
 private:
+	bool doImportFile(DataBlockStorage& dbs, int32_t dirid, const Path& sourcefile);
 	bool exportDirId(int32_t dirid, const Path& localdir);
-    Path obtainDBFilePath()const;
-    Path obtainDataStorageFilePath()const;
+    Path newDBFilePath()const;
+    Path newDataStorageFilePath()const;
     Path workdir_;
     Path pkgfile_;    
     PKGDB* pkgdb_ = nullptr;    

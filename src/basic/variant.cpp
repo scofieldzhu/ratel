@@ -89,16 +89,16 @@ void Variant::setVoidPtr(vptr_t ptr)
 	isnull_ = false;
 }
 
-vptr_t Variant::convertToVoidPtr() const
+vptr_t Variant::toVoidPtr() const
 {
 	VERIFY_MATCHED_TYPE(kVoidPtrType)
 	return reinterpret_cast<vptr_t>(strvalue_.toInt64());	
 }
 
-bool Variant::convertToVoidPtr(vptr_t& result) const
+bool Variant::toVoidPtr(vptr_t& result) const
 {
 	CHECK_MISMATCHED_TYPE(kVoidPtrType);
-	result = convertToVoidPtr();
+	result = toVoidPtr();
 	return true;
 }
 
@@ -109,16 +109,16 @@ void Variant::setStr(const RString& str)
 	isnull_ = false;
 }
 
-RString Variant::convertToStr() const
+RString Variant::toStr() const
 {
 	VERIFY_MATCHED_TYPE(kStringType)
 	return strvalue_;
 }
 
-bool Variant::convertToStr(RString& result) const
+bool Variant::toStr(RString& result) const
 {
 	CHECK_MISMATCHED_TYPE(kStringType);
-	result = convertToStr();
+	result = toStr();
 	return true;
 }
 
@@ -129,16 +129,16 @@ void Variant::setInt32(int32_t val)
 	isnull_ = false;
 }
 
-int32_t Variant::convertToInt32() const
+int32_t Variant::toInt32() const
 {
 	VERIFY_MATCHED_TYPE(kIntType)
 	return strvalue_.toInt32();
 }
 
-bool Variant::convertToInt32(int32_t& result) const
+bool Variant::toInt32(int32_t& result) const
 {
 	CHECK_MISMATCHED_TYPE(kIntType)
-	result = convertToInt32();
+	result = toInt32();
 	return true;
 }
 
@@ -149,14 +149,14 @@ void Variant::setUInt32(uint32_t val)
 	isnull_ = false;
 }
 
-bool Variant::convertToUInt32(uint32_t& result) const
+bool Variant::toUInt32(uint32_t& result) const
 {
 	CHECK_MISMATCHED_TYPE(kUIntType)
-	result = convertToUInt32();
+	result = toUInt32();
 	return true;
 }
 
-uint32_t Variant::convertToUInt32() const
+uint32_t Variant::toUInt32() const
 {
 	VERIFY_MATCHED_TYPE(kUIntType)
 	return strvalue_.toUInt32();
@@ -169,14 +169,14 @@ void Variant::setDouble(double val)
 	isnull_ = false;
 }
 
-bool Variant::convertToDouble(double& result) const
+bool Variant::toDouble(double& result) const
 {
 	CHECK_MISMATCHED_TYPE(kDoubleType)
-	result = convertToDouble();
+	result = toDouble();
 	return true;
 }
 
-double Variant::convertToDouble() const
+double Variant::toDouble() const
 {
 	VERIFY_MATCHED_TYPE(kDoubleType)
 	return strvalue_.toDouble();

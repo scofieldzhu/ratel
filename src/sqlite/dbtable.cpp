@@ -90,13 +90,13 @@ RString DbTable::makeInsertRowSql(const RowDataDict& record)
 		const DbTableCol* thiscol = getColumn(colkey);
 		switch(thiscol->dataMeta()->dataType()){
 			case SqlDataMeta::kStr:
-				ressql += RString::FormatString("'%s',", record[colkey].convertToStr().cstr());
+				ressql += RString::FormatString("'%s',", record[colkey].toStr().cstr());
 				break;
 			case SqlDataMeta::kInt:
-				ressql += (RString::FromInt32(record[colkey].convertToInt32()) + ",");
+				ressql += (RString::FromInt32(record[colkey].toInt32()) + ",");
 				break; 
 			case SqlDataMeta::kReal:
-				ressql += (RString::FromDouble(record[colkey].convertToDouble()) + ",");
+				ressql += (RString::FromDouble(record[colkey].toDouble()) + ",");
 				break;
 		}		
 	}

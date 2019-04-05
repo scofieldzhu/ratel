@@ -42,12 +42,12 @@ Package::~Package()
     close();
 }
 
-Path Package::obtainDBFilePath() const
+Path Package::newDBFilePath() const
 {
     return workdir_.join(RString::NewUID() + ".db");
 }
 
-Path Package::obtainDataStorageFilePath() const
+Path Package::newDataStorageFilePath() const
 {
     return workdir_.join(RString::NewUID() + ".fds");
 }
@@ -72,8 +72,15 @@ bool Package::createDir(const RString& name, const Path& location)
 		}
 	}
 	Path newdirpath = location.join(name);
+	RString fn = RString::NewUID();		
+	{
+		//create new data file
+		DataBlockStorage newds(workdir_.join(fn).toWString());
+		newds.initEmpty();
+	}	
 	if(!pkgdb_->dirTable().insertRow(RowDataDict({{DirTable::kPathKey, newdirpath.cstr()},
 												{DirTable::kParentKey, parentid},
+												{DirTable::kDataFileUIDKey, fn.cstr()},
 												{DirTable::kStatusKey, DirTable::NORMAL}}))){
 		slog_err(pkglogger) << "insertRow(newdir:" << newdirpath.cstr() << " parentid:" << parentid << ") failed!" << endl;
 		return false;
@@ -147,9 +154,9 @@ bool Package::exportDirId(int32_t dirid, const Path& localdir)
 		return false;
 	}
 	for(auto rowdata : resultrows){
-		RString fn = rowdata[FileTable::kNameKey].convertToStr().cstr();
+		RString fn = rowdata[FileTable::kNameKey].toStr().cstr();
 		Path localfilepath = localdir.join(fn);
-		DataBlockStorage::UID fid = rowdata[FileTable::kFileUIDKey].convertToStr().cstr();
+		DataBlockStorage::UID fid = rowdata[FileTable::kFileUIDKey].toStr().cstr();
 		if(!filedatastorage_->exportDataBlock(fid, localfilepath)){
 			slog_err(pkglogger) << "exportDataBlock fid:" << fid.c_str() << " failed!" << endl;
 			return false;
@@ -160,8 +167,8 @@ bool Package::exportDirId(int32_t dirid, const Path& localdir)
 	if(!pkgdb_->dirTable().querySubDirs(dirid, resultrows, reference))
 		return false;
 	for(auto rowdata : resultrows){
-		int32_t did = rowdata[DirTable::kIdKey].convertToInt32();
-		Path pkgsubdir = rowdata[DirTable::kPathKey].convertToStr();
+		int32_t did = rowdata[DirTable::kIdKey].toInt32();
+		Path pkgsubdir = rowdata[DirTable::kPathKey].toStr();
 		Path newsubdir = localdir.join(pkgsubdir.filename());
 		CreateDir(newsubdir);
 		if(!exportDirId(did, newsubdir)){
@@ -179,33 +186,42 @@ bool Package::importFile(const Path& dirlocation, const Path& sourcefile)
 		return false;
 	}	
 	RETURN_FALSE_IFNOT_OPENED();
-	int32_t dirid = pkgdb_->dirTable().queryDirId(dirlocation.rstring());
-	if(dirid == -1){
+	RowDataDict dirdata({
+		{DirTable::kIdKey, Variant(Variant::kIntType)},
+		{DirTable::kDataFileUIDKey, Variant(Variant::kStringType)},
+	});
+	if(!pkgdb_->dirTable().queryDir(dirlocation.rstring(), dirdata)){
 		slog_err(pkglogger) << "dirlocation(" << dirlocation.cstr() << ") not exists!" << endl;
 		return false;
 	}
-	const RString srcfn = sourcefile.filename().rstring();
-	if(pkgdb_->fileTable().existsFile(srcfn, dirid)){
-		slog_err(pkglogger) << "same file(" << srcfn.cstr() << ") already exists in location directory(" << dirlocation.cstr() << ")!" << endl;
+	const int32_t kTheDirId = dirdata[DirTable::kIdKey].toInt32();
+	RString dsfn = dirdata[DirTable::kDataFileUIDKey].toStr();
+	const Path dsfilepath = workdir_.join(dsfn);
+	DataBlockStorage thedbs(dsfilepath.toWString());
+	if(!thedbs.load()){
+		slog_err(pkglogger) << "load data block storage file(" << dsfilepath.cstr() << ") failed!" << endl;
 		return false;
 	}
-	AgileFileOperator filereader(sourcefile.toWString());
-	uint32_t wholedatasize = 0;
-	char* wholedata = filereader.readWholeData(wholedatasize);
-	if(wholedata == nullptr){
-		slog_err(pkglogger) << "read whole data from source file failed!" << endl;
+	return doImportFile(thedbs, kTheDirId, sourcefile);
+}
+
+bool Package::doImportFile(DataBlockStorage& dbs, int32_t dirid, const Path& sourcefile)
+{
+	const RString kSrcFn = sourcefile.filename().rstring();
+	if(pkgdb_->fileTable().existsFile(kSrcFn, dirid)){
+		slog_err(pkglogger) << "same file(" << kSrcFn.cstr() << ") already exists in location dirid(" << dirid << ")!" << endl;
 		return false;
 	}
-	DataBlockStorage::UID newfileuid = DataBlockStorage::NewUID();	
-	filedatastorage_->appendDataBlock(newfileuid, wholedata, wholedatasize);
+	DataBlockStorage::UID newfileuid = DataBlockStorage::NewUID();
+	dbs.appendDataBlock(newfileuid, sourcefile);
 	RowDataDict newrow({
-		{FileTable::kNameKey, srcfn.cstr()},
+		{FileTable::kNameKey, kSrcFn.cstr()},
 		{FileTable::kDirIdKey, dirid},
 		{FileTable::kFileUIDKey, newfileuid.c_str()},
 		{FileTable::kStatusKey, FileTable::NORMAL}
-		});
+	});
 	if(!pkgdb_->fileTable().insertRow(newrow)){
-		filedatastorage_->removeDataBlock(newfileuid); //rollback data
+		dbs.removeDataBlock(newfileuid); //rollback data
 		slog_err(pkglogger) << "insert new row data to FileTable failed!" << endl;
 		return false;
 	}
@@ -224,9 +240,9 @@ bool Package::removeFile(const Path& filepath)
 		slog_err(pkglogger) << "filepath(" << filepath.cstr() <<") is invalid!" << endl;
 		return false;
 	}
-	DataBlockStorage::UID fid = resultdata[FileTable::kFileUIDKey].convertToStr().cstr();
+	DataBlockStorage::UID fid = resultdata[FileTable::kFileUIDKey].toStr().cstr();
 	filedatastorage_->removeDataBlock(fid);
-	return pkgdb_->fileTable().removeFile(resultdata[FileTable::kIdKey].convertToInt32());
+	return pkgdb_->fileTable().removeFile(resultdata[FileTable::kIdKey].toInt32());
 }
 
 bool Package::exportFile(const Path& sourcefile, const Path& localfile)
@@ -239,14 +255,14 @@ bool Package::exportFile(const Path& sourcefile, const Path& localfile)
 		slog_err(pkglogger) << "sourcefile(" << sourcefile.cstr() << ") not exists!" << endl;
 		return false;
 	}
-	DataBlockStorage::UID fid = resrowdata[FileTable::kFileUIDKey].convertToStr().cstr();
+	DataBlockStorage::UID fid = resrowdata[FileTable::kFileUIDKey].toStr().cstr();
 	return filedatastorage_->exportDataBlock(fid, localfile);
 }
 
 bool Package::load(const Path& pkgpath)
 {
-    Path dbfilepath = obtainDBFilePath();
-	Path storagefilepath = obtainDataStorageFilePath();
+    Path dbfilepath = newDBFilePath();
+	Path storagefilepath = newDataStorageFilePath();
 	PKGReader reader;
 // 	if(!reader.loadFile(pkgpath, dbfilepath, storagefilepath)){
 // 		slog_err(pkglogger) << "load pkg path(" << pkgpath.cstr() << ") failed and it's invalid package file!";
@@ -278,23 +294,24 @@ bool Package::createNew(const Path& newpkgpath)
 		log_err(pkglogger, "new package filepath(%s) is invalid!", pkgfile_.cstr());
         return false;
     }
-    Path dbfilepath = obtainDBFilePath();
-    pkgdb_ = new PKGDB(dbfilepath, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);    
-	Path datafilepath = obtainDataStorageFilePath();
-	filedatastorage_ = new DataBlockStorage(datafilepath.toWString());
-	filedatastorage_->initEmpty();
+    pkgdb_ = new PKGDB(workdir_.join(RString::NewUID() + ".db"), SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);    
+// 	Path datafilepath = newDataStorageFilePath();
+// 	filedatastorage_ = new DataBlockStorage(datafilepath.toWString());
+// 	filedatastorage_->initEmpty();
     return true;
 }
 
 void Package::commit()
 {
 	RETURN_IFNOT_OPENED(); 	
-	Path datafilepath = filedatastorage_->filePath();
-//     PKGWriter pkgwriter(pkgfile_, pkgdb_->dbFilePath(), datafilepath);
-// 	if(!pkgwriter.write()){
-// 		slog_err(pkglogger) << "write data to package file failed!" << endl;
-// 		return;
-// 	}
+    PKGWriter w;
+	if(!w.reInit(pkgfile_, pkgdb_->dbFilePath())){
+		slog_err(pkglogger) << " PKGWriter reInit failed! pkgfile[" << pkgfile_.cstr() << "]" << endl;
+		return;
+	}
+	RStrings fns = pkgdb_->dirTable().queryAllDataFiles();
+	for(auto fn : fns)
+		w.writeDataFile(workdir_.join(fn));
 }
 
 bool Package::opened() const

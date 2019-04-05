@@ -23,6 +23,7 @@ public:
 	static const RString kParentKey;
 	static const RString kDataFileUIDKey;
 	static const RString kStatusKey;
+	std::vector<RString> queryAllDataFiles();
 	bool queryDir(const RString& path, RowDataDict& resultdata);
 	int32_t queryDirId(const RString& path);
 	int32_t queryDirId(const RString& dirname, int32_t parentdirid);

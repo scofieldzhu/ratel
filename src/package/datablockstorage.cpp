@@ -9,6 +9,7 @@ CreateTime: 2018-12-30 20:09
 =========================================================================*/
 #include "datablockstorage.h"
 #include "path.h"
+#include "fsutil.h"
 #include "pkglogger.h"
 using namespace std;
 
@@ -160,7 +161,35 @@ void DataBlockStorage::appendDataBlock(const UID& blockid, const char* data, uin
 
 void DataBlockStorage::appendDataBlock(const UID& blockid, const Path& sourcefile)
 {
-
+	if(!sourcefile.isRegularFile()){
+		slog_err(pkglogger) << "invalid source file[" << sourcefile.cstr() << "]!" << endl;
+		return;
+	}
+	if(!*this){
+		slog_err(pkglogger) << "invalid file!" << endl;
+		return;
+	}
+	if(existsDataBlock(blockid)){
+		slog_err(pkglogger) << "invalid block id:" << blockid.c_str() << endl;
+		return;
+	}
+	if(header_->useditemcnt >= header_->maxreservblockcnt){
+		slog_err(pkglogger) << "no extra item for this block!" << blockid.c_str() << endl;
+		return;
+	}
+	agfileop_.setEndPos();
+	uint32_t oldsize = 0;
+	agfileop_.getSize(oldsize);
+	AgileFileOperator filereader(sourcefile.toWString());
+	uint32_t wholesize = 0;
+	filereader.getSize(wholesize);
+	fsutil::TransformDataBlock(filereader.handle(), agfileop_.handle(), wholesize, 1024 * 4);	
+	const uint32_t kNewBlockItemIndex = header_->useditemcnt;
+	memcpy(blockitems_[kNewBlockItemIndex].blockid, blockid.c_str(), UID_LEN);
+	blockitems_[kNewBlockItemIndex].offset = oldsize;
+	blockitems_[kNewBlockItemIndex].size = wholesize;
+	++header_->useditemcnt;
+	fflushHeaderData(true);
 }
 
 bool DataBlockStorage::fetchDataBlock(const UID& blockid, char* recvdata, uint32_t& datasize)

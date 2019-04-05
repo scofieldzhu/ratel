@@ -39,6 +39,7 @@ public:
     void close();
     bool getSize(uint32_t& size);
     const std::wstring& filePath()const{ return filepath_; }
+	HANDLE handle(){ return fhandle_; }
     bool ignore(uint32_t bytecnt);    
     AgileFileOperator(const std::wstring& filepath);
     ~AgileFileOperator();   

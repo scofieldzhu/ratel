@@ -45,7 +45,7 @@ int32_t DirTable::queryDirId(const RString& path)
 	}
 	RString sql = makeQueryRowWhenSql("%s='%s'", kPathKey.cstr(), path.cstr());
 	Variant data(Variant::kIntType);
-	return db_->queryColumnValueOfFirstResultRow(sql, 0, data) ? data.convertToInt32() : -1;
+	return db_->queryColumnValueOfFirstResultRow(sql, 0, data) ? data.toInt32() : -1;
 }
 
 bool DirTable::querySubDirIds(int32_t parentid, std::vector<int32_t>& subids)
@@ -54,7 +54,7 @@ bool DirTable::querySubDirIds(int32_t parentid, std::vector<int32_t>& subids)
 	std::vector<RowDataDict> resultrows;
 	if(querySubDirs(parentid, resultrows, reference)){
 		for(auto row : resultrows)
-			subids.push_back(row[kIdKey].convertToInt32());
+			subids.push_back(row[kIdKey].toInt32());
 		return true;
 	}
 	return false;
@@ -82,13 +82,30 @@ bool DirTable::queryDir(const RString& path, RowDataDict& resultdata)
 
 int32_t DirTable::queryDirId(const RString& dirname, int32_t parentdirid)
 {
-	RString sql = makeQueryRowWhenSql("%s LIKE '%%/%s' and %s=%d", kPathKey.cstr(), dirname.cstr(), kParentKey.cstr(), parentdirid);
 	if(db_ == nullptr){
 		slog_err(pkglogger) << "no any db instance connected!" << endl;
 		return -1;
 	}
+	RString sql = makeQueryRowWhenSql("%s LIKE '%%/%s' and %s=%d", kPathKey.cstr(), dirname.cstr(), kParentKey.cstr(), parentdirid);
 	Variant data(Variant::kIntType);
-	return db_->queryColumnValueOfFirstResultRow(sql, 0, data) ? data.convertToInt32() : -1;
+	return db_->queryColumnValueOfFirstResultRow(sql, 0, data) ? data.toInt32() : -1;
+}
+
+std::vector<RString> DirTable::queryAllDataFiles()
+{
+	std::vector<RString> resfiles;
+	if(db_ == nullptr){
+		slog_err(pkglogger) << "no any db instance connected!" << endl;
+		return resfiles;
+	}
+	RString sql = makeQueryRowWhenSql("%s=%d", kStatusKey.cstr(), NORMAL);
+	RowDataDict reference({{kDataFileUIDKey, Variant(Variant::kStringType)}});
+	std::vector<RowDataDict> resrows;
+	if(db_->queryMultiResultRowData(sql, resrows, reference)){
+		for(auto row : resrows)
+			resfiles.push_back(row[kDataFileUIDKey].toStr());
+	}
+	return resfiles;
 }
 
 RATEL_NAMESPACE_END

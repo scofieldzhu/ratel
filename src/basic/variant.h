@@ -27,20 +27,20 @@ public:
 		kVoidPtrType
 	};
 	void setVoidPtr(vptr_t ptr);
-	bool convertToVoidPtr(vptr_t& ptr)const;
-	vptr_t convertToVoidPtr()const;
+	bool toVoidPtr(vptr_t& ptr)const;
+	vptr_t toVoidPtr()const;
 	void setStr(const RString& str);
-	bool convertToStr(RString& result)const;
-	RString convertToStr()const;
+	bool toStr(RString& result)const;
+	RString toStr()const;
 	void setInt32(int32_t val);
-	bool convertToInt32(int32_t& result)const;
-	int32_t convertToInt32()const;	
+	bool toInt32(int32_t& result)const;
+	int32_t toInt32()const;	
 	void setUInt32(uint32_t val);
-	bool convertToUInt32(uint32_t& result)const;
-	uint32_t convertToUInt32()const;
+	bool toUInt32(uint32_t& result)const;
+	uint32_t toUInt32()const;
 	void setDouble(double val);
-	bool convertToDouble(double& result)const;
-	double convertToDouble()const;	
+	bool toDouble(double& result)const;
+	double toDouble()const;	
 	bool operator==(const Variant& rhs)const;
 	bool operator!=(const Variant& rhs)const;
 	bool isNull()const { return isnull_; }
