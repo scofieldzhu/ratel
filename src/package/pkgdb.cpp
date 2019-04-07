@@ -40,11 +40,13 @@ int32_t PKGDB::queryFileId(const RString& filename, const RString& parentdir)
 								DirTable::kIdKey.cstr(),
 								filetable_.name().cstr(),
 								FileTable::kDirIdKey.cstr());
-	sql += RString::FormatString("WHERE %s.%s='%s' and %s.%s='%s';",
+	sql += RString::FormatString("WHERE %s.%s='%s' and %s.%s='%s' and %s=%d;",
 								dirtable_.name().cstr(),
 								DirTable::kPathKey.cstr(),
 								filetable_.name().cstr(),
-								FileTable::kNameKey.cstr());		
+								FileTable::kNameKey.cstr(),
+								FileTable::kStatusKey.cstr(),
+								FileTable::NORMAL);		
 	Variant data(Variant::kIntType);
 	return queryColumnValueOfFirstResultRow(sql, 0, data) ? data.toInt32() : -1;
 }

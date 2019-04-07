@@ -23,7 +23,7 @@ public:
 	DirTable& dirTable() { return dirtable_; }
 	FileTable& fileTable() { return filetable_; }
 	int32_t queryFileId(const RString& filename, const RString& parentdir);
-	bool queryFile(const Path& absfilepath, RowDataDict& resultdata);
+	bool queryFile(const Path& absfilepath, RowDataDict& resultdata);	
 	PKGDB(const Path& dbfile, int32_t flags, const char* zvfs = nullptr);
 	~PKGDB();
 

@@ -21,10 +21,10 @@ public:
     bool createDir(const RString& name, const Path& location);
     bool importDir(const Path& targetdir, const Path& localdir);
     bool removeDir(const Path& dir);
-    bool exportDir(const Path& sourcedir, const Path& local_targetdir);
+    bool exportDir(const Path& sourcedir, const Path& localdir);
     bool importFile(const Path& dirlocation, const Path& sourcefile);
     bool removeFile(const Path& filepath);
-    bool exportFile(const Path& sourcefilepath, const Path& local_targetfilepath);
+    bool exportFile(const Path& sourcefilepath, const Path& localfile);
     bool load(const Path& pkgpath);
     bool createNew(const Path& newpkgpath);
     void commit();
@@ -35,14 +35,14 @@ public:
     ~Package();
 
 private:
+	bool doRemoveDir(int32_t dirid);
 	bool doImportFile(DataBlockStorage& dbs, int32_t dirid, const Path& sourcefile);
-	bool exportDirId(int32_t dirid, const Path& localdir);
+	bool exportDirId(int32_t dirid, DataBlockStorage& dbs, const Path& localdir);
     Path newDBFilePath()const;
     Path newDataStorageFilePath()const;
     Path workdir_;
     Path pkgfile_;    
     PKGDB* pkgdb_ = nullptr;    
-	DataBlockStorage* filedatastorage_ = nullptr;
 };
 
 RATEL_NAMESPACE_END

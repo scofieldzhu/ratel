@@ -30,6 +30,7 @@ public:
 	bool existsColumn(const RString& key)const { return getColumn(key) != nullptr; }
     RString makeCreateSql(bool ifexists = true);   
 	RString makeInsertRowSql(const RowDataDict& row);    
+	RString makeUpdateRowWhenSql(const RowDataDict& newdata, const char* whenfmt, ...);   
     RString makeDelRowWhenSql(const char* whenfmt, ...);
     RString makeQueryRowWhenSql(const char* whenfmt, ...);
     RString makeDropSql();	

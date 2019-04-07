@@ -105,6 +105,39 @@ RString DbTable::makeInsertRowSql(const RowDataDict& record)
 	return ressql;
 }
 
+RString DbTable::makeUpdateRowWhenSql(const RowDataDict& newrecord, const char* whenfmt, ...)
+{
+	logverify(sqlitelogger, checkTableRecordValidity(newrecord) && newrecord.keyCount() > 0);
+	RString ressql = "UPDATE " + name_ + " SET ";
+	for(auto colkey : newrecord.keys()){
+		ressql += (colkey + "=");
+		const DbTableCol* col = getColumn(colkey);
+		switch(col->dataMeta()->dataType()){
+			case SqlDataMeta::kStr:
+				ressql += RString::FormatString("'%s',", newrecord[colkey].toStr().cstr());
+				break;
+			case SqlDataMeta::kInt:
+				ressql += (RString::FromInt32(newrecord[colkey].toInt32()) + ",");
+				break;
+			case SqlDataMeta::kReal:
+				ressql += (RString::FromDouble(newrecord[colkey].toDouble()) + ",");
+				break;
+		}
+	}
+	ressql.popBack();
+	ressql+= " WHERE ";
+	static const int32_t kMaxBufSize = 400;
+	char buffer[kMaxBufSize] = {'\0'};
+	va_list vl;
+	va_start(vl, whenfmt);
+	vsprintf_s(buffer, kMaxBufSize - 1, whenfmt, vl);
+	va_end(vl);
+	RString whensql = buffer;
+	ressql += whensql;
+	ressql += ";";
+	return ressql;
+}
+
 RString DbTable::makeDelRowWhenSql(const char* whenfmt, ...)
 {
     static const int32_t kMaxBufSize = 400;

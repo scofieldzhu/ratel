@@ -19,14 +19,14 @@ RATEL_NAMESPACE_BEGIN
 class RATEL_PACKAGE_API PKGReader
 {
 public:
-	bool load(const Path& pkgfile, const Path& targetdir);
+	bool load(const Path& pkgfile, const Path& targetdir, Path& dbfile);
     PKGReader();
     ~PKGReader();
 
 private:
 	void close();
 	bool open(const Path& pkgfile);	
-	bool loadNextFile(const Path& targetdir);	
+	bool loadNextFile(const Path& targetdir, RString& outfilename);	
     bool readTypeId();
     std::ifstream fs_;
 };

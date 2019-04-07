@@ -40,12 +40,12 @@ FileTable::~FileTable()
 {}
 
 int32_t FileTable::queryFileId(const RString& filename, int32_t dirid)
-{	
-	RString sql = makeQueryRowWhenSql("%s='%s' and %s=%d", kNameKey.cstr(), filename.cstr(), kDirIdKey.cstr(), dirid);	
+{		
 	if(db_ == nullptr){
 		slog_err(pkglogger) << "no any db instance connected!" << endl;
 		return -1;
 	}
+	RString sql = makeQueryRowWhenSql("%s='%s' and %s=%d and %s=%d", kNameKey.cstr(), filename.cstr(), kDirIdKey.cstr(), dirid, kStatusKey, NORMAL);	
 	Variant data(Variant::kIntType);
 	return db_->queryColumnValueOfFirstResultRow(sql, 0, data) ? data.toInt32() : -1;
 }
@@ -56,7 +56,7 @@ bool FileTable::queryFile(const RString& filename, int32_t dirid, RowDataDict& r
 		slog_err(pkglogger) << "no any db instance connected!" << endl;
 		return false;
 	}
-	RString sql = makeQueryRowWhenSql("%s='%s' and %s=%d", kNameKey.cstr(), filename.cstr(), kDirIdKey.cstr(), dirid);
+	RString sql = makeQueryRowWhenSql("%s='%s' and %s=%d and %s=%d", kNameKey.cstr(), filename.cstr(), kDirIdKey.cstr(), dirid, kStatusKey, NORMAL);
 	return db_->queryFirstResultRowData(sql, resultdata);
 }
 
@@ -66,7 +66,7 @@ bool FileTable::queryFilesOfDir(int32_t dirid, std::vector<RowDataDict>& resultr
 		slog_err(pkglogger) << "no any db instance connected!" << endl;
 		return false;
 	}
-	RString sql = makeQueryRowWhenSql("%s=%d", kDirIdKey.cstr(), dirid);	
+	RString sql = makeQueryRowWhenSql("%s=%d and %s=%d", kDirIdKey.cstr(), dirid, kStatusKey, NORMAL);	
 	return db_->queryMultiResultRowData(sql, resultrows, reference);
 }
 
@@ -81,7 +81,20 @@ bool FileTable::removeFile(int32_t id)
 		slog_err(pkglogger) << "no any db instance connected!" << endl;
 		return false;
 	}
-	return db_->execUpdateData(makeDelRowWhenSql("%s=%d", kIdKey, id));
+	RowDataDict rd({{kStatusKey, REMOVED}});
+	RString sql = makeUpdateRowWhenSql(rd, "%s=%d", kIdKey.cstr(), id);
+	return db_->execUpdateData(sql);
+}
+
+bool FileTable::removeDirFiles(int32_t dirid)
+{
+	if(db_ == nullptr){
+		slog_err(pkglogger) << "no any db instance connected!" << endl;
+		return false;
+	}
+	RowDataDict rd({{kStatusKey, REMOVED}});
+	RString sql = makeUpdateRowWhenSql(rd, "%s=%d", kDirIdKey.cstr(), dirid);
+	return db_->execUpdateData(sql);
 }
 
 RATEL_NAMESPACE_END

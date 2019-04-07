@@ -110,7 +110,7 @@ int main()
     slog_info(g_AppLogger) << "enter main..." << endl;
 
     TestCase_TestPackage_Create();
- 	TestCase_TestPackage_Load();
+ 	//TestCase_TestPackage_Load();
 
 	::CoUninitialize();
 

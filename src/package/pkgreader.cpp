@@ -27,7 +27,7 @@ PKGReader::~PKGReader()
     close();
 }
 
-bool PKGReader::load(const Path& pkgfile, const Path& targetdir)
+bool PKGReader::load(const Path& pkgfile, const Path& targetdir, Path& dbfile)
 {
 	if(!targetdir.isDirectory()){
 		slog_err(pkglogger) << "targetdir(" << targetdir.cstr() << ") not exists!" << endl;
@@ -37,7 +37,14 @@ bool PKGReader::load(const Path& pkgfile, const Path& targetdir)
 		slog_err(pkglogger) << " open pkg file(" << pkgfile.rstring().cstr() << ") failed!" << endl;
 		return false;
 	}
-	while(loadNextFile(targetdir))
+	RString fn;
+	if(!loadNextFile(targetdir, fn)){ //first file is database file				
+		slog_err(pkglogger) << " load db file failed!" << endl;
+		close();
+		return false;
+	}
+	dbfile = fn;
+	while(loadNextFile(targetdir, fn))
 		;
 	close();
 	return true;
@@ -56,7 +63,7 @@ bool PKGReader::open(const Path& filepath)
     return false;    
 }
 
-bool PKGReader::loadNextFile(const Path& targetdir)
+bool PKGReader::loadNextFile(const Path& targetdir, RString& outfilename)
 {
 	if(fs_.eof())
 		return false;
@@ -71,14 +78,14 @@ bool PKGReader::loadNextFile(const Path& targetdir)
 	char* fnbuf = new char[bytestoread + 1];
 	fs_.read(fnbuf, bytestoread);
 	fnbuf[bytestoread] = '\0';
-	RString filename = fnbuf;
+	outfilename = fnbuf;
 	delete[] fnbuf;
-
+	
 	//read file content size
 	fs_.read((char*)&bytestoread, sizeof(bytestoread));
 
 	//read file content
-	Path filepath = targetdir.join(filename);
+	Path filepath = targetdir.join(outfilename);
 	ofstream ofs(filepath.toLocale().c_str(), ios_base::out | ios_base::binary);
     return fsutil::TransformDataBlock(fs_, ofs, bytestoread, kReadBufferSize);
 }
