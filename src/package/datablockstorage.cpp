@@ -37,7 +37,13 @@ void DataBlockStorage::fflushHeaderData(bool onlyvaliditems)
 	const uint32_t KMaxItemsCountOfEachFlush = 80;
     while(cureatitemcnt < kTargetOpFileCnt){
         nextreaditemcnt = leftitemcnt < KMaxItemsCountOfEachFlush ? (kTargetOpFileCnt - cureatitemcnt) : KMaxItemsCountOfEachFlush;
-        agfileop_.writeData((const char*)&blockitems_[cureatitemcnt], nextreaditemcnt * sizeof(DataBlockItem));
+        agfileop_.writeData((const char*)&(blockitems_[cureatitemcnt]), nextreaditemcnt * sizeof(DataBlockItem));
+
+// 		DataBlockItem* itemarray = new DataBlockItem[nextreaditemcnt];
+// 		agfileop_.setOpPos(nextreaditemcnt * sizeof(DataBlockItem) * -1, AgileFileOperator::kCurPos);
+// 		agfileop_.readData((char*)itemarray, nextreaditemcnt * sizeof(DataBlockItem));
+// 		delete[] itemarray;
+
         cureatitemcnt += nextreaditemcnt;
     };
     agfileop_.flush();
@@ -121,10 +127,12 @@ void DataBlockStorage::removeDataBlock(const UID& blockid)
         return;
     }
     //translate forward items started from the item next to block index
-    for(uint32_t i = blockindex + 1; i < header_->useditemcnt; ++i)
-        blockitems_[i - 1] = blockitems_[i];
-    --header_->useditemcnt;
-    fflushHeaderData(true);
+	for(uint32_t i = blockindex + 1; i <= header_->useditemcnt; ++i){
+		blockitems_[i - 1] = blockitems_[i];
+		blockitems_[i - 1].offset -= kTheBlock.size;
+	}    
+	--header_->useditemcnt;
+    fflushHeaderData(false);	
 }
 
 void DataBlockStorage::appendDataBlock(const UID& blockid, const char* data, uint32_t size)

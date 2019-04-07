@@ -88,7 +88,7 @@ bool AgileFileOperator::digest(uint32_t off, uint32_t size)
         slog_err(kernellogger) << "invalid params passed! perhaps it's too large!" << endl;
         return false;
     }
-    static const uint32_t kBufferSize = 1024;
+    static const uint32_t kBufferSize = 1024 * 4; //4k 
     char databuffer[kBufferSize] = {'\0'};    
     uint32_t rpos = off + size, wpos = off;    
     while(rpos < filesize){
@@ -192,7 +192,7 @@ bool AgileFileOperator::trunc(uint32_t size)
 {
     if(!isOpened())
         return false;
-    if(!setOpPos(size - 1, kBeginPos)){
+    if(!setOpPos(size, kBeginPos)){
         slog_err(kernellogger) << "setPos failed!" << endl;
         return false;
     }
