@@ -58,7 +58,7 @@ bool Package::createDir(const RString& name, const Path& location)
 	RETURN_FALSE_IFNOT_OPENED();
 	int32_t parentid = 0;
 	if(location.rstring() == "./")
-		parentid = -1; //root dir
+		parentid = 0; //root dir
 	else{
 		parentid = pkgdb_->dirTable().queryDirId(location.cstr());
 		if(parentid == -1){
@@ -129,6 +129,28 @@ bool Package::removeDir(const Path& dir)
 		return false;
 	}
     return doRemoveDir(dirid);
+}
+
+bool Package::createRootDir()
+{
+	Path rootdirpath = "./";
+	RString fn = RString::NewUID();
+	{	//create new data file
+		DataBlockStorage newds(workdir_.join(fn).toWString());
+		newds.initEmpty();
+	}
+	if(!pkgdb_->dirTable().insertRow(
+		RowDataDict({
+			{DirTable::kIdKey, 0},
+			{DirTable::kPathKey, rootdirpath.cstr()},
+			{DirTable::kParentKey, -1},
+			{DirTable::kDataFileUIDKey, fn.cstr()},
+			{DirTable::kStatusKey, DirTable::NORMAL}})
+		)){
+		slog_err(pkglogger) << "insertRow(rootdir:" << rootdirpath.cstr() << " failed!" << endl;
+		return false;
+	}
+	return true;
 }
 
 bool Package::doRemoveDir(int32_t dirid)
@@ -337,13 +359,20 @@ bool Package::createNew(const Path& newpkgpath)
 		log_err(pkglogger, "new package filepath(%s) is invalid!", pkgfile_.cstr());
         return false;
     }
-    pkgdb_ = new PKGDB(workdir_.join(RString::NewUID() + ".db"), SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);    
-    return true;
+    pkgdb_ = new PKGDB(workdir_.join(RString::NewUID() + ".db"), SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);    	
+    if(!createRootDir()){
+		log_err(pkglogger, "create root dir failed");
+		return false;
+	}
+	commit();
+	return true;
 }
 
 void Package::commit()
 {
 	RETURN_IFNOT_OPENED(); 	
+	if(pkgfile_.exists())
+		RemoveFile(pkgfile_);
     PKGWriter w;
 	if(!w.reInit(pkgfile_, pkgdb_->dbFilePath())){
 		slog_err(pkglogger) << " PKGWriter reInit failed! pkgfile[" << pkgfile_.cstr() << "]" << endl;
@@ -359,10 +388,12 @@ bool Package::opened() const
     return pkgdb_ != nullptr;
 }
 
-void Package::close()
+void Package::close(bool commitmodified)
 {
 	if(!opened())
 		return;
+	if(commitmodified)
+		commit();
 	rtdelete(pkgdb_);
 	pkgdb_ = nullptr;	
 	RemoveDir(workdir_);

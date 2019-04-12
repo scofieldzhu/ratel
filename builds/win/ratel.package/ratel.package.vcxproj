@@ -155,6 +155,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <AdditionalLibraryDirectories>../_bin;../../../3rd/sflogger/bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>ratel.basic-x64.lib;ratel.filesys-x64.lib;ratel.sqlite-x64.lib;ratel.kernel-x64.lib;sflogger.core-v140-x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

@@ -156,6 +156,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <AdditionalLibraryDirectories>../_bin;../../../3rd/sflogger/bin</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Ole32.lib;sflogger.core-v140-x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

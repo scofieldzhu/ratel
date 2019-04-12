@@ -330,7 +330,9 @@ public:
 	//encode and decode rstring between locale and wstring charset
     std::string decodeToLocale()const;
     std::wstring decodeToWString()const;
+	static RString FromLocale(const char* localestr);
     RString& encodeFromLocale(const char* localestr);
+	static RString FromWString(const std::wstring& srcstr);
     RString& encodeFromWString(const std::wstring& srcstr);    
 
 	static RString NewUID();

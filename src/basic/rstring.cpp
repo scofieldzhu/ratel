@@ -1046,12 +1046,24 @@ std::wstring RString::decodeToWString() const
     return cvt.from_bytes(cstr());
 }
 
+RString RString::FromLocale(const char* localestr)
+{
+	RString rs;
+	return rs.encodeFromLocale(localestr);
+}
+
 RString& RString::encodeFromLocale(const char* localestr)
 {
     std::locale l(""); //get locale from environment, same as: setlocale(LC_ALL, "").
     std::wstring_convert<LocaleCodecvt> cv(new LocaleCodecvt(l.name()));
     std::wstring tmpwstr = cv.from_bytes(localestr);
     return encodeFromWString(tmpwstr);
+}
+
+RString RString::FromWString(const std::wstring& srcstr)
+{
+	RString rs;
+	return rs.encodeFromWString(srcstr);
 }
 
 RString& RString::encodeFromWString(const std::wstring& srcstr)

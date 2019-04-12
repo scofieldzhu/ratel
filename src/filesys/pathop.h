@@ -15,5 +15,6 @@ CreateTime: 2019-3-20 21:18
 RATEL_NAMESPACE_BEGIN
 RATEL_FILESYS_API bool CreateDir(const Path& dirpath);
 RATEL_FILESYS_API bool RemoveDir(const Path& dirpath);
+RATEL_FILESYS_API bool RemoveFile(const Path& path);
 RATEL_NAMESPACE_END
 #endif

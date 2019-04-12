@@ -40,4 +40,11 @@ bool RemoveDir(const Path& dirpath)
 	return fop.fAnyOperationsAborted == FALSE;
 }
 
+bool RemoveFile(const Path& path)
+{
+	return RemoveDir(path);
+}
+
 RATEL_NAMESPACE_END
+
+

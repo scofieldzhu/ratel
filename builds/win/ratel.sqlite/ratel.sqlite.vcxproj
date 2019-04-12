@@ -157,7 +157,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>../../../3rd/sflogger/bin;../../../3rd/sqlite3.27.2/x64;../_bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>ratel.basic-x64.lib;ratel.filesys-x64.lib;ratel.kernel-x64.lib;sflogger.core-v140-x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ratel.basic-x64.lib;ratel.filesys-x64.lib;ratel.kernel-x64.lib;sflogger.core-v140-x64.lib;sqlite3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

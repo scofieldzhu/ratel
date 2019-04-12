@@ -29,12 +29,13 @@ public:
     bool createNew(const Path& newpkgpath);
     void commit();
     bool opened()const;
-    void close();
+    void close(bool commitmodified = false);
     const Path& workDir()const { return workdir_; }
     Package(const Path& workdir);
     ~Package();
 
 private:
+	bool createRootDir();
 	bool doRemoveDir(int32_t dirid);
 	bool doImportFile(DataBlockStorage& dbs, int32_t dirid, const Path& sourcefile);
 	bool exportDirId(int32_t dirid, DataBlockStorage& dbs, const Path& localdir);
