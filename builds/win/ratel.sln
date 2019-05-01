@@ -48,6 +48,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tinypack", "tinypack\tinypa
 		{1B5F67E6-5EB7-4628-96F1-FD98CF26318C} = {1B5F67E6-5EB7-4628-96F1-FD98CF26318C}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ratel.serialization", "ratel.serialization\ratel.serialization.vcxproj", "{C0023E7E-5A1B-418A-A91A-A46A34AC7880}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -136,6 +138,14 @@ Global
 		{227F5653-3857-4922-AB9C-29375DB7D42E}.Release|x64.Build.0 = Release|x64
 		{227F5653-3857-4922-AB9C-29375DB7D42E}.Release|x86.ActiveCfg = Release|Win32
 		{227F5653-3857-4922-AB9C-29375DB7D42E}.Release|x86.Build.0 = Release|Win32
+		{C0023E7E-5A1B-418A-A91A-A46A34AC7880}.Debug|x64.ActiveCfg = Debug|x64
+		{C0023E7E-5A1B-418A-A91A-A46A34AC7880}.Debug|x64.Build.0 = Debug|x64
+		{C0023E7E-5A1B-418A-A91A-A46A34AC7880}.Debug|x86.ActiveCfg = Debug|Win32
+		{C0023E7E-5A1B-418A-A91A-A46A34AC7880}.Debug|x86.Build.0 = Debug|Win32
+		{C0023E7E-5A1B-418A-A91A-A46A34AC7880}.Release|x64.ActiveCfg = Release|x64
+		{C0023E7E-5A1B-418A-A91A-A46A34AC7880}.Release|x64.Build.0 = Release|x64
+		{C0023E7E-5A1B-418A-A91A-A46A34AC7880}.Release|x86.ActiveCfg = Release|Win32
+		{C0023E7E-5A1B-418A-A91A-A46A34AC7880}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
