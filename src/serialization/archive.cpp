@@ -10,5 +10,15 @@ CreateTime: 2019-4-18 21:24
 #include "archive.h"
 
 RATEL_NAMESPACE_BEGIN
+Archive::Archive()
+{}
+
+Archive::~Archive()
+{}
+
+SObject* Archive::readObject(SMetaCls* metacls)
+{
+	return nullptr;
+}
 
 RATEL_NAMESPACE_END

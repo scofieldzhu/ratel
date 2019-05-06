@@ -18,13 +18,15 @@ struct SMetaCls
 {
 	const char* clsname = nullptr;
 	int32_t objsize = 0;
-	SMetaCls* basecls = nullptr;
 	int32_t schema = -1;
-	SObject* (*createfunc)() = nullptr;
-	SObject* (*getbasefunc)() = nullptr;
+	SObject* (*fncreateobj)() = nullptr;
+	SMetaCls* basecls = nullptr;
+	
 	SObject* createObject();
-	static SMetaCls* stFirstCls = nullptr;
-	static SObject* CreateObject(const char* clsname);
+	static SMetaCls* Load();	
+
+	static SMetaCls* stFirstCls;	
+	SMetaCls* nextcls = nullptr;		
 };
 
 RATEL_NAMESPACE_END

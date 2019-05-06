@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\src\serialization\archive.h" />
     <ClInclude Include="..\..\..\src\serialization\binaryarchive.h" />
+    <ClInclude Include="..\..\..\src\serialization\metaclsautoconf.h" />
     <ClInclude Include="..\..\..\src\serialization\smetacls.h" />
     <ClInclude Include="..\..\..\src\serialization\serializationlogger.h" />
     <ClInclude Include="..\..\..\src\serialization\serializationpublic.h" />
@@ -33,8 +34,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\serialization\archive.cpp" />
+    <ClCompile Include="..\..\..\src\serialization\metaclsautoconf.cpp" />
     <ClCompile Include="..\..\..\src\serialization\serializationlogger.cpp" />
     <ClCompile Include="..\..\..\src\serialization\smetacls.cpp" />
+    <ClCompile Include="..\..\..\src\serialization\sobject.cpp" />
     <ClCompile Include="..\..\..\src\serialization\testcls.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -118,6 +121,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>ratel.basic-x64-d.lib;ratel.filesys-x64-d.lib;ratel.sqlite-x64-d.lib;ratel.kernel-x64-d.lib;sflogger.core-v140-x64-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../_bin;../../../3rd/sflogger/bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

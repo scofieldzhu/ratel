@@ -8,9 +8,10 @@ Module: testcls.cpp
 CreateTime: 2019-4-27 21:09
 =========================================================================*/
 #include "testcls.h"
+#include "archive.h"
 USING_RATEL
 
-IMPL_SERIALIZER(SObject, TestCls, 0)
+IMPL_SERIAL(TestCls, SObject, 0)
 
 TestCls::TestCls(){
 

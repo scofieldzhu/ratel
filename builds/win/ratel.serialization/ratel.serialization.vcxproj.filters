@@ -39,6 +39,9 @@
     <ClInclude Include="..\..\..\src\serialization\testcls.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\serialization\metaclsautoconf.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\ratel.licenseheader" />
@@ -54,6 +57,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\serialization\testcls.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\serialization\sobject.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\serialization\metaclsautoconf.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

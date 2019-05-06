@@ -4,24 +4,21 @@ for for those c++ developers pursuing fast-developement.
 Copyright (c) scofieldzhu. All rights reserved.	
 
 Project: ratel.serialization 
-Module: archive.h 
-CreateTime: 2019-4-18 20:55
+Module: metaclsautoconf.cpp 
+CreateTime: 2019-5-5 22:25
 =========================================================================*/
-#ifndef __archive_h__
-#define __archive_h__
-
-#include "serializationpublic.h"
+#include "metaclsautoconf.h"
+#include "smetacls.h"
 
 RATEL_NAMESPACE_BEGIN
 
-class RATEL_SERIALIZATION_API Archive
+MetaClsAutoConf::MetaClsAutoConf(SMetaCls* newcls)
 {
-public:
-	SObject* readObject(SMetaCls* metacls);
-	Archive();
-	virtual ~Archive();
-};
+	newcls->nextcls = SMetaCls::stFirstCls;
+	SMetaCls::stFirstCls = newcls;
+}
+
+MetaClsAutoConf::~MetaClsAutoConf()
+{}
 
 RATEL_NAMESPACE_END
-
-#endif

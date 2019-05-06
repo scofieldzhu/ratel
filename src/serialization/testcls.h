@@ -14,7 +14,7 @@ CreateTime: 2019-4-27 21:01
 class TestCls : public RATEL::SObject
 {
 
-	DECLARE_SERIALIZER(RATEL::SObject, TestCls)
+	DECL_SERIAL(TestCls)	
 
 public:
 	TestCls();
