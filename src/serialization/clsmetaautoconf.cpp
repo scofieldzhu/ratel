@@ -4,21 +4,21 @@ for for those c++ developers pursuing fast-developement.
 Copyright (c) scofieldzhu. All rights reserved.	
 
 Project: ratel.serialization 
-Module: metaclsautoconf.h 
-CreateTime: 2019-5-5 22:22
+Module: clsmetaautoconf.cpp 
+CreateTime: 2019-5-5 22:25
 =========================================================================*/
-#ifndef __metaclsautoconf_h__
-#define __metaclsautoconf_h__
-
-#include "serializationpublic.h"
+#include "clsmetaautoconf.h"
+#include "sclsmeta.h"
 
 RATEL_NAMESPACE_BEGIN
 
-struct RATEL_SERIALIZATION_API MetaClsAutoConf
+ClsMetaAutoConf::ClsMetaAutoConf(SClsMeta* newcls)
 {
-	MetaClsAutoConf(SMetaCls* newcls);
-	~MetaClsAutoConf();
-};
-RATEL_NAMESPACE_END
+	newcls->nextcls = SClsMeta::stFirstCls;
+	SClsMeta::stFirstCls = newcls;
+}
 
-#endif
+ClsMetaAutoConf::~ClsMetaAutoConf()
+{}
+
+RATEL_NAMESPACE_END

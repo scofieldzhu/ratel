@@ -12,7 +12,7 @@ CreateTime: 2019-5-5 21:39
 RATEL_NAMESPACE_BEGIN
 
 static const char* stSObject = "SObject";
-SMetaCls SObject::ClsSObject = {stSObject, sizeof(stSObject), -1, nullptr, nullptr, nullptr};
+SClsMeta SObject::st_SObject_Meta = {stSObject, sizeof(stSObject), 0xFFFF, nullptr, nullptr, nullptr};
 
 SObject::SObject(){}
 
@@ -28,13 +28,13 @@ bool SObject::isSerializable() const
 	return false;
 }
 
-bool SObject::isKindOf(const SMetaCls* targetmetacls) const
+bool SObject::isKindOf(const SClsMeta& targetmetacls) const
 {
-	SMetaCls* curmetacls = getMetaCls();
-	while(curmetacls != nullptr){
-		if(curmetacls == targetmetacls)
+	SClsMeta* curmeta = &getClsMeta();
+	while(curmeta != nullptr){
+		if(curmeta == &targetmetacls)
 			return true;
-		curmetacls = curmetacls->basecls;
+		curmeta = curmeta->basecls;
 	}
 	return false;
 }

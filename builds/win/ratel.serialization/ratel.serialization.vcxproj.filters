@@ -30,16 +30,16 @@
     <ClInclude Include="..\..\..\src\serialization\serializationpublic.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\serialization\smetacls.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\serialization\sobject.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\serialization\testcls.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\serialization\metaclsautoconf.h">
+    <ClInclude Include="..\..\..\src\serialization\sclsmeta.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\serialization\clsmetaautoconf.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -53,16 +53,16 @@
     <ClCompile Include="..\..\..\src\serialization\serializationlogger.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\serialization\smetacls.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\serialization\testcls.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\serialization\sobject.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\serialization\metaclsautoconf.cpp">
+    <ClCompile Include="..\..\..\src\serialization\sclsmeta.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\serialization\clsmetaautoconf.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

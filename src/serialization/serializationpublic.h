@@ -20,7 +20,7 @@ CreateTime: 2019-4-18 21:20
 
 RATEL_NAMESPACE_BEGIN
 
-struct SMetaCls;
+struct SClsMeta;
 class SObject;
 class Archive;
 

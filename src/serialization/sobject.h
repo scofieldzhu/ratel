@@ -10,41 +10,41 @@ CreateTime: 2019-4-18 20:58
 #ifndef __serializer_h__
 #define __serializer_h__
 
-#include "smetacls.h"
-#include "metaclsautoconf.h"
+#include "sclsmeta.h"
+#include "clsmetaautoconf.h"
 
 RATEL_NAMESPACE_BEGIN
 
 class RATEL_SERIALIZATION_API SObject
 {
 public:
-	static SMetaCls ClsSObject;
-	virtual SMetaCls* getMetaCls()const{ return &SObject::ClsSObject; }
+	static SClsMeta st_SObject_Meta;
+	virtual SClsMeta& getClsMeta()const{ return SObject::st_SObject_Meta; }
 	void serialize(Archive& ar);
 	bool isSerializable()const;
-	bool isKindOf(const SMetaCls* metacls)const;
+	bool isKindOf(const SClsMeta& metacls)const;
 	SObject();
 	virtual ~SObject();
 };
 
 RATEL_NAMESPACE_END
 
-#define GET_METACLS(TheCls) (&TheCls::Cls##TheCls)
+#define GET_METACLS(TheCls) (&TheCls::st_##TheCls##_Meta)
 
 #define __DECL_NEW_METACLS(MyCls) \
 	public:\
-	static RATEL::SMetaCls Cls##MyCls;\
-	RATEL::SMetaCls* getMetaCls()const;
+	static RATEL::SClsMeta st_##MyCls##_Meta;\
+	RATEL::SClsMeta& getClsMeta()const;
 
 #define __IMPL_NEW_METACLS(MyCls, BaseCls, Schema, fnNew) \
 	static const char* stClsName = #MyCls; \
-	RATEL::SMetaCls MyCls::Cls##MyCls = { stClsName, sizeof(MyCls), Schema, fnNew, GET_METACLS(BaseCls), nullptr}; \
-	static RATEL::MetaClsAutoConf __autoconf(&MyCls::Cls##MyCls); \
-	RATEL::SMetaCls* MyCls::getMetaCls()const{ return &MyCls::Cls##MyCls; }
+	RATEL::SClsMeta MyCls::st_##MyCls##_Meta = {stClsName, sizeof(MyCls), Schema, fnNew, GET_METACLS(BaseCls), nullptr}; \
+	static RATEL::ClsMetaAutoConf __autoconf(&MyCls::st_##MyCls##_Meta); \
+	RATEL::SClsMeta& MyCls::getClsMeta()const{ return MyCls::st_##MyCls##_Meta; }
 
 #define DECL_DYNAMIC(MyCls) __DECL_NEW_METACLS(MyCls)
 
-#define IMPL_DYNAMIC(MyCls, BaseCls) __IMPL_NEW_METACLS(MyCls, BaseCls, -1, nullptr)	
+#define IMPL_DYNAMIC(MyCls, BaseCls) __IMPL_NEW_METACLS(MyCls, BaseCls, 0xFFFF, nullptr)	
 
 #define DECL_DYNCREATE(MyCls) \
 	DECL_DYNAMIC(MyCls) \
@@ -52,7 +52,7 @@ RATEL_NAMESPACE_END
 
 #define IMPL_DYNCREATE(MyCls, BaseCls) \
 	RATEL::SObject* MyCls::CreateObject() { return new MyCls(); } \
-	__IMPL_NEW_METACLS(MyCls, BaseCls, -1, MyCls::CreateObject) 
+	__IMPL_NEW_METACLS(MyCls, BaseCls, 0xFFFF, MyCls::CreateObject) 
 
 #define DECL_SERIAL(MyCls) \
 	DECL_DYNCREATE(MyCls) \

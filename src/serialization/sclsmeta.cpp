@@ -7,14 +7,15 @@ Project: ratel.serialization
 Module: smetacls.cpp 
 CreateTime: 2019-4-25 22:01
 =========================================================================*/
-#include "smetacls.h"
+#include "sclsmeta.h"
 #include "serializationlogger.h"
+#include "archive.h"
 
 RATEL_NAMESPACE_BEGIN
 
-SMetaCls* SMetaCls::stFirstCls = nullptr;
+SClsMeta* SClsMeta::stFirstCls = nullptr;
 
-SObject* SMetaCls::createObject()
+SObject* SClsMeta::createObject()
 {
 	if(fncreateobj == nullptr){
 		slog_err(serializationlogger) << "trying create object failed, perhaps its' class declaration not label with 'DECL_DYNCREATE'!" << endl;
@@ -23,8 +24,27 @@ SObject* SMetaCls::createObject()
 	return (*fncreateobj)();
 }
 
-SMetaCls* SMetaCls::Load()
+void SClsMeta::store(Archive& ar)const
 {
+	uint32_t len = strlen(clsname);
+	ar << schemano << len;
+	ar.writeData(clsname, len);
+}
+
+SObject* SClsMeta::CreateObject(const char* clsname)
+{
+	SClsMeta* thiscls = Find(clsname);
+	return thiscls ? thiscls->createObject() : nullptr;	
+}
+
+SClsMeta* SClsMeta::Find(const char* clsname)
+{
+	SClsMeta* curcls = stFirstCls;
+	while(curcls != nullptr){
+		if(strcmp(curcls->clsname, clsname) == 0)
+			return curcls;
+		curcls = curcls->nextcls;
+	}
 	return nullptr;
 }
 

@@ -21,8 +21,8 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\src\serialization\archive.h" />
     <ClInclude Include="..\..\..\src\serialization\binaryarchive.h" />
-    <ClInclude Include="..\..\..\src\serialization\metaclsautoconf.h" />
-    <ClInclude Include="..\..\..\src\serialization\smetacls.h" />
+    <ClInclude Include="..\..\..\src\serialization\clsmetaautoconf.h" />
+    <ClInclude Include="..\..\..\src\serialization\sclsmeta.h" />
     <ClInclude Include="..\..\..\src\serialization\serializationlogger.h" />
     <ClInclude Include="..\..\..\src\serialization\serializationpublic.h" />
     <ClInclude Include="..\..\..\src\serialization\sobject.h" />
@@ -34,9 +34,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\serialization\archive.cpp" />
-    <ClCompile Include="..\..\..\src\serialization\metaclsautoconf.cpp" />
+    <ClCompile Include="..\..\..\src\serialization\clsmetaautoconf.cpp" />
     <ClCompile Include="..\..\..\src\serialization\serializationlogger.cpp" />
-    <ClCompile Include="..\..\..\src\serialization\smetacls.cpp" />
+    <ClCompile Include="..\..\..\src\serialization\sclsmeta.cpp" />
     <ClCompile Include="..\..\..\src\serialization\sobject.cpp" />
     <ClCompile Include="..\..\..\src\serialization\testcls.cpp" />
   </ItemGroup>
@@ -116,7 +116,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;SERIALIZATION_EXPORT;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../../../src/basic;../../../3rd/sflogger/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../src/kernel;../../../src/basic;../../../3rd/sflogger/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
