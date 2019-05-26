@@ -26,23 +26,27 @@ public:
 	Archive& operator>>(int32_t& value);
 	Archive& operator<<(uint32_t value);
 	Archive& operator<<(int32_t value);
+	Archive& operator<<(const RString& str);
+	Archive& operator>>(RString& str);
 	bool readData(char* data, uint32_t size, uint32_t* actualsize);
 	void writeData(const char* data, uint32_t size);	
 	void writeClsMeta(const SClsMeta& meta);
-	SObject* readObject(SClsMeta* metacls);
+	SObject* readObject(const SClsMeta& metacls);
 	void writeObject(const SObject& obj);
 	bool isStored()const { return isstored_; }
 	Archive(std::wstring& fn, bool isstore);
 	virtual ~Archive();
 
 private:
-	friend Archive& operator<<(Archive& ar, const SObject& obj);
+	friend RATEL_SERIALIZATION_API Archive& operator<<(Archive& ar, const SObject& obj);
+	friend RATEL_SERIALIZATION_API Archive& operator>>(Archive& ar, SObject& obj);
 	AgileFileOperator fileoperator_;
 	bool isstored_;
 	std::map<const SClsMeta*, uint16_t> clsmetamap_;
 };
 
-Archive& operator<<(Archive& ar, const SObject& obj);
+RATEL_SERIALIZATION_API Archive& operator<<(Archive& ar, const SObject& obj);
+RATEL_SERIALIZATION_API Archive& operator>>(Archive& ar, SObject& obj);
 
 RATEL_NAMESPACE_END
 

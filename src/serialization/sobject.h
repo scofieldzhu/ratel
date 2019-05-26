@@ -20,7 +20,7 @@ class RATEL_SERIALIZATION_API SObject
 public:
 	static SClsMeta st_SObject_Meta;
 	virtual SClsMeta& getClsMeta()const{ return SObject::st_SObject_Meta; }
-	void serialize(Archive& ar);
+	virtual void serialize(Archive& ar);
 	bool isSerializable()const;
 	bool isKindOf(const SClsMeta& metacls)const;
 	SObject();
@@ -29,7 +29,8 @@ public:
 
 RATEL_NAMESPACE_END
 
-#define GET_METACLS(TheCls) (&TheCls::st_##TheCls##_Meta)
+#define GET_CLS_META(TheCls) (TheCls::st_##TheCls##_Meta)
+#define GET_CLS_META_PTR(TheCls) std::addressof(GET_CLS_META(TheCls)) 
 
 #define __DECL_NEW_METACLS(MyCls) \
 	public:\
@@ -38,9 +39,9 @@ RATEL_NAMESPACE_END
 
 #define __IMPL_NEW_METACLS(MyCls, BaseCls, Schema, fnNew) \
 	static const char* stClsName = #MyCls; \
-	RATEL::SClsMeta MyCls::st_##MyCls##_Meta = {stClsName, sizeof(MyCls), Schema, fnNew, GET_METACLS(BaseCls), nullptr}; \
-	static RATEL::ClsMetaAutoConf __autoconf(&MyCls::st_##MyCls##_Meta); \
-	RATEL::SClsMeta& MyCls::getClsMeta()const{ return MyCls::st_##MyCls##_Meta; }
+	RATEL::SClsMeta MyCls::st_##MyCls##_Meta = {stClsName, sizeof(MyCls), Schema, fnNew, GET_CLS_META_PTR(BaseCls), nullptr}; \
+	static RATEL::ClsMetaAutoConf __autoconf(GET_CLS_META_PTR(MyCls)); \
+	RATEL::SClsMeta& MyCls::getClsMeta()const{ return GET_CLS_META(MyCls); }
 
 #define DECL_DYNAMIC(MyCls) __DECL_NEW_METACLS(MyCls)
 
@@ -62,7 +63,7 @@ RATEL_NAMESPACE_END
 	RATEL::SObject* MyCls::CreateObject() { return new MyCls(); } \
 	__IMPL_NEW_METACLS(MyCls, BaseCls, Schema, MyCls::CreateObject) \
 	RATEL::Archive& operator>>(RATEL::Archive& ar, MyCls*& myobj){ \
-		myobj = (MyCls*)ar.readObject(GET_METACLS(MyCls)); \
+		myobj = (MyCls*)ar.readObject(GET_CLS_META(MyCls)); \
 		return ar; \
 	}
 	

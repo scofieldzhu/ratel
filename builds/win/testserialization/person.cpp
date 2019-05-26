@@ -3,20 +3,33 @@ Ratel is a application framework, which provides some convenient librarys
 for for those c++ developers pursuing fast-developement.
 Copyright (c) scofieldzhu. All rights reserved.	
 
-Project: ratel.serialization 
-Module: testcls.cpp 
-CreateTime: 2019-4-27 21:09
+Project: testserialization 
+Module: person.cpp 
+CreateTime: 2019-5-26 21:32
 =========================================================================*/
-#include "testcls.h"
+#include "person.h"
 #include "archive.h"
 USING_RATEL
 
-IMPL_SERIAL(TestCls, SObject, 0)
+IMPL_SERIAL(Person, SObject, 1)
 
-TestCls::TestCls(){
+Person::Person()
+{}
 
+Person::Person(const RString& nameval)
+	:name(nameval)
+{}
+
+Person::~Person()
+{}
+
+void Person::serialize(Archive& ar)
+{
+	if(ar.isStored()){
+		uint32_t namelen = name.size();
+		ar << namelen << name << age;
+	}else{
+
+	}
 }
 
-TestCls::~TestCls(){
-
-}

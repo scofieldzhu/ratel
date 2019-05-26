@@ -18,13 +18,14 @@ struct SClsMeta
 {
 	const char* clsname = nullptr;
 	uint32_t objsize = 0;
-	uint32_t schemano = -1;
+	uint32_t schemano = 0xFFFFF;
 	SObject* (*fncreateobj)() = nullptr;
 	SClsMeta* basecls = nullptr;
 	
-	SObject* createObject();
+	SObject* createObject()const;
 
 	void store(Archive& ar)const;
+	void load(Archive& ar)const;
 
 	static SObject* CreateObject(const char* clsname);
 	static SClsMeta* Find(const char* clsname);

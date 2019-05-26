@@ -50,6 +50,17 @@ Archive& Archive::operator>>(int16_t& value)
 	return *this;
 }
 
+Archive& Archive::operator>>(RString& str)
+{
+	uint32_t finishedbytes = 0;
+	char* buffer = new char[str.size() + 1];
+	fileoperator_.readData(buffer, str.size(), &finishedbytes);	
+	buffer[finishedbytes] = '\0';
+	str = buffer;
+	delete[] buffer;
+	return *this;
+}
+
 Archive& Archive::operator<<(uint32_t value)
 {
 	fileoperator_.writeData((const char*)(&value), sizeof(value), nullptr);
@@ -71,6 +82,12 @@ Archive& Archive::operator<<(uint16_t value)
 Archive& Archive::operator<<(int16_t value)
 {
 	fileoperator_.writeData((const char*)(&value), sizeof(value), nullptr);
+	return *this;
+}
+
+Archive& Archive::operator<<(const RString& str)
+{
+	fileoperator_.writeData(str.cstr(), str.size(), nullptr);
 	return *this;
 }
 
@@ -98,9 +115,9 @@ void Archive::writeClsMeta(const SClsMeta& meta)
 	}
 }
 
-SObject* Archive::readObject(SClsMeta* metacls)
+SObject* Archive::readObject(const SClsMeta& metacls)
 {
-	SObject* newobj = metacls ? metacls->createObject() : nullptr;
+	SObject* newobj = metacls.createObject();
 	if(newobj)
 		newobj->serialize(*this);
 	return newobj;
@@ -116,6 +133,11 @@ void Archive::writeObject(const SObject& obj)
 Archive& operator<<(Archive& ar, const SObject& obj)
 {
 	ar.writeObject(obj);
+	return ar;
+}
+
+Archive& operator>>(Archive& ar, SObject& obj)
+{
 	return ar;
 }
 
