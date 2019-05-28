@@ -31,6 +31,7 @@ public:
 	bool readData(char* data, uint32_t size, uint32_t* actualsize);
 	void writeData(const char* data, uint32_t size);	
 	void writeClsMeta(const SClsMeta& meta);
+	SClsMeta* readClsMeta();
 	SObject* readObject(const SClsMeta& metacls);
 	void writeObject(const SObject& obj);
 	bool isStored()const { return isstored_; }
@@ -39,14 +40,13 @@ public:
 
 private:
 	friend RATEL_SERIALIZATION_API Archive& operator<<(Archive& ar, const SObject& obj);
-	friend RATEL_SERIALIZATION_API Archive& operator>>(Archive& ar, SObject& obj);
 	AgileFileOperator fileoperator_;
 	bool isstored_;
-	std::map<const SClsMeta*, uint16_t> clsmetamap_;
+	std::map<const SClsMeta*, uint16_t> metamapofwrite_;
+	std::map<uint16_t, SClsMeta*> metamapofread_;
 };
 
 RATEL_SERIALIZATION_API Archive& operator<<(Archive& ar, const SObject& obj);
-RATEL_SERIALIZATION_API Archive& operator>>(Archive& ar, SObject& obj);
 
 RATEL_NAMESPACE_END
 

@@ -24,11 +24,11 @@ struct SClsMeta
 	
 	SObject* createObject()const;
 
-	void store(Archive& ar)const;
-	void load(Archive& ar)const;
+	void store(Archive& ar)const;	
 
 	static SObject* CreateObject(const char* clsname);
-	static SClsMeta* Find(const char* clsname);
+	static SClsMeta* FindMeta(const char* clsname);
+	static SClsMeta* LoadMeta(Archive& ar);
 
 	static SClsMeta* stFirstCls;	
 	SClsMeta* nextcls = nullptr;		

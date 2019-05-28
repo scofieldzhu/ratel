@@ -31,18 +31,32 @@ void SClsMeta::store(Archive& ar)const
 	ar.writeData(clsname, len);
 }
 
-void SClsMeta::load(Archive& ar) const
+SClsMeta* SClsMeta::LoadMeta(Archive& ar)
 {
-	
+	uint32_t namelen = 0;
+	uint32_t oldschemano = 0;
+	ar >> oldschemano >> namelen;
+	char* clsname = new char[namelen + 1];
+	SClsMeta* resultmeta = nullptr;
+	if(!ar.readData(clsname, namelen, nullptr))
+		slog_err(serializationlogger) << "invalid file format!" << endl;
+	else{
+		clsname[namelen] = '\0';
+		resultmeta = SClsMeta::FindMeta(clsname);
+		if(resultmeta == nullptr)
+			slog_err(serializationlogger) << "unknown class(" << (const char*)clsname << ")!" << endl;
+	}			
+	rtarrydelete(clsname);
+	return resultmeta;
 }
 
 SObject* SClsMeta::CreateObject(const char* clsname)
 {
-	SClsMeta* thiscls = Find(clsname);
+	SClsMeta* thiscls = FindMeta(clsname);
 	return thiscls ? thiscls->createObject() : nullptr;	
 }
 
-SClsMeta* SClsMeta::Find(const char* clsname)
+SClsMeta* SClsMeta::FindMeta(const char* clsname)
 {
 	SClsMeta* curcls = stFirstCls;
 	while(curcls != nullptr){

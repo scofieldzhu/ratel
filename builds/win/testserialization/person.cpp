@@ -29,7 +29,8 @@ void Person::serialize(Archive& ar)
 		uint32_t namelen = name.size();
 		ar << namelen << name << age;
 	}else{
-
+		uint32_t namelen = 0;
+		ar >> namelen >> name >>age;
 	}
 }
 

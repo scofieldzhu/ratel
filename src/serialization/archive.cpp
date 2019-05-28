@@ -104,15 +104,32 @@ void Archive::writeData(const char* data, uint32_t size)
 void Archive::writeClsMeta(const SClsMeta& meta)
 {
 	logverifymsg(serializationlogger, meta.schemano != kNewClsTag, "cannot writeClsMeta for class(%s)", meta.clsname);
-	auto it = clsmetamap_.find(&meta);
-	if(it != clsmetamap_.end()){
+	auto it = metamapofwrite_.find(&meta);
+	if(it != metamapofwrite_.end()){
 		uint16_t clsindex = it->second;
 		operator<<(kClsNoBase | clsindex);
 	}else{
 		operator<<(kNewClsTag);
 		meta.store(*this);
-		clsmetamap_.insert({&meta, st_NextClsSeedId++});
+		metamapofwrite_.insert({&meta, st_NextClsSeedId++});
 	}
+}
+
+SClsMeta* Archive::readClsMeta()
+{
+	uint16_t clstag = 0;
+	operator>>(clstag);
+	if(clstag == kNewClsTag){
+		SClsMeta* meta = SClsMeta::LoadMeta(*this);
+		if(meta)
+			metamapofread_.insert({st_NextClsSeedId++, meta});
+		return meta;
+	}
+	uint16_t clsindex = clstag & 0x7FFF;
+	auto it = metamapofread_.find(clsindex);
+	if(it == metamapofread_.end())
+		slog_err(serializationlogger) << "unrecognized class index:" << clsindex << endl;
+	return it->second;
 }
 
 SObject* Archive::readObject(const SClsMeta& metacls)
@@ -133,11 +150,6 @@ void Archive::writeObject(const SObject& obj)
 Archive& operator<<(Archive& ar, const SObject& obj)
 {
 	ar.writeObject(obj);
-	return ar;
-}
-
-Archive& operator>>(Archive& ar, SObject& obj)
-{
 	return ar;
 }
 

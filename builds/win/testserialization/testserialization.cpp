@@ -6,10 +6,16 @@ USING_RATEL
 int main()
 {
 	std::wstring filename = L"testserialization.bin";
-	Archive ar(filename, true);
+	Archive ar(filename, false);
+	SClsMeta* mt = ar.readClsMeta();
+	if(mt){
+		SObject* so = ar.readObject(*mt);
+		Person* p = dynamic_cast<Person*>(so);
+		p = p;
+	}
 
-	Person p("Lilei");
-	ar<<p;
+// 	Person p("Lilei");
+// 	ar<<p;
 
 
 
