@@ -3,22 +3,30 @@
 #include "archive.h"
 USING_RATEL
 
-int main()
+void WriteTestData()
+{
+	std::wstring filename = L"testserialization.bin";
+	Archive ar(filename, true);
+	Person p1("JiYouWen");
+	p1.age = 33;
+	ar << p1;
+}
+
+void ReadTestData()
 {
 	std::wstring filename = L"testserialization.bin";
 	Archive ar(filename, false);
-	SClsMeta* mt = ar.readClsMeta();
-	if(mt){
-		SObject* so = ar.readObject(*mt);
-		Person* p = dynamic_cast<Person*>(so);
-		p = p;
+	SClsMeta* m = ar.readClsMeta();
+	if(m){
+		Person* p = Person::SafeCast(ar.readObject(*m));
+		if(p)
+			p->print();
 	}
+}
 
-// 	Person p("Lilei");
-// 	ar<<p;
-
-
-
-
-    std::cout << "Hello World!\n"; 
+int main()
+{
+	WriteTestData();
+	ReadTestData();
+	return 0;
 }

@@ -28,15 +28,9 @@ bool SObject::isSerializable() const
 	return false;
 }
 
-bool SObject::isKindOf(const SClsMeta& targetmetacls) const
+bool SObject::isKindOf(const SObject& rhs)
 {
-	SClsMeta* curmeta = &getClsMeta();
-	while(curmeta != nullptr){
-		if(curmeta == &targetmetacls)
-			return true;
-		curmeta = curmeta->basecls;
-	}
-	return false;
+	return getClsMeta().isBase(rhs.getClsMeta());
 }
 
 RATEL_NAMESPACE_END

@@ -24,6 +24,17 @@ SObject* SClsMeta::createObject()const
 	return (*fncreateobj)();
 }
 
+bool SClsMeta::isBase(const SClsMeta& rhs) const
+{
+	const SClsMeta* curmeta = this;
+	while(curmeta != nullptr){
+		if(curmeta == &rhs)
+			return true;
+		curmeta = curmeta->basecls;
+	}
+	return false;
+}
+
 void SClsMeta::store(Archive& ar)const
 {
 	uint32_t len = strlen(clsname);

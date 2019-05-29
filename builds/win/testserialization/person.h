@@ -17,6 +17,7 @@ class Person : public RATEL::SObject
 {
 	DECL_SERIAL(Person)
 public:
+	void print();
 	void serialize(RATEL::Archive& ar);
 	Person();
 	Person(const RATEL::RString&);

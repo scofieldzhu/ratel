@@ -22,7 +22,7 @@ public:
 	virtual SClsMeta& getClsMeta()const{ return SObject::st_SObject_Meta; }
 	virtual void serialize(Archive& ar);
 	bool isSerializable()const;
-	bool isKindOf(const SClsMeta& metacls)const;
+	bool isKindOf(const SObject&);
 	SObject();
 	virtual ~SObject();
 };
@@ -35,13 +35,21 @@ RATEL_NAMESPACE_END
 #define __DECL_NEW_METACLS(MyCls) \
 	public:\
 	static RATEL::SClsMeta st_##MyCls##_Meta;\
-	RATEL::SClsMeta& getClsMeta()const;
+	RATEL::SClsMeta& getClsMeta()const; \
+	static MyCls* SafeCast(RATEL::SObject*);
 
 #define __IMPL_NEW_METACLS(MyCls, BaseCls, Schema, fnNew) \
 	static const char* stClsName = #MyCls; \
 	RATEL::SClsMeta MyCls::st_##MyCls##_Meta = {stClsName, sizeof(MyCls), Schema, fnNew, GET_CLS_META_PTR(BaseCls), nullptr}; \
 	static RATEL::ClsMetaAutoConf __autoconf(GET_CLS_META_PTR(MyCls)); \
-	RATEL::SClsMeta& MyCls::getClsMeta()const{ return GET_CLS_META(MyCls); }
+	RATEL::SClsMeta& MyCls::getClsMeta()const{ return GET_CLS_META(MyCls); } \
+	MyCls* MyCls::SafeCast(RATEL::SObject* obj){ \
+		if(obj){ \
+			if(GET_CLS_META(MyCls).isBase(obj->getClsMeta())) \
+				return static_cast<MyCls*>(obj); \
+		} \
+		return nullptr; \
+	}
 
 #define DECL_DYNAMIC(MyCls) __DECL_NEW_METACLS(MyCls)
 

@@ -14,7 +14,7 @@ CreateTime: 2019-4-18 21:15
 
 RATEL_NAMESPACE_BEGIN
                                          
-struct SClsMeta
+struct RATEL_SERIALIZATION_API SClsMeta
 {
 	const char* clsname = nullptr;
 	uint32_t objsize = 0;
@@ -23,6 +23,8 @@ struct SClsMeta
 	SClsMeta* basecls = nullptr;
 	
 	SObject* createObject()const;
+
+	bool isBase(const SClsMeta&)const;
 
 	void store(Archive& ar)const;	
 
