@@ -30,18 +30,19 @@ void Person::print()
 	cout << endl << "Person Object:" << endl;
 	cout << "Name:" << name.cstr() << endl;
 	cout << "Age:" << age << endl;
+	cout << "Salary:" << salary << endl;
 }
 
 void Person::serialize(Archive& ar)
 {
 	if(ar.isStored()){
 		uint32_t namelen = name.size();
-		ar << namelen << name << age;
+		ar << namelen << name << age << salary;
 	}else{
 		uint32_t namelen = 0;
 		ar >> namelen;
 		name.resize(namelen);
-		ar >> name >>age;
+		ar >> name >>age >> salary;
 	}
 }
 

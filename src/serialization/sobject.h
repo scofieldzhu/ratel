@@ -20,7 +20,7 @@ class RATEL_SERIALIZATION_API SObject
 public:
 	static SClsMeta st_SObject_Meta;
 	virtual SClsMeta& getClsMeta()const{ return SObject::st_SObject_Meta; }
-	virtual void serialize(Archive& ar);
+	virtual void serialize(Archive& ar) = 0;
 	bool isSerializable()const;
 	bool isKindOf(const SObject&);
 	SObject();

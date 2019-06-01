@@ -24,6 +24,7 @@ public:
 	~Person();
 	RATEL::RString name = "unnamed";
 	uint32_t age = 0;
+	double salary = 18900.0;
 };
 
 #endif

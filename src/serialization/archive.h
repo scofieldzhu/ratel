@@ -19,13 +19,15 @@ class RATEL_SERIALIZATION_API Archive
 {
 public:
 	Archive& operator>>(uint16_t& value);
-	Archive& operator>>(int16_t& value);
 	Archive& operator<<(uint16_t value);
+	Archive& operator>>(int16_t& value);	
 	Archive& operator<<(int16_t value);
 	Archive& operator>>(uint32_t& value);
-	Archive& operator>>(int32_t& value);
 	Archive& operator<<(uint32_t value);
 	Archive& operator<<(int32_t value);
+	Archive& operator>>(int32_t& value);		
+	Archive& operator<<(double value);
+	Archive& operator>>(double& value);
 	Archive& operator<<(const RString& str);
 	Archive& operator>>(RString& str);
 	bool readData(char* data, uint32_t size, uint32_t* actualsize);
@@ -33,6 +35,7 @@ public:
 	void writeClsMeta(const SClsMeta& meta);
 	SClsMeta* readClsMeta();
 	SObject* readObject(const SClsMeta& metacls);
+	SObject* readNextObject();
 	void writeObject(const SObject& obj);
 	bool isStored()const { return isstored_; }
 	Archive(std::wstring& fn, bool isstore);

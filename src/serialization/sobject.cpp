@@ -18,11 +18,6 @@ SObject::SObject(){}
 
 SObject::~SObject(){}
 
-void SObject::serialize(Archive& ar)
-{
-	// do nothing
-}
-
 bool SObject::isSerializable() const
 {
 	return false;

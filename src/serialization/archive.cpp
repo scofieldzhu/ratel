@@ -40,13 +40,13 @@ Archive& Archive::operator>>(int32_t& value)
 
 Archive& Archive::operator>>(uint16_t& value)
 {
-	fileoperator_.readData((char*)(&value), sizeof(uint16_t), nullptr);
+	fileoperator_.readData((char*)(&value), sizeof(value), nullptr);
 	return *this;
 }
 
 Archive& Archive::operator>>(int16_t& value)
 {
-	fileoperator_.readData((char*)(&value), sizeof(uint16_t), nullptr);
+	fileoperator_.readData((char*)(&value), sizeof(value), nullptr);
 	return *this;
 }
 
@@ -58,6 +58,12 @@ Archive& Archive::operator>>(RString& str)
 	buffer[finishedbytes] = '\0';
 	str = buffer;
 	delete[] buffer;
+	return *this;
+}
+
+Archive& Archive::operator>>(double& value)
+{
+	fileoperator_.readData((char*)(&value), sizeof(value), nullptr);
 	return *this;
 }
 
@@ -91,6 +97,12 @@ Archive& Archive::operator<<(const RString& str)
 	return *this;
 }
 
+Archive& Archive::operator<<(double value)
+{
+	fileoperator_.writeData((const char*)(&value), sizeof(value), nullptr);
+	return *this;
+}
+
 bool Archive::readData(char* data, uint32_t size, uint32_t* actualsize)
 {
 	return fileoperator_.readData(data, size, actualsize);
@@ -103,26 +115,28 @@ void Archive::writeData(const char* data, uint32_t size)
 
 void Archive::writeClsMeta(const SClsMeta& meta)
 {
+	static uint32_t stNewClsSeedIdOfWrite = 0;
 	logverifymsg(serializationlogger, meta.schemano != kNewClsTag, "cannot writeClsMeta for class(%s)", meta.clsname);
 	auto it = metamapofwrite_.find(&meta);
 	if(it != metamapofwrite_.end()){
-		uint16_t clsindex = it->second;
-		operator<<(kClsNoBase | clsindex);
+		uint16_t clsno = kClsNoBase | it->second;
+		operator<<(clsno);
 	}else{
 		operator<<(kNewClsTag);
 		meta.store(*this);
-		metamapofwrite_.insert({&meta, st_NextClsSeedId++});
+		metamapofwrite_.insert({&meta, ++stNewClsSeedIdOfWrite});
 	}
 }
 
 SClsMeta* Archive::readClsMeta()
 {
+	static uint32_t stNewClsSeedIdOfRead = 0;
 	uint16_t clstag = 0;
 	operator>>(clstag);
 	if(clstag == kNewClsTag){
 		SClsMeta* meta = SClsMeta::LoadMeta(*this);
 		if(meta)
-			metamapofread_.insert({st_NextClsSeedId++, meta});
+			metamapofread_.insert({++stNewClsSeedIdOfRead, meta});
 		return meta;
 	}
 	uint16_t clsindex = clstag & 0x7FFF;
@@ -138,6 +152,14 @@ SObject* Archive::readObject(const SClsMeta& metacls)
 	if(newobj)
 		newobj->serialize(*this);
 	return newobj;
+}
+
+SObject* Archive::readNextObject()
+{
+	SClsMeta* newmeta = readClsMeta();
+	if(newmeta)
+		return readObject(*newmeta);
+	return nullptr;
 }
 
 void Archive::writeObject(const SObject& obj)

@@ -26,6 +26,7 @@
     <ClInclude Include="..\..\..\src\serialization\serializationlogger.h" />
     <ClInclude Include="..\..\..\src\serialization\serializationpublic.h" />
     <ClInclude Include="..\..\..\src\serialization\sobject.h" />
+    <ClInclude Include="..\..\..\src\serialization\sobjectlist.h" />
     <ClInclude Include="..\..\..\src\serialization\xmlarchive.h" />
   </ItemGroup>
   <ItemGroup>
@@ -37,6 +38,7 @@
     <ClCompile Include="..\..\..\src\serialization\serializationlogger.cpp" />
     <ClCompile Include="..\..\..\src\serialization\sclsmeta.cpp" />
     <ClCompile Include="..\..\..\src\serialization\sobject.cpp" />
+    <ClCompile Include="..\..\..\src\serialization\sobjectlist.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
