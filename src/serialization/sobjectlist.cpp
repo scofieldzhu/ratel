@@ -14,29 +14,25 @@ CreateTime: 2019-6-1 19:46
 RATEL_NAMESPACE_BEGIN
 
 SObjectList::SObjectList()
-{
-
-}
+{}
 
 SObjectList::~SObjectList()
-{
+{}
 
-}
-
-SObject* SObjectList::object(uint32_t index)
+SObjectSPtr SObjectList::object(uint32_t index)
 {
 	return index < count() ? objects_[index] : nullptr; 
 }
 
-void SObjectList::append(SObject& obj)
+void SObjectList::append(SObjectSPtr obj)
 {
-	if(std::find(objects_.begin(), objects_.end(), &obj) == objects_.end())
-		objects_.push_back(&obj);
+	if(std::find(objects_.begin(), objects_.end(), obj) == objects_.end())
+		objects_.push_back(obj);
 }
 
-void SObjectList::remove(SObject& obj)
+void SObjectList::remove(SObjectSPtr obj)
 {
-	auto it = std::find(objects_.begin(), objects_.end(), &obj);
+	auto it = std::find(objects_.begin(), objects_.end(), obj);
 	if(it != objects_.end())
 		objects_.erase(it);
 }
@@ -54,7 +50,7 @@ void SObjectList::serialize(Archive& ar)
 		if(count){
 			objects_.clear();
 			while(count--){
-				SObject* newobj = ar.readNextObject();
+				SObjectSPtr newobj = ar.readNextObject();
 				if(newobj == nullptr){
 					slog_fatal(serializationlogger) << "Read SObject failed for wrong format!" << endl;
 					return;

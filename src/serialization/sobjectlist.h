@@ -17,16 +17,17 @@ RATEL_NAMESPACE_BEGIN
 class RATEL_SERIALIZATION_API SObjectList : public SObject
 {
 public:
+	bool empty()const { return count() == 0; }
 	uint32_t count()const { return objects_.size(); }
-	SObject* object(uint32_t index);
-	void append(SObject& obj);
-	void remove(SObject& obj);
+	SObjectSPtr object(uint32_t index);
+	void append(SObjectSPtr obj);
+	void remove(SObjectSPtr obj);
 	void serialize(Archive& ar);
 	SObjectList();
 	~SObjectList();
 
 private:
-	std::vector<SObject*> objects_;
+	std::vector<SObjectSPtr> objects_;
 };
 
 RATEL_NAMESPACE_END

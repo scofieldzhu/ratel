@@ -9,16 +9,16 @@ void WriteTestData()
 	std::wstring filename = L"testserialization.bin";
 	Archive ar(filename, true);	
 
-	Person p1("JiYouWen");
-	p1.age = 33;
+	Person* p1 = new Person("JiYouWen");
+	p1->age = 33;
 
-	Person p2("Wangdaoliang");
-	p2.age = 34;
-	p2.salary = 2300.0;
+	Person* p2 = new Person("Wangdaoliang");
+	p2->age = 34;
+	p2->salary = 2300.8;
 
 	SObjectList objects;
-	objects.append(p1);
-	objects.append(p2);
+	objects.append(SObjectSPtr(p1));
+	objects.append(SObjectSPtr(p2));
 	objects.serialize(ar);	
 }
 
@@ -28,9 +28,9 @@ void ReadTestData()
 	Archive ar(filename, false);
 	SObjectList objs;
 	objs.serialize(ar);
-	if(objs.count()){
+	if(!objs.empty()){
 		for(uint32_t i = 0; i < objs.count(); ++i){
-			Person* p = Person::SafeCast(objs.object(i));
+			Person* p = Person::SafeCast(objs.object(i).get());
 			p->print();
 		}
 	}

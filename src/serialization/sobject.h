@@ -41,15 +41,15 @@ RATEL_NAMESPACE_END
 #define __IMPL_NEW_METACLS(MyCls, BaseCls, Schema, fnNew) \
 	static const char* stClsName = #MyCls; \
 	RATEL::SClsMeta MyCls::st_##MyCls##_Meta = {stClsName, sizeof(MyCls), Schema, fnNew, GET_CLS_META_PTR(BaseCls), nullptr}; \
-	static RATEL::ClsMetaAutoConf __autoconf(GET_CLS_META_PTR(MyCls)); \
-	RATEL::SClsMeta& MyCls::getClsMeta()const{ return GET_CLS_META(MyCls); } \
-	MyCls* MyCls::SafeCast(RATEL::SObject* obj){ \
-		if(obj){ \
-			if(GET_CLS_META(MyCls).isBase(obj->getClsMeta())) \
-				return static_cast<MyCls*>(obj); \
-		} \
-		return nullptr; \
-	}
+ 	static RATEL::ClsMetaAutoConf __autoconf(GET_CLS_META_PTR(MyCls)); \
+ 	RATEL::SClsMeta& MyCls::getClsMeta()const{ return GET_CLS_META(MyCls); } \
+ 	MyCls* MyCls::SafeCast(RATEL::SObject* obj){ \
+ 		if(obj){ \
+ 			if(GET_CLS_META(MyCls).isBase(obj->getClsMeta())) \
+ 				return static_cast<MyCls*>(obj); \
+ 		} \
+ 		return nullptr; \
+ 	}
 
 #define DECL_DYNAMIC(MyCls) __DECL_NEW_METACLS(MyCls)
 
@@ -57,22 +57,16 @@ RATEL_NAMESPACE_END
 
 #define DECL_DYNCREATE(MyCls) \
 	DECL_DYNAMIC(MyCls) \
-	static RATEL::SObject* CreateObject();
+	static RATEL::SObjectSPtr CreateObject();
 
 #define IMPL_DYNCREATE(MyCls, BaseCls) \
-	RATEL::SObject* MyCls::CreateObject() { return new MyCls(); } \
+	RATEL::SObjectSPtr MyCls::CreateObject() { return new MyCls(); } \
 	__IMPL_NEW_METACLS(MyCls, BaseCls, 0xFFFF, MyCls::CreateObject) 
 
-#define DECL_SERIAL(MyCls) \
-	DECL_DYNCREATE(MyCls) \
-	friend RATEL::Archive& operator>>(RATEL::Archive& ar, MyCls*& myobj);
+#define DECL_SERIAL(MyCls) DECL_DYNCREATE(MyCls) 
 
 #define IMPL_SERIAL(MyCls, BaseCls, Schema) \
-	RATEL::SObject* MyCls::CreateObject() { return new MyCls(); } \
-	__IMPL_NEW_METACLS(MyCls, BaseCls, Schema, MyCls::CreateObject) \
-	RATEL::Archive& operator>>(RATEL::Archive& ar, MyCls*& myobj){ \
-		myobj = (MyCls*)ar.readObject(GET_CLS_META(MyCls)); \
-		return ar; \
-	}
+	RATEL::SObjectSPtr MyCls::CreateObject() { return RATEL::SObjectSPtr((RATEL::SObject*)(new MyCls())); } \
+	__IMPL_NEW_METACLS(MyCls, BaseCls, Schema, MyCls::CreateObject)  	
 	
 #endif

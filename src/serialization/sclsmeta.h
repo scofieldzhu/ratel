@@ -13,22 +13,23 @@ CreateTime: 2019-4-18 21:15
 #include "serializationpublic.h"
 
 RATEL_NAMESPACE_BEGIN
-                                         
+                            
+
 struct RATEL_SERIALIZATION_API SClsMeta
 {
 	const char* clsname = nullptr;
 	uint32_t objsize = 0;
 	uint32_t schemano = 0xFFFFF;
-	SObject* (*fncreateobj)() = nullptr;
+	SObjectSPtr (*fncreateobj)() = nullptr;
 	SClsMeta* basecls = nullptr;
 	
-	SObject* createObject()const;
+	SObjectSPtr createObject()const;
 
 	bool isBase(const SClsMeta&)const;
 
 	void store(Archive& ar)const;	
 
-	static SObject* CreateObject(const char* clsname);
+	static SObjectSPtr CreateObject(const char* clsname);
 	static SClsMeta* FindMeta(const char* clsname);
 	static SClsMeta* LoadMeta(Archive& ar);
 

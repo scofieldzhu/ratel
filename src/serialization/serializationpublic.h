@@ -24,6 +24,8 @@ struct SClsMeta;
 class SObject;
 class Archive;
 
+using SObjectSPtr = std::shared_ptr<SObject>;
+
 RATEL_NAMESPACE_END
 
 #endif

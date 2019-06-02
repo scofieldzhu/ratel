@@ -34,8 +34,8 @@ public:
 	void writeData(const char* data, uint32_t size);	
 	void writeClsMeta(const SClsMeta& meta);
 	SClsMeta* readClsMeta();
-	SObject* readObject(const SClsMeta& metacls);
-	SObject* readNextObject();
+	SObjectSPtr readObject(const SClsMeta& metacls);
+	SObjectSPtr readNextObject();
 	void writeObject(const SObject& obj);
 	bool isStored()const { return isstored_; }
 	Archive(std::wstring& fn, bool isstore);

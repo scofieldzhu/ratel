@@ -15,7 +15,7 @@ RATEL_NAMESPACE_BEGIN
 
 SClsMeta* SClsMeta::stFirstCls = nullptr;
 
-SObject* SClsMeta::createObject()const
+SObjectSPtr SClsMeta::createObject()const
 {
 	if(fncreateobj == nullptr){
 		slog_err(serializationlogger) << "trying create object failed, perhaps its' class declaration not label with 'DECL_DYNCREATE'!" << endl;
@@ -61,7 +61,7 @@ SClsMeta* SClsMeta::LoadMeta(Archive& ar)
 	return resultmeta;
 }
 
-SObject* SClsMeta::CreateObject(const char* clsname)
+SObjectSPtr SClsMeta::CreateObject(const char* clsname)
 {
 	SClsMeta* thiscls = FindMeta(clsname);
 	return thiscls ? thiscls->createObject() : nullptr;	

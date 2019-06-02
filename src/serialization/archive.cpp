@@ -146,15 +146,15 @@ SClsMeta* Archive::readClsMeta()
 	return it->second;
 }
 
-SObject* Archive::readObject(const SClsMeta& metacls)
+SObjectSPtr Archive::readObject(const SClsMeta& metacls)
 {
-	SObject* newobj = metacls.createObject();
+	SObjectSPtr newobj = metacls.createObject();
 	if(newobj)
 		newobj->serialize(*this);
 	return newobj;
 }
 
-SObject* Archive::readNextObject()
+SObjectSPtr Archive::readNextObject()
 {
 	SClsMeta* newmeta = readClsMeta();
 	if(newmeta)
