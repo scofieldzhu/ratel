@@ -11,7 +11,6 @@ CreateTime: 2019-4-18 20:58
 #define __serializer_h__
 
 #include "sclsmeta.h"
-#include "clsmetaautoconf.h"
 
 RATEL_NAMESPACE_BEGIN
 
@@ -38,10 +37,18 @@ RATEL_NAMESPACE_END
 	RATEL::SClsMeta& getClsMeta()const; \
 	static MyCls* SafeCast(RATEL::SObject*);
 
+#define __CLSMETA_AUTOLINK(MyCls) \
+	static struct ClsMetaAutoConf{ \
+		ClsMetaAutoConf(SClsMeta* newcls) { \
+			newcls->nextcls = SClsMeta::stFirstCls; \
+			SClsMeta::stFirstCls = newcls; \
+		} \
+	}__autocnf__(GET_CLS_META_PTR(MyCls));
+
 #define __IMPL_NEW_METACLS(MyCls, BaseCls, Schema, fnNew) \
 	static const char* stClsName = #MyCls; \
 	RATEL::SClsMeta MyCls::st_##MyCls##_Meta = {stClsName, sizeof(MyCls), Schema, fnNew, GET_CLS_META_PTR(BaseCls), nullptr}; \
- 	static RATEL::ClsMetaAutoConf __autoconf(GET_CLS_META_PTR(MyCls)); \
+	__CLSMETA_AUTOLINK(MyCls) \
  	RATEL::SClsMeta& MyCls::getClsMeta()const{ return GET_CLS_META(MyCls); } \
  	MyCls* MyCls::SafeCast(RATEL::SObject* obj){ \
  		if(obj){ \

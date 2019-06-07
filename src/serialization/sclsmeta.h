@@ -12,8 +12,7 @@ CreateTime: 2019-4-18 21:15
 
 #include "serializationpublic.h"
 
-RATEL_NAMESPACE_BEGIN
-                            
+RATEL_NAMESPACE_BEGIN                            
 
 struct RATEL_SERIALIZATION_API SClsMeta
 {
