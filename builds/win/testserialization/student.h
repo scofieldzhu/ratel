@@ -4,27 +4,25 @@ for for those c++ developers pursuing fast-developement.
 Copyright (c) scofieldzhu. All rights reserved.	
 
 Project: testserialization 
-Module: person.h 
-CreateTime: 2019-5-26 21:32
+Module: student.h 
+CreateTime: 2019-6-7 19:21
 =========================================================================*/
-#ifndef __person_h__
-#define __person_h__
+#ifndef __student_h__
+#define __student_h__
 
-#include "sobject.h"
-#include "rstring.h"
+#include "person.h"
 
-class Person : public RATEL::SObject
+class Student : public Person
 {
-	DECL_SERIAL(Person)
+	DECL_SERIAL(Student)
 public:
-	virtual void print();
+	void print();
 	void serialize(RATEL::Archive& ar);
-	Person();
-	Person(const RATEL::RString&);
-	virtual ~Person();
-	RATEL::RString name = "unnamed";
-	uint32_t age = 0;
-	char gender = 'm';
+	Student();
+	Student(const RATEL::RString&);	
+	~Student();
+	RATEL::RString sid = "untitled";
+	double score = 0.0;
 };
 
 #endif

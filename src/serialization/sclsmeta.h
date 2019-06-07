@@ -36,6 +36,12 @@ struct RATEL_SERIALIZATION_API SClsMeta
 	SClsMeta* nextcls = nullptr;		
 };
 
+struct RATEL_SERIALIZATION_API SClsMetaInitializer
+{
+	SClsMetaInitializer(SClsMeta* newcls);
+	~SClsMetaInitializer();
+};
+
 RATEL_NAMESPACE_END
 
 #endif

@@ -156,10 +156,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="person.cpp" />
+    <ClCompile Include="student.cpp" />
+    <ClCompile Include="teacher.cpp" />
     <ClCompile Include="testserialization.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="person.h" />
+    <ClInclude Include="student.h" />
+    <ClInclude Include="teacher.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\ratel.licenseheader" />

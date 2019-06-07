@@ -21,9 +21,21 @@
     <ClCompile Include="person.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="student.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="teacher.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="person.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="student.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="teacher.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

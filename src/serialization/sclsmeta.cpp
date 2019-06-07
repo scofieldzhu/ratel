@@ -78,6 +78,13 @@ SClsMeta* SClsMeta::FindMeta(const char* clsname)
 	return nullptr;
 }
 
+SClsMetaInitializer::SClsMetaInitializer(SClsMeta* newcls)
+{
+	newcls->nextcls = SClsMeta::stFirstCls; 
+	SClsMeta::stFirstCls = newcls; 
+}
+
+SClsMetaInitializer::~SClsMetaInitializer()
+{}
+
 RATEL_NAMESPACE_END
-
-

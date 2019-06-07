@@ -5,7 +5,7 @@ Copyright (c) scofieldzhu. All rights reserved.
 
 Project: testserialization 
 Module: person.cpp 
-CreateTime: 2019-5-26 21:32
+CreateTime: 2019-6-7 21:32
 =========================================================================*/
 #include "person.h"
 #include <iostream>
@@ -30,19 +30,19 @@ void Person::print()
 	cout << endl << "Person Object:" << endl;
 	cout << "Name:" << name.cstr() << endl;
 	cout << "Age:" << age << endl;
-	cout << "Salary:" << salary << endl;
+	cout << "Gender:" << gender << endl;
 }
 
 void Person::serialize(Archive& ar)
 {
 	if(ar.isStored()){
 		uint32_t namelen = name.size();
-		ar << namelen << name << age << salary;
+		ar << namelen << name << age << gender;
 	}else{
 		uint32_t namelen = 0;
 		ar >> namelen;
 		name.resize(namelen);
-		ar >> name >>age >> salary;
+		ar >> name >> age >> gender;
 	}
 }
 

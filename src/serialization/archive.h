@@ -18,6 +18,8 @@ RATEL_NAMESPACE_BEGIN
 class RATEL_SERIALIZATION_API Archive
 {
 public:
+	Archive& operator>>(char& value);
+	Archive& operator<<(char value);
 	Archive& operator>>(uint16_t& value);
 	Archive& operator<<(uint16_t value);
 	Archive& operator>>(int16_t& value);	

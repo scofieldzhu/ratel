@@ -67,6 +67,12 @@ Archive& Archive::operator>>(double& value)
 	return *this;
 }
 
+Archive& Archive::operator>>(char& value)
+{
+	fileoperator_.readData((char*)(&value), sizeof(value), nullptr);
+	return *this;
+}
+
 Archive& Archive::operator<<(uint32_t value)
 {
 	fileoperator_.writeData((const char*)(&value), sizeof(value), nullptr);
@@ -98,6 +104,12 @@ Archive& Archive::operator<<(const RString& str)
 }
 
 Archive& Archive::operator<<(double value)
+{
+	fileoperator_.writeData((const char*)(&value), sizeof(value), nullptr);
+	return *this;
+}
+
+Archive& Archive::operator<<(char value)
 {
 	fileoperator_.writeData((const char*)(&value), sizeof(value), nullptr);
 	return *this;
