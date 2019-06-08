@@ -23,9 +23,11 @@ Teacher::Teacher(const RATEL::RString& str)
 
 void Teacher::print()
 {
+	cout <<"---------teacher info------------" << endl;
 	Person::print();
 	cout << "tid:" << tid.cstr() << endl;
 	cout << "salary:" << salary << endl;
+	cout <<"---------------------------------" << endl;
 }
 
 void Teacher::serialize(RATEL::Archive& ar)

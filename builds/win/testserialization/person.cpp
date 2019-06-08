@@ -27,7 +27,6 @@ Person::~Person()
 
 void Person::print()
 {
-	cout << endl << "Person Object:" << endl;
 	cout << "Name:" << name.cstr() << endl;
 	cout << "Age:" << age << endl;
 	cout << "Gender:" << gender << endl;

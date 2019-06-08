@@ -26,9 +26,11 @@ Student::~Student()
 
 void Student::print()
 {
+	cout <<"---------student info------------" << endl;
 	Person::print(); 
 	cout << "sid:" << sid.cstr() << endl;
 	cout << "score:" << score << endl;
+	cout <<"---------------------------------" << endl;
 }
 
 void Student::serialize(RATEL::Archive& ar)
