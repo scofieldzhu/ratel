@@ -20,13 +20,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\serialization\archive.h" />
-    <ClInclude Include="..\..\..\src\serialization\binaryarchive.h" />
     <ClInclude Include="..\..\..\src\serialization\sclsmeta.h" />
     <ClInclude Include="..\..\..\src\serialization\serializationlogger.h" />
     <ClInclude Include="..\..\..\src\serialization\serializationpublic.h" />
     <ClInclude Include="..\..\..\src\serialization\sobject.h" />
     <ClInclude Include="..\..\..\src\serialization\sobjectlist.h" />
-    <ClInclude Include="..\..\..\src\serialization\xmlarchive.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\ratel.licenseheader" />

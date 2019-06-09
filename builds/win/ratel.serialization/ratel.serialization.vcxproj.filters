@@ -18,12 +18,6 @@
     <ClInclude Include="..\..\..\src\serialization\archive.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\serialization\binaryarchive.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\serialization\xmlarchive.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\serialization\serializationlogger.h">
       <Filter>头文件</Filter>
     </ClInclude>
