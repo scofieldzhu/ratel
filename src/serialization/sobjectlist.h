@@ -18,7 +18,7 @@ class RATEL_SERIALIZATION_API SObjectList : public SObject
 {
 public:
 	bool empty()const { return count() == 0; }
-	uint32_t count()const { return objects_.size(); }
+	uint32_t count()const { return (uint32_t)objects_.size(); }
 	SObjectSPtr object(uint32_t index);
 	void append(SObjectSPtr obj);
 	void remove(SObjectSPtr obj);

@@ -37,7 +37,7 @@ bool SClsMeta::isBase(const SClsMeta& rhs) const
 
 void SClsMeta::store(Archive& ar)const
 {
-	uint32_t len = strlen(clsname);
+	uint32_t len = (uint32_t)strlen(clsname);
 	ar << schemano << len;
 	ar.writeData(clsname, len);
 }

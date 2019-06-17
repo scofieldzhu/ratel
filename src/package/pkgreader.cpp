@@ -87,7 +87,7 @@ bool PKGReader::loadNextFile(const Path& targetdir, RString& outfilename)
 	//read file content
 	Path filepath = targetdir.join(outfilename);
 	ofstream ofs(filepath.toLocale().c_str(), ios_base::out | ios_base::binary);
-    return fsutil::TransformDataBlock(fs_, ofs, bytestoread, kReadBufferSize);
+    return fsutil::TransformDataBlock(fs_, ofs, static_cast<uint32_t>(bytestoread), kReadBufferSize);
 }
 
 void PKGReader::close()

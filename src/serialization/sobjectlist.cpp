@@ -40,7 +40,7 @@ void SObjectList::remove(SObjectSPtr obj)
 void SObjectList::serialize(Archive& ar)
 {
 	if(ar.isStored()){
-		uint32_t count = objects_.size();
+		uint32_t count = (uint32_t)objects_.size();
 		ar << count;
 		for(auto it : objects_)
 			ar << *it;

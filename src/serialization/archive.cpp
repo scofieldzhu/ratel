@@ -52,10 +52,10 @@ Archive& Archive::operator>>(int16_t& value)
 
 Archive& Archive::operator>>(RString& str)
 {
-	uint32_t finishedbytes = 0;
+	uint32_t finishbytes = 0;
 	char* buffer = new char[str.size() + 1];
-	fileoperator_.readData(buffer, str.size(), &finishedbytes);	
-	buffer[finishedbytes] = '\0';
+	fileoperator_.readData(buffer, (uint32_t)str.size(), &finishbytes);	
+	buffer[finishbytes] = '\0';
 	str = buffer;
 	delete[] buffer;
 	return *this;
@@ -99,7 +99,7 @@ Archive& Archive::operator<<(int16_t value)
 
 Archive& Archive::operator<<(const RString& str)
 {
-	fileoperator_.writeData(str.cstr(), str.size(), nullptr);
+	fileoperator_.writeData(str.cstr(), (uint32_t)str.size(), nullptr);
 	return *this;
 }
 
