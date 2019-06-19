@@ -36,6 +36,9 @@
     <ClInclude Include="..\..\..\src\kernel\fsutil.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\kernel\session.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\ratel.licenseheader" />
@@ -54,6 +57,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\kernel\fsutil.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\kernel\session.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

@@ -17,4 +17,12 @@ Module: kernelpublic.h
 
 #include "basic.h"
 
+RATEL_NAMESPACE_BEGIN
+
+class Session;
+using SessionSPtr = std::shared_ptr<Session>;
+using SessionList = std::vector<SessionSPtr>;
+
+RATEL_NAMESPACE_END
+
 #endif

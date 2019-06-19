@@ -167,6 +167,7 @@
     <ClInclude Include="..\..\..\src\kernel\kernellogger.h" />
     <ClInclude Include="..\..\..\src\kernel\kernelpublic.h" />
     <ClInclude Include="..\..\..\src\kernel\propdict.h" />
+    <ClInclude Include="..\..\..\src\kernel\session.h" />
     <ClInclude Include="..\..\..\src\kernel\task.h" />
   </ItemGroup>
   <ItemGroup>
@@ -178,6 +179,7 @@
     <ClCompile Include="..\..\..\src\kernel\fsutil.cpp" />
     <ClCompile Include="..\..\..\src\kernel\kernellogger.cpp" />
     <ClCompile Include="..\..\..\src\kernel\propdict.cpp" />
+    <ClCompile Include="..\..\..\src\kernel\session.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
