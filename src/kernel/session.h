@@ -21,10 +21,11 @@ public:
 	void leave();	
 	void attachChild(SessionSPtr& s);
 	void detachChild(SessionSPtr& s);
-	bool isChild(SessionSPtr& s)const;
-	SessionList findActiveChildren()const;
-	bool existActiveChild()const;
+	bool isChild(SessionSPtr& s) const;
+	SessionList findActiveChildren() const;
+	bool existActiveChild() const;
 	SessionList children() const { return children_; }
+	const RString& name() const { return name_; }
 	Session(const RString& name);
 	virtual ~Session();
 
