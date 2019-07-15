@@ -304,6 +304,11 @@ public:
     static RString FormatString(const char* format, ...);
 	RString& format(const char* format, ...);	
 
+    RString& upper();
+    RString upper()const;
+    RString& lower();
+    RString lower()const;
+
 	//conversion between rstring and number
 	static RString FromInt16(int16_t v){ return RString().fromInt16(v); }
 	static RString FromUnInt16(uint16_t v){ return RString().fromUInt16(v); }

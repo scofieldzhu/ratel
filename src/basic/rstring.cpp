@@ -1101,6 +1101,40 @@ RString& RString::format(const char * format, ...)
     return assign(buffer);
 }
 
+RString& RString::upper()    
+{
+    for(std::size_t i = 0; i < size(); ++i){
+        reference c = at(i);
+        if(c >= 'a' && c <= 'z')
+            c = 'A' + (c - 'a');
+    }
+    return *this;
+}
+
+RString RString::upper() const
+{
+    RString cpy(*this);
+    cpy.upper();
+    return cpy;
+}
+
+RString& RString::lower()    
+{
+    for(std::size_t i = 0; i < size(); ++i){
+        reference c = at(i);
+        if(c >= 'A' && c <= 'Z')
+            c = 'a' + (c - 'A');
+    }
+    return *this;
+}
+
+RString RString::lower() const
+{
+    RString cpy(*this);
+    cpy.lower();
+    return cpy;
+}
+
 int16_t RString::toInt16() const
 {
 	std::stringstream ss;

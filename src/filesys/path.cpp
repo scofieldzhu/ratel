@@ -67,6 +67,16 @@ Path Path::filename() const
     return pathstr_.substr(pos + 1);
 }
 
+Path Path::extension() const
+{
+    Path fn = filename();
+    if(fn.empty())
+        return fn;
+    RString fnstr = fn.rstring();
+    size_t pos = fnstr.findFirstOf('.');
+    return pos == RString::npos ? "" : fnstr.substr(pos + 1) ;
+}
+
 bool Path::exists() const
 {
     std::string localestring = pathstr_.decodeToLocale();
@@ -99,3 +109,4 @@ std::string Path::toLocale() const
 }
 
 RATEL_NAMESPACE_END
+

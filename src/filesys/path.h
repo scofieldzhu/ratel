@@ -28,6 +28,7 @@ public:
     Path join(const Path& rhs)const;
     Path parentPath()const;
     Path filename()const;
+    Path extension()const;
     bool null()const { return pathstr_.null(); }
     bool empty()const { return pathstr_.empty(); }
     Path();
