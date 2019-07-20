@@ -111,13 +111,13 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;KERNEL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>../../../src/basic;../../../3rd/sflogger/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../src/basic;../../../3rd/sflogger/include;../../../3rd/boost170</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>../../../3rd/sflogger/bin;../_bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>ratel.basic-x64-d.lib;sflogger.core-v140-x64-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ratel.basic-x64-d.lib;sflogger.core-v150-x64-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -149,14 +149,14 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;KERNEL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>../../../src/basic;../../../3rd/sflogger/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../src/basic;../../../3rd/sflogger/include;../../../3rd/boost170</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>false</GenerateDebugInformation>
-      <AdditionalDependencies>ratel.basic-x64.lib;sflogger.core-v140-x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ratel.basic-x64.lib;sflogger.core-v150-x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../../../3rd/sflogger/bin;../_bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -169,6 +169,8 @@
     <ClInclude Include="..\..\..\src\kernel\propdict.h" />
     <ClInclude Include="..\..\..\src\kernel\session.h" />
     <ClInclude Include="..\..\..\src\kernel\task.h" />
+    <ClInclude Include="..\..\..\src\kernel\uimediator.hxx" />
+    <ClInclude Include="..\..\..\src\kernel\xsignal.hxx" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\ratel.licenseheader" />

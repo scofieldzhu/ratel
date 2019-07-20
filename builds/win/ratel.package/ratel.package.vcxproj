@@ -116,7 +116,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>../_bin;../../../3rd/sflogger/bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>ratel.basic-x64-d.lib;ratel.filesys-x64-d.lib;ratel.sqlite-x64-d.lib;ratel.kernel-x64-d.lib;sflogger.core-v140-x64-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ratel.basic-x64-d.lib;ratel.filesys-x64-d.lib;ratel.sqlite-x64-d.lib;ratel.kernel-x64-d.lib;sflogger.core-v150-x64-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -155,7 +155,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <AdditionalLibraryDirectories>../_bin;../../../3rd/sflogger/bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>ratel.basic-x64.lib;ratel.filesys-x64.lib;ratel.sqlite-x64.lib;ratel.kernel-x64.lib;sflogger.core-v140-x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ratel.basic-x64.lib;ratel.filesys-x64.lib;ratel.sqlite-x64.lib;ratel.kernel-x64.lib;sflogger.core-v150-x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
