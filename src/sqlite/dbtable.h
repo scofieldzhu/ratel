@@ -35,7 +35,6 @@ public:
     RString makeQueryRowWhenSql(const char* whenfmt, ...);
     RString makeDropSql();	
 	bool create();
-	bool isCreated()const;
 	bool insertRow(const RowDataDict& record);
 	Variant queryColumnValueOfFirstResultRow(const RString& sql, const RString& columnkey);	
 	void drop();
