@@ -11,16 +11,48 @@ CreateTime: 2019-7-30 21:05
 #define __sqlfield_h__
 
 #include "sqlbase.h"
+#include "databasepublic.h"
 
 RATEL_NAMESPACE_BEGIN
 
-class RATEL_DATABASE_API SqlField
+class RATEL_DATABASE_API SqlField final
 {
 public:
-    void setAutoValue(bool autoval);
-    bool autoValue()const;
-    void setDefaultValue(Variant& v);
+    void setName(const RString& name) { name_ = name; }
+    const RString& name()const { return name_; }
+    void setAutoValue(bool isauto) { isautovalue_ = isauto; }
+    bool isAutoValue()const { return isautovalue_; }
+    void setDefaultValue(Variant& v) { defaultvalue_ = v; }
+    const Variant& defaultValue()const { return defaultvalue_; }
+    bool ownDefautValue()const { return !defaultvalue_.isNull(); }
+    SqlDataType dataType()const { return datatype_; }
+    void setLength(int32_t len) { length_ = len; }
+    int32_t length()const { return length_; }
+    bool ownLength()const { return length_ < 0; }
+    void setPrecision(int32_t p) { precision_ = p; }
+    int32_t precision()const { return precision_; }
+    bool ownPrecision()const { return precision_ < 0; }    
+    void setValue(const Variant& v);
+    const Variant& value()const { return value_; }
+    bool isNull()const { return value_.isNull(); }
+    void setReadOnly(bool r) { isreadonly_ = r; }
+    bool isReadOnly()const { return isreadonly_; }
+    SqlField(const RString& name = "", SqlDataType t = SqlDataType::kInvalid);
+    SqlField(const SqlField&);
+    const SqlField& operator=(const SqlField&);
+    bool operator==(const SqlField&);
+    bool operator!=(const SqlField&);
+    ~SqlField() = default;
 
+private:
+    RString name_;
+    Variant value_;
+    SqlDataType datatype_;
+    Variant defaultvalue_;
+    int32_t length_ = -1;
+    int32_t precision_ = -1;
+    bool isautovalue_ = false;
+    bool isreadonly_ = false;
 };
 
 RATEL_NAMESPACE_END

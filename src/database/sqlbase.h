@@ -10,12 +10,13 @@ CreateTime: 2019-7-30 21:34
 #ifndef __sqlbase_h__
 #define __sqlbase_h__
 
-#include "databasepublic.h"
+#include "basic.h"
 
 RATEL_NAMESPACE_BEGIN
 
 enum class SqlDataType
 {
+    kInvalid,
     kInteger,
     kReal,
     kChars,
