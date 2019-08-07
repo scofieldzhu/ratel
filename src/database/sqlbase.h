@@ -25,6 +25,26 @@ enum class SqlDataType
     kImage
 };
 
+enum class SqlStatement
+{
+    kUpdate,
+    kSelect,
+    kDelete,
+    kInsert,
+    kWhere
+};
+
+enum class DbmsType
+{
+    kSQLite,
+    kMySql,
+    kOracle,
+    kSqlServer,
+    kDB2
+};
+
+using ConHandle = void*;
+
 RATEL_NAMESPACE_END
 
 #endif

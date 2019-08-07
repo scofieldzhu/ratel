@@ -17,6 +17,8 @@ RATEL_NAMESPACE_BEGIN
 class RATEL_DATABASE_API SqlQuery
 {
 public:
+    void clear();
+    
 
 };
 

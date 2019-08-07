@@ -19,11 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\src\database\database.h" />
+    <ClInclude Include="..\..\..\src\database\connection.h" />
     <ClInclude Include="..\..\..\src\database\databaselogger.h" />
     <ClInclude Include="..\..\..\src\database\databasepublic.h" />
     <ClInclude Include="..\..\..\src\database\sqlbase.h" />
-    <ClInclude Include="..\..\..\src\database\sqldriver.h" />
+    <ClInclude Include="..\..\..\src\database\dbdriver.h" />
     <ClInclude Include="..\..\..\src\database\sqlerr.h" />
     <ClInclude Include="..\..\..\src\database\sqlfield.h" />
     <ClInclude Include="..\..\..\src\database\sqlquery.h" />
@@ -31,8 +31,8 @@
     <ClInclude Include="..\..\..\src\database\sqlresult.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\database\database.cpp" />
-    <ClCompile Include="..\..\..\src\database\sqldriver.cpp" />
+    <ClCompile Include="..\..\..\src\database\connection.cpp" />
+    <ClCompile Include="..\..\..\src\database\dbdriver.cpp" />
     <ClCompile Include="..\..\..\src\database\sqlfield.cpp" />
     <ClCompile Include="..\..\..\src\database\sqlquery.cpp" />
     <ClCompile Include="..\..\..\src\database\sqlrecord.cpp" />
@@ -124,6 +124,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>../_bin;../../../3rd/sflogger/bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>ratel.basic-x64-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

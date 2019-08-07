@@ -20,8 +20,8 @@ class RATEL_DATABASE_API SqlField final
 public:
     void setName(const RString& name) { name_ = name; }
     const RString& name()const { return name_; }
-    void setAutoValue(bool isauto) { isautovalue_ = isauto; }
-    bool isAutoValue()const { return isautovalue_; }
+    void setAutoValue(bool isauto) { autovalue_ = isauto; }
+    bool isAutoValue()const { return autovalue_; }
     void setDefaultValue(Variant& v) { defaultvalue_ = v; }
     const Variant& defaultValue()const { return defaultvalue_; }
     bool ownDefautValue()const { return !defaultvalue_.isNull(); }
@@ -35,13 +35,15 @@ public:
     void setValue(const Variant& v);
     const Variant& value()const { return value_; }
     bool isNull()const { return value_.isNull(); }
-    void setReadOnly(bool r) { isreadonly_ = r; }
-    bool isReadOnly()const { return isreadonly_; }
+    bool isValid()const { return datatype_ == SqlDataType::kInvalid; }
+    void setReadOnly(bool r) { readonly_ = r; }
+    bool isReadOnly()const { return readonly_; }
     SqlField(const RString& name = "", SqlDataType t = SqlDataType::kInvalid);
     SqlField(const SqlField&);
+    bool equalWith(const SqlField&)const;
     const SqlField& operator=(const SqlField&);
-    bool operator==(const SqlField&);
-    bool operator!=(const SqlField&);
+    bool operator==(const SqlField&)const;
+    bool operator!=(const SqlField&)const;
     ~SqlField() = default;
 
 private:
@@ -51,8 +53,8 @@ private:
     Variant defaultvalue_;
     int32_t length_ = -1;
     int32_t precision_ = -1;
-    bool isautovalue_ = false;
-    bool isreadonly_ = false;
+    bool autovalue_ = false;
+    bool readonly_ = false;
 };
 
 RATEL_NAMESPACE_END

@@ -18,4 +18,11 @@ CreateTime: 2019-7-30 21:15
 
 #include "basic.h"
 
+RATEL_NAMESPACE_BEGIN
+
+class SqlQuery;
+class SqlField;
+class DbDriver;
+RATEL_NAMESPACE_END
+
 #endif
