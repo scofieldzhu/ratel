@@ -10,28 +10,17 @@ CreateTime: 2019-7-30 21:34
 #ifndef __sqlbase_h__
 #define __sqlbase_h__
 
-#include "basic.h"
+#include "databasepublic.h"
 
 RATEL_NAMESPACE_BEGIN
 
 enum class SqlDataType
 {
-    kInvalid,
+    kNull,
     kInteger,
     kReal,
-    kChars,
     kText,
-    kBinary,
-    kImage
-};
-
-enum class SqlStatement
-{
-    kUpdate,
-    kSelect,
-    kDelete,
-    kInsert,
-    kWhere
+    kBinary
 };
 
 enum class DbmsType
@@ -44,6 +33,8 @@ enum class DbmsType
 };
 
 using ConHandle = void*;
+
+#define NOERR "noerr"
 
 RATEL_NAMESPACE_END
 

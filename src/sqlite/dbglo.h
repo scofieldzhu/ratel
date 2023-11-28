@@ -22,5 +22,6 @@ namespace sqlkw
     RATEL_SQLITE_API extern const RString kDefault;
 }
 
+
 RATEL_NAMESPACE_END
 #endif

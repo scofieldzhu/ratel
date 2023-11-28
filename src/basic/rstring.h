@@ -340,6 +340,9 @@ public:
 	static RString FromWString(const std::wstring& srcstr);
     RString& encodeFromWString(const std::wstring& srcstr);    
 
+    bool startWith(const RString& rhs)const;
+    bool endWith(const RString& rhs)const;
+
 	static RString NewUID();
 
     // assign [strptr, <null>)

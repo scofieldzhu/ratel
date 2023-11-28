@@ -106,14 +106,4 @@ void SqlRecord::remove(int32_t pos)
         fields_.erase(fields_.begin() + pos);
 }
 
-bool SqlRecord::empty() const
-{
-    return fields_.empty();
-}
-
-std::size_t SqlRecord::count() const
-{
-    return fields_.size();
-}
-
 RATEL_NAMESPACE_END

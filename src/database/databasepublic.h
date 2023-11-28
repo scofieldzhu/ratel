@@ -20,9 +20,13 @@ CreateTime: 2019-7-30 21:15
 
 RATEL_NAMESPACE_BEGIN
 
-class SqlQuery;
+class SqlResult;
+class SqlRecord;
 class SqlField;
 class DbDriver;
+class SqlStatement;
+class Connection;
+
 RATEL_NAMESPACE_END
 
 #endif

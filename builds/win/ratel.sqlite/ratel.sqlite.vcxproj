@@ -22,32 +22,32 @@
     <ProjectGuid>{D7E2B7C5-717A-4031-B1AC-1AD406AAF83D}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>ratelsqlite</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -111,13 +111,13 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>RATEL_SQLITE_EXPORTS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../../../src/kernel;../../../src/filesys;../../../src/basic;../../../3rd/sflogger/include;../../../3rd/sqlite3.27.2/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../src/kernel;../../../src/filesys;../../../src/database;../../../src/basic;../../../3rd/sflogger/include;../../../3rd/sqlite3.27.2/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>../../../3rd/sflogger/bin;../../../3rd/sqlite3.27.2/x64;../_bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>ratel.basic-x64-d.lib;ratel.filesys-x64-d.lib;ratel.kernel-x64-d.lib;sflogger.core-v150-x64-d.lib;sqlite3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ratel.basic-x64-d.lib;ratel.filesys-x64-d.lib;ratel.kernel-x64-d.lib;ratel.database-x64-d.lib;sflogger.core-v150-x64-d.lib;sqlite3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -149,7 +149,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>RATEL_SQLITE_EXPORTS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../../../src/kernel;../../../src/filesys;../../../src/basic;../../../3rd/sflogger/include;../../../3rd/sqlite3.27.2/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../src/kernel;../../../src/filesys;../../../src/database;../../../src/basic;../../../3rd/sflogger/include;../../../3rd/sqlite3.27.2/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -165,8 +165,11 @@
     <ClInclude Include="..\..\..\src\sqlite\dbglo.h" />
     <ClInclude Include="..\..\..\src\sqlite\rowdatadict.h" />
     <ClInclude Include="..\..\..\src\sqlite\sqldatameta.h" />
+    <ClInclude Include="..\..\..\src\sqlite\sqlitecon.h" />
+    <ClInclude Include="..\..\..\src\sqlite\sqlitedriver.h" />
     <ClInclude Include="..\..\..\src\sqlite\sqlitelogger.h" />
     <ClInclude Include="..\..\..\src\sqlite\sqlitepublic.h" />
+    <ClInclude Include="..\..\..\src\sqlite\sqliteresult.h" />
     <ClInclude Include="..\..\..\src\sqlite\statement.h" />
     <ClInclude Include="..\..\..\src\sqlite\dbtable.h" />
     <ClInclude Include="..\..\..\src\sqlite\dbtablecol.h" />
@@ -179,7 +182,10 @@
     <ClCompile Include="..\..\..\src\sqlite\dbglo.cpp" />
     <ClCompile Include="..\..\..\src\sqlite\dbtablecol.cpp" />
     <ClCompile Include="..\..\..\src\sqlite\rowdatadict.cpp" />
+    <ClCompile Include="..\..\..\src\sqlite\sqlitecon.cpp" />
+    <ClCompile Include="..\..\..\src\sqlite\sqlitedriver.cpp" />
     <ClCompile Include="..\..\..\src\sqlite\sqlitelogger.cpp" />
+    <ClCompile Include="..\..\..\src\sqlite\sqliteresult.cpp" />
     <ClCompile Include="..\..\..\src\sqlite\statement.cpp" />
     <ClCompile Include="..\..\..\src\sqlite\dbtable.cpp" />
   </ItemGroup>

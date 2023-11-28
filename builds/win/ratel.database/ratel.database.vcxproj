@@ -26,17 +26,15 @@
     <ClInclude Include="..\..\..\src\database\dbdriver.h" />
     <ClInclude Include="..\..\..\src\database\sqlerr.h" />
     <ClInclude Include="..\..\..\src\database\sqlfield.h" />
-    <ClInclude Include="..\..\..\src\database\sqlquery.h" />
     <ClInclude Include="..\..\..\src\database\sqlrecord.h" />
     <ClInclude Include="..\..\..\src\database\sqlresult.h" />
+    <ClInclude Include="..\..\..\src\database\sqlstatement.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\database\connection.cpp" />
-    <ClCompile Include="..\..\..\src\database\dbdriver.cpp" />
     <ClCompile Include="..\..\..\src\database\sqlfield.cpp" />
-    <ClCompile Include="..\..\..\src\database\sqlquery.cpp" />
     <ClCompile Include="..\..\..\src\database\sqlrecord.cpp" />
-    <ClCompile Include="..\..\..\src\database\sqlresult.cpp" />
+    <ClCompile Include="..\..\..\src\database\sqlstatement.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\ratel.licenseheader" />
@@ -46,32 +44,32 @@
     <ProjectGuid>{DA3F42F7-6B5B-4328-9567-A28A3C84B981}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>rateldatabase</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>

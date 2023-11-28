@@ -1073,6 +1073,20 @@ RString& RString::encodeFromWString(const std::wstring& srcstr)
     return assign(utf8str.c_str());
 }
 
+bool RString::startWith(const RString& rhs) const
+{
+    if(rhs.empty() || rhs.size() > size())
+        return false;
+    return substr(0, rhs.size()).compare(rhs) == 0;
+}
+
+bool RString::endWith(const RString& rhs) const
+{
+    if(rhs.empty() || rhs.size() > size())
+        return false;
+    return substr(size() - rhs.size(), RString::npos).compare(rhs) == 0;
+}
+
 RString RString::NewUID()
 {
 #ifdef WIN32

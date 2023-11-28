@@ -23,6 +23,11 @@ public:
                       const RString& host = RString(), 
                       int port = -1,
                       const RString& connOpts = RString()) = 0;
+    void setOpened(bool flag) { opened_ = flag; }  
+    bool isOpened()const { return opened_; }
+    void setLastError(const RString& err) { lasterr_ = err; }
+    const RString& lastError()const { return lasterr_; }
+    void resetLastError() { lasterr_ = NOERR; }      
     virtual void close() = 0;
     virtual ConHandle handle() = 0;
     virtual bool beginTransaction() = 0;
@@ -30,6 +35,10 @@ public:
     virtual bool rollbackTransaction() = 0;
     virtual DbmsType dbmsType()const = 0;
     virtual ~DbDriver() = default;
+
+private:
+    bool opened_ = false;
+    RString lasterr_ = NOERR;
 };
 
 RATEL_NAMESPACE_END

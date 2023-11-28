@@ -26,6 +26,7 @@ class RowDataDict;
 class Statement;
 using StatementSPtr = std::shared_ptr<Statement>;
 class SqlDataMeta;
+class SqliteDriver;
 RATEL_NAMESPACE_END
 
 #endif

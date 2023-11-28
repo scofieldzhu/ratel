@@ -45,6 +45,10 @@ void CheckedArrayDelete(T* p)
     delete[] p;
 }
 
+template <typename T>
+void Ignore(T&&)
+{}
+
 RATEL_NAMESPACE_END
 
 #define rtdelete(p) RATEL::CheckedDelete(p)

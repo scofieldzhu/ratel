@@ -35,10 +35,10 @@ public:
     void setValue(const Variant& v);
     const Variant& value()const { return value_; }
     bool isNull()const { return value_.isNull(); }
-    bool isValid()const { return datatype_ == SqlDataType::kInvalid; }
+    bool isValid()const { return datatype_ == SqlDataType::kNull; }
     void setReadOnly(bool r) { readonly_ = r; }
     bool isReadOnly()const { return readonly_; }
-    SqlField(const RString& name = "", SqlDataType t = SqlDataType::kInvalid);
+    SqlField(const RString& name = "", SqlDataType t = SqlDataType::kNull);
     SqlField(const SqlField&);
     bool equalWith(const SqlField&)const;
     const SqlField& operator=(const SqlField&);

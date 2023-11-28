@@ -32,8 +32,8 @@ public:
     void replace(int32_t pos, const SqlField& field);
     void insert(int32_t pos, const SqlField& field);
     void remove(int32_t pos);
-    bool empty()const;
-    std::size_t count()const;
+    bool empty() const { return fields_.empty(); }
+    std::size_t count() const { return fields_.size(); }
     SqlRecord();
     ~SqlRecord();
 
