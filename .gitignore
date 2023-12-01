@@ -58,3 +58,4 @@ builds/win/ratel.sqlite/x64/Debug/vc140.pdb
 *.pdb
 *.pdb
 *.tcf
+/CMakeSettings.json

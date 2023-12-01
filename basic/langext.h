@@ -10,7 +10,7 @@ CreateTime: 2018-12-16 22:01
 #ifndef __langext_h__
 #define __langext_h__
 
-#include "ratelnsp.h"
+#include "ratel_nsp.h"
 
 RATEL_NAMESPACE_BEGIN
 
