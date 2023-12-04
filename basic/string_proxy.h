@@ -12,6 +12,7 @@ class RATEL_BASIC_API StringProxy final
 {
 public:
 	const std::string& stdStr()const { return stdstr_;  }
+	static StringProxy NewUID();
 	void toLower();
 	void toUpper();
 	static StringProxy FromInt(int32_t ival);

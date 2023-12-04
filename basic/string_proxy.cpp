@@ -5,7 +5,12 @@
 #include "spdlog/spdlog.h"
 #ifdef PLATFORM_WIN
 #include "winheader.h"
+#include <objbase.h>
+#else
+#include <uuid/uuid.h>
+#endif
 
+#ifdef PLATFORM_WIN
 namespace
 {
 	template <size_t CP>
@@ -123,6 +128,26 @@ StringProxy& StringProxy::operator=(const std::string& str)
 {
 	stdstr_ = str;
 	return *this;
+}
+
+StringProxy StringProxy::NewUID()
+{
+	char buffer[50] = {'\0'};
+#ifdef PLATFORM_WIN
+	GUID guid;
+	::CoCreateGuid(&guid);
+	std::sprintf(buffer,
+		"%08lX-%04hX-%04hX-%02hhX%02hhX-%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX",
+		guid.Data1, guid.Data2, guid.Data3,
+		guid.Data4[0], guid.Data4[1], guid.Data4[2], guid.Data4[3],
+		guid.Data4[4], guid.Data4[5], guid.Data4[6], guid.Data4[7]
+	);
+#else
+	uuid_t uuid;
+	uuid_generate_random(uuid);
+	uuid_unparse(uuid, buffer);
+#endif	
+	return StringProxy(buffer);
 }
 
 void StringProxy::toLower()
