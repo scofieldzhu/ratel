@@ -38,9 +38,10 @@ void TestCase_DirectedGraph()
 	spdlog::info("After remove vertex:V1, graphics arcs are following:");
 	dg.removeVertex("V1");
 	display_dg_arcs_func();
-
-
-
+	spdlog::info("===========================");
+	spdlog::info("After clear. graphics arcs are following:");
+	dg.clear();
+	display_dg_arcs_func();
 }
 
 std::string ArcInfoToString(int idx, const DG::ArcInfo& info)

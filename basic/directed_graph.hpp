@@ -166,7 +166,10 @@ inline void DirectedGraph<VDT, ADT, VKT>::getVertexArcs(const_vertex_key_referen
 template<class VDT, class ADT, class VKT>
 inline void DirectedGraph<VDT, ADT, VKT>::clear()
 {
-
+	while(!vertex_node_map_.empty()){
+		auto iter = vertex_node_map_.begin();
+		removeVertex(iter->first);			
+	}
 }
 
 template<class VDT, class ADT, class VKT>
@@ -175,7 +178,9 @@ inline DirectedGraph<VDT, ADT, VKT>::DirectedGraph()
 
 template<class VDT, class ADT, class VKT>
 inline DirectedGraph<VDT, ADT, VKT>::~DirectedGraph()
-{}
+{
+	clear();
+}
 
 template<class VDT, class ADT, class VKT>
 inline auto DirectedGraph<VDT, ADT, VKT>::locateArcNode(const_vertex_key_reference source_vertex, const_vertex_key_reference target_vertex) const
@@ -213,6 +218,8 @@ inline void DirectedGraph<VDT, ADT, VKT>::removeAllOutArcNodes(VertexNode& host)
 {
 	while(host.head_out_arc)
 		removeArc(host.head_out_arc->source_vertex, host.head_out_arc->target_vertex);
+	while(host.head_in_arc)
+		removeArc(host.head_in_arc->source_vertex, host.head_in_arc->target_vertex);
 }
 
 template<class VDT, class ADT, class VKT>
