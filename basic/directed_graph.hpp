@@ -21,14 +21,15 @@ RATEL_NAMESPACE_BEGIN
 template <class VDT, class ADT, class VKT = std::string>
 class DirectedGraph
 {
-public:
+public:	
 	using vertex_key_type = VKT;
-	using vertex_key_reference = vertex_key_type&;
+	using vertex_key_reference = vertex_key_type&;	
 	using const_vertex_key_reference = const vertex_key_type&;
 	using vertex_data_type = std::enable_if<std::is_default_constructible_v<VDT> &&
 											std::is_copy_assignable_v<VDT>, VDT>::type;
 	using arc_data_type = std::enable_if<std::is_default_constructible_v<ADT> &&
 										 std::is_copy_assignable_v<ADT>, ADT>::type;
+	using self_type = DirectedGraph<VDT, ADT, VKT>;	
 	struct ArcInfo
 	{
 		arc_data_type data;
@@ -43,7 +44,8 @@ public:
 	void addArc(const_vertex_key_reference source_vertex, const_vertex_key_reference target_vertex, const arc_data_type& data);
 	void removeArc(const_vertex_key_reference source_vertex, const_vertex_key_reference target_vertex);
 	bool existArc(const_vertex_key_reference source_vertex, const_vertex_key_reference target_vertex)const;
-	void getVertexArcs(const_vertex_key_reference vertex_key, ArcInfoList& out_arcs, ArcInfoList& in_arcs)const;
+	void getVertexArcs(const_vertex_key_reference vertex_key, ArcInfoList& out_arcs, ArcInfoList& in_arcs)const;	
+	bool checkCycle()const;
 	void clear();
 	DirectedGraph();
 	~DirectedGraph();
@@ -51,10 +53,17 @@ public:
 private:
 	struct ArcNode;
 	struct VertexNode;
+	using graph_list_type = std::vector<self_type>;
+	using visit_map = std::map<vertex_key_type, bool>;
+	using vertex_key_list_type = std::vector<vertex_key_type>;
+	using vertex_key_list2_type = std::vector<vertex_key_list_type>;
 	auto locateArcNode(const_vertex_key_reference source_vertex, const_vertex_key_reference target_vertex)const;
 	void removeOutArcNode(VertexNode& node, const_vertex_key_reference target_vertex);
 	void removeAllOutArcNodes(VertexNode& host);
 	void removeInArcNode(VertexNode& node, const_vertex_key_reference source_vertex);
+	void getConnectedComponents(vertex_key_list2_type& components)const;
+	void dfs(const_vertex_key_reference start_vertex, visit_map& visit_map, vertex_key_list_type& vertexes)const; //deep first search algorithm to obtain a connected component.
+	bool checkCycleImpl(const_vertex_key_reference source_vertex, visit_map& visited, visit_map& visit_stack)const;
 
 	struct ArcNode
 	{
@@ -239,6 +248,72 @@ inline void DirectedGraph<VDT, ADT, VKT>::removeInArcNode(VertexNode& node, cons
 		last_arc = cur_arc;
 		cur_arc = cur_arc->next_in_arc;
 	}
+}
+
+template<class VDT, class ADT, class VKT>
+inline void DirectedGraph<VDT, ADT, VKT>::getConnectedComponents(vertex_key_list2_type& components)const
+{
+	visit_map visited;
+	for(const auto& kv : vertex_node_map_)
+		visited[kv.first] = false;
+	for(const auto& kv : vertex_node_map_){
+		const auto& cur_vertex = kv.first;
+		if(!visited[cur_vertex]){
+			vertex_key_list_type component;
+			dfs(cur_vertex, visited, component);
+			components.push_back(component);
+		}
+	}
+}
+
+template<class VDT, class ADT, class VKT>
+inline void DirectedGraph<VDT, ADT, VKT>::dfs(const_vertex_key_reference start_vertex, visit_map& visited, vertex_key_list_type& result_vertexes)const
+{
+	visited[start_vertex] = true;
+	result_vertexes.push_back(start_vertex);
+	const auto& vertex_node = vertex_node_map_[start_vertex];
+	for(auto out_arc = vertex_node.head_out_arc; out_arc != nullptr; out_arc = out_arc->next_out_arc){
+		if(!visited[out_arc->target_vertex]){
+			dfs(out_arc->target_vertex, visited, result_vertexes);
+		}
+	}
+}
+
+template<class VDT, class ADT, class VKT>
+inline bool DirectedGraph<VDT, ADT, VKT>::checkCycle()const
+{
+	visit_map visited, visit_stack;
+	for(const auto& kv : vertex_node_map_){
+		visited[kv.first] = false;
+		visit_stack[kv.first] = false;
+	}
+    for(const auto& kv : vertex_node_map_) {
+    	const auto& source_vertex = kv.first;
+        if(!visited[source_vertex] && checkCycleImpl(source_vertex, visited, visit_stack))
+            return true;
+    }
+	return false;
+}
+
+template<class VDT, class ADT, class VKT>
+inline bool DirectedGraph<VDT, ADT, VKT>::checkCycleImpl(const_vertex_key_reference source_vertex, visit_map& visited, visit_map& visit_stack)const
+{
+    if(!visited[source_vertex]) {
+        visited[source_vertex] = true;
+        visit_stack[source_vertex] = true;
+        // 递归地检测邻接顶点
+        for(auto out_arc = vertex_node_map_.at(source_vertex).head_out_arc; out_arc != nullptr; out_arc = out_arc->next_out_arc){
+        	const auto& adjacent_vertex = out_arc->target_vertex;
+        	if(!visited[adjacent_vertex] && checkCycleImpl(adjacent_vertex, visited, visit_stack)){ // 如果邻接顶点未被访问，继续递归
+        		return true;
+        	}else if(visit_stack[adjacent_vertex]){ // 如果邻接顶点已经在递归堆栈中，说明存在环
+        		return true;
+        	}
+        }
+    }
+    // 回溯，从递归堆栈中移除当前顶点
+	visit_stack[source_vertex] = false;
+    return false;
 }
 
 RATEL_NAMESPACE_END

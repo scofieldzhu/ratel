@@ -22,22 +22,32 @@ void TestCase_DirectedGraph()
 	dg.addArc("V3", "V1", 0);
 	dg.addArc("V4", "V2", 0);
 	dg.addArc("V4", "V1", 0);
-	dg.addArc("V4", "V3", 0);
+	dg.addArc("V4", "V3", 0);	
 	auto display_dg_arcs_func = [&dg](){
 		PrintVertexArcs(dg, "V1");
 		PrintVertexArcs(dg, "V2");
 		PrintVertexArcs(dg, "V3");
 		PrintVertexArcs(dg, "V4");
 	};
-	display_dg_arcs_func();
 	spdlog::info("===========================");
-	spdlog::info("After remove arc:V1->V3, graphics arcs are following:");
+	spdlog::info("DG is created, exists cycle:{}", dg.checkCycle());
+	display_dg_arcs_func();
+	
+	spdlog::info("===========================");
 	dg.removeArc("V1", "V3");
+	spdlog::info("After remove arc:V1->V3, graphics arcs are following: exists cycle:{}", dg.checkCycle());
 	display_dg_arcs_func();
+
 	spdlog::info("===========================");
-	spdlog::info("After remove vertex:V1, graphics arcs are following:");
 	dg.removeVertex("V1");
+	spdlog::info("After remove vertex:V1, graphics arcs are following:exists cycle:{}", dg.checkCycle());
 	display_dg_arcs_func();
+
+	spdlog::info("===========================");
+	dg.removeArc("V3", "V4");
+	spdlog::info("After remove arc:V3->V4, graphics arcs are following:exists cycle:{}", dg.checkCycle());
+	display_dg_arcs_func();
+
 	spdlog::info("===========================");
 	spdlog::info("After clear. graphics arcs are following:");
 	dg.clear();

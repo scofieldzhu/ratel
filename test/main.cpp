@@ -10,7 +10,7 @@ int main()
 	cout << "Hello world!" << endl;
 	TestCase_SPDLogger();
 	//TestCase_StringProxy();
-	//TestCase_DirectedGraph();
-	TestCase_Notifier();
+	TestCase_DirectedGraph();
+	//TestCase_Notifier();
 	return 0;
 }
