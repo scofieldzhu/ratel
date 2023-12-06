@@ -30,4 +30,4 @@ target_link_libraries(${proj_name} debug ${deplibs_dbg} optimized ${deplibs_opt}
 
 install(TARGETS ${proj_name} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 file(GLOB HEADERS "*.h" "*.hpp")
-install(FILES ${HEADERS} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/${proj_name})
+install(FILES ${HEADERS} DESTINATION ${CMAKE_ISNTALL_INCLUDE}/${proj_name})

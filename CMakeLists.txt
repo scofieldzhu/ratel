@@ -3,7 +3,7 @@
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(proj_name "Ratel")
+set(proj_name "ratel")
 
 project (${proj_name})
 
@@ -27,6 +27,8 @@ link_directories(
 add_compile_options(/wd4996 /wd4275 /wd4251)
 
 set(CMAKE_INSTALL_PREFIX "${PROJECT_BINARY_DIR}/${proj_name}" CACHE PATH "Installation prefix")
+
+set(CMAKE_ISNTALL_INCLUDE "${CMAKE_INSTALL_PREFIX}/include/${proj_name}")
 
 add_subdirectory(basic)
 
