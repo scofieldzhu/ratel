@@ -26,12 +26,11 @@ link_directories(
 
 add_compile_options(/wd4996 /wd4275 /wd4251)
 
+set(CMAKE_INSTALL_PREFIX "${PROJECT_BINARY_DIR}/${proj_name}" CACHE PATH "Installation prefix")
+
 add_subdirectory(basic)
 
 add_subdirectory(test)
 
-#install(TARGETS ${proj_name} DESTINATION bin)
-#install(FILES "${PROJECT_BINARY_DIR}/MyLibraryConfig.h" 
-   #     DESTINATION include)
-
-# TODO: 如有需要，请添加测试并安装目标。
+file(GLOB HEADERS "${trd_bin}/*d.dll")
+install(FILES ${HEADERS} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)

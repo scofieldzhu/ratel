@@ -12,5 +12,6 @@ int main()
 	//TestCase_StringProxy();
 	TestCase_DirectedGraph();
 	//TestCase_Notifier();
+	getchar();
 	return 0;
 }
