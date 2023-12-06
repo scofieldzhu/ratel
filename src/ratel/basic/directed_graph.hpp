@@ -5,6 +5,7 @@ Copyright (c) scofieldzhu. All rights reserved.
 
 Project: ratel.basic 
 Module: directed_graph.h 
+Create time: 2023/12/02 09:39:48
 =========================================================================*/
 #ifndef __directed_graph_h__
 #define __directed_graph_h__
@@ -14,7 +15,7 @@ Module: directed_graph.h
 #include <string>
 #include <cstdint>
 #include <type_traits>
-#include "ratel_nsp.h"
+#include "ratel/basic/ratel_nsp.h"
 
 RATEL_NAMESPACE_BEGIN
 
@@ -301,17 +302,15 @@ inline bool DirectedGraph<VDT, ADT, VKT>::checkCycleImpl(const_vertex_key_refere
     if(!visited[source_vertex]) {
         visited[source_vertex] = true;
         visit_stack[source_vertex] = true;
-        // 递归地检测邻接顶点
         for(auto out_arc = vertex_node_map_.at(source_vertex).head_out_arc; out_arc != nullptr; out_arc = out_arc->next_out_arc){
         	const auto& adjacent_vertex = out_arc->target_vertex;
-        	if(!visited[adjacent_vertex] && checkCycleImpl(adjacent_vertex, visited, visit_stack)){ // 如果邻接顶点未被访问，继续递归
+        	if(!visited[adjacent_vertex] && checkCycleImpl(adjacent_vertex, visited, visit_stack)){ 
         		return true;
-        	}else if(visit_stack[adjacent_vertex]){ // 如果邻接顶点已经在递归堆栈中，说明存在环
+        	}else if(visit_stack[adjacent_vertex]){ 
         		return true;
         	}
         }
     }
-    // 回溯，从递归堆栈中移除当前顶点
 	visit_stack[source_vertex] = false;
     return false;
 }

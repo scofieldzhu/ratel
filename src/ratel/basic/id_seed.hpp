@@ -5,13 +5,14 @@ Copyright (c) scofieldzhu. All rights reserved.
 
 Project: ratel.basic 
 Module: directed_graph.h 
+Create time: 2023/12/03 11:24:58
 =========================================================================*/
 #ifndef __id_seed_hpp__
 #define __id_seed_hpp__
 
 #include <limits>
 #include <type_traits>
-#include "ratel_nsp.h"
+#include "ratel/basic/ratel_nsp.h"
 
 RATEL_NAMESPACE_BEGIN
 

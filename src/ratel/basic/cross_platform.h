@@ -4,10 +4,11 @@ for for those c++ developers pursuing fast-developement.
 Copyright (c) scofieldzhu. All rights reserved.
 
 Project: ratel.basic
-Module: crossplatform.h
+Module: cross_platform.h
+Create time: 2023/11/30 10:25:14
 =========================================================================*/
-#ifndef __crossplatform_h__
-#define __crossplatform_h__
+#ifndef __cross_platform_h__
+#define __cross_platform_h__
 
 #if defined(WIN32) || defined(_WIN32) || defined(WIN64) || defined(_WIN64) || defined(_MSC_VER) || defined(WINDOW) || defined(_WINDOWS)
 	#define PLATFORM_WIN

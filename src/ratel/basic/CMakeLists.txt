@@ -28,6 +28,19 @@ set(deplibs_dbg spdlogd)
 set(deplibs_opt spdlog)
 target_link_libraries(${proj_name} debug ${deplibs_dbg} optimized ${deplibs_opt})
 
+# configure_file(
+#     ${license_file}
+#     COPYONLY
+# )
+# add_custom_target(UpdateLicenseHeader
+#     COMMAND LicenseHeaderManager -t ${license_file} -p ${CMAKE_SOURCE_DIR} -r
+#     COMMENT "Updating license headers"
+# )
+# add_dependencies(${proj_name} UpdateLicenseHeader)
+
 install(TARGETS ${proj_name} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 file(GLOB HEADERS "*.h" "*.hpp")
 install(FILES ${HEADERS} DESTINATION ${CMAKE_ISNTALL_INCLUDE}/${proj_name})
+
+
+

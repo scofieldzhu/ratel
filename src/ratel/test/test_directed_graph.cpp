@@ -1,6 +1,6 @@
 #include "test_directed_graph.h"
 #include <format>
-#include "basic/directed_graph.hpp"
+#include "ratel/basic/directed_graph.hpp"
 #include "spdlog/spdlog.h"
 
 using namespace ratel;

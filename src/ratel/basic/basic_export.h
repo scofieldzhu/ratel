@@ -4,13 +4,14 @@ for for those c++ developers pursuing fast-developement.
 Copyright (c) scofieldzhu. All rights reserved.	
 
 Project: ratel.basic 
-Module: basic_public.h 
+Module: basic_export.h 
+Create time: 2023/11/30 09:28:45
 =========================================================================*/
-#ifndef __basic_public_h__
-#define __basic_public_h__
+#ifndef __basic_export_h__
+#define __basic_export_h__
 
-#include "crossplatform.h"
-#include "ratel_nsp.h"
+#include "ratel/basic/cross_platform.h"
+#include "ratel/basic/ratel_nsp.h"
 
 #ifdef PLATFORM_WIN
     #ifdef BASIC_EXPORTS

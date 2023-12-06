@@ -1,7 +1,16 @@
+/*=======================================================================
+Ratel is a application framework, which provides some convenient librarys
+for for those c++ developers pursuing fast-developement.
+Copyright (c) scofieldzhu. All rights reserved.	
+
+Project: ratel.basic 
+Module: string_proxy.h 
+Create time: 2023/12/01 12:47:59
+=========================================================================*/
 #ifndef __string_proxy_h__
 #define __string_proxy_h__
 
-#include "basic_export.h"
+#include "ratel/basic/basic_export.h"
 #include <cstdint>
 #include <initializer_list>
 #include <string>

@@ -15,13 +15,12 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${build_bin})
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${build_bin})
 
 include_directories(
-	${CMAKE_SOURCE_DIR}
+	${CMAKE_SOURCE_DIR}/src
 	${trd_incl}
 )
 
 link_directories(
 	${trd_bin} 
-	${ratel_bin}
 )
 
 add_compile_options(/wd4996 /wd4275 /wd4251)
@@ -30,9 +29,11 @@ set(CMAKE_INSTALL_PREFIX "${PROJECT_BINARY_DIR}/${proj_name}" CACHE PATH "Instal
 
 set(CMAKE_ISNTALL_INCLUDE "${CMAKE_INSTALL_PREFIX}/include/${proj_name}")
 
-add_subdirectory(basic)
+set(license_file "${CMAKE_CURRENT_SOURCE_DIR}/doc/license_template.txt" )
 
-add_subdirectory(test)
+add_subdirectory(src/ratel/basic)
+
+add_subdirectory(src/ratel/test)
 
 file(GLOB HEADERS "${trd_bin}/*d.dll")
 install(FILES ${HEADERS} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)

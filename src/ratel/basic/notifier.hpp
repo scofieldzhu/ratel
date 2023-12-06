@@ -5,6 +5,7 @@ Copyright (c) scofieldzhu. All rights reserved.
 
 Project: ratel.basic 
 Module: ratelnsp.h 
+Create time: 2023/12/05 09:02:35
 =========================================================================*/
 #ifndef __notifier_h__
 #define __notifier_h__
@@ -13,7 +14,7 @@ Module: ratelnsp.h
 #include <mutex>
 #include <cstdint>
 #include <functional>
-#include "id_seed.hpp"
+#include "ratel/basic/id_seed.hpp"
 
 RATEL_NAMESPACE_BEGIN
 

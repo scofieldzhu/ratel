@@ -1,0 +1,10 @@
+extensions: .cs .cpp .h .cxx .hpp .c
+/*=======================================================================
+Ratel is a application framework, which provides some convenient librarys
+for for those c++ developers pursuing fast-developement.
+Copyright (c) scofieldzhu. All rights reserved.
+
+Project: ratel.basic
+Module: win_header.h
+Create time: 2023/11/30 10:34:45
+=========================================================================*/

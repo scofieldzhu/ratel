@@ -1,5 +1,5 @@
 #include "test_string_proxy.h"
-#include "basic/string_proxy.h"
+#include "ratel/basic/string_proxy.h"
 using namespace ratel;
 
 void TestCase_StringProxy()
