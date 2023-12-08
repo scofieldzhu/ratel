@@ -33,6 +33,8 @@ set(license_file "${CMAKE_CURRENT_SOURCE_DIR}/doc/license_template.txt" )
 
 add_subdirectory(src/ratel/basic)
 
+add_subdirectory(src/ratel/geometry)
+
 add_subdirectory(src/ratel/test)
 
 file(GLOB HEADERS "${trd_bin}/*d.dll")
