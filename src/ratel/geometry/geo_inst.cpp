@@ -15,4 +15,7 @@ void Test()
 	using Pt2i = Vec2<int>;
 	VecProxy<Pt2i> pt2i_vp;
 
+	VecProxy<int> vpi;
+	vpi.loadBytes(byte_vec.data(), byte_vec.size());
+
 }

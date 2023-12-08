@@ -12,11 +12,12 @@ Create time: 2023/12/08 09:37:45
 
 #include "base_type.h"
 #include <concepts>
+#include <type_traits>
 
 RATEL_NAMESPACE_BEGIN
 
 template <typename T, typename B, typename CB>
-concept serializable = requires(T t1, T t2, B b, CB cb, size_t s){
+concept SerializableType = requires(T t1, T t2, B b, CB cb, size_t s){
     T();
     {t1 = std::move(t2)};
     {T::GetByteSize()}->std::same_as<size_t>;
@@ -24,17 +25,24 @@ concept serializable = requires(T t1, T t2, B b, CB cb, size_t s){
     {t1.loadBytes(cb, s)}->std::same_as<size_t>;
 };
 
+template <typename T>
+concept ArithmeticType = std::is_arithmetic_v<T>;
+
 template <class E>
 class VecProxy
 {
 public:
-    static_assert(serializable<E, BytePtr, ConsBytePtr>);
+    static_assert(SerializableType<E, BytePtr, ConsBytePtr> || ArithmeticType<E>);
     using element_type = E;
     using list_type = std::vector<element_type>;
 
     size_t getSerializedByteSize()const
     {
-        return E::GetByteSize() * list_.size() + sizeof(int);
+        if constexpr(ArithmeticType<element_type>){
+            return sizeof(element_type) * list_.size() + sizeof(int);
+        }else{
+            return E::GetByteSize() * list_.size() + sizeof(int);
+        }        
     }
 
     ByteVec serializeToBytes()const
@@ -46,12 +54,16 @@ public:
         memcpy(p_data, &element_count, sizeof(int));
         p_data += sizeof(int);
         size_t finish_bytes = sizeof(int);
-        for(const auto& v : list_){
-            auto cur_size = v.serializeToBytes(p_data, bv.size() - finish_bytes);
-            if(!cur_size)
-                return ByteVec();
-            finish_bytes += cur_size;
-            p_data += cur_size;
+        if constexpr(ArithmeticType<element_type>){
+            memcpy(p_data, (void*)list_.data(), kTotalByteSize - sizeof(int));
+        }else{
+            for(const auto& v : list_){
+                auto cur_size = v.serializeToBytes(p_data, bv.size() - finish_bytes);
+                if(!cur_size)
+                    return ByteVec();
+                finish_bytes += cur_size;
+                p_data += cur_size;
+            }
         }
         return bv;
     }
@@ -61,20 +73,25 @@ public:
         const size_t kTotalByteSize = getSerializedByteSize();
         if(byte_data == nullptr || size < sizeof(int))
             return false;
-        const BytePtr byte_cursor = byte_data;
+        auto byte_cursor = byte_data;
         int element_count = 0;
         memcpy(&element_count, byte_cursor, sizeof(int));
         byte_cursor += sizeof(int);
         size_t left_size = size - sizeof(int);
-        list_.clear();
-        for(auto i = 0; i < element_count; ++i){
-            element_type e;
-            auto finish_size = e.loadBytes(byte_cursor, left_size);
-            if(finish_size == 0)
-                return false;
-            byte_cursor += finish_size;
-            left_size -= finish_size;
-            list_.push_back(std::move(e));
+        if constexpr(ArithmeticType<element_type>){
+            list_.resize(element_count);
+            memcpy((void*)list_.data(), byte_cursor, kTotalByteSize - sizeof(int));
+        }else{
+            list_.clear();
+            for(auto i = 0; i < element_count; ++i){
+                element_type e;
+                auto finish_size = e.loadBytes(byte_cursor, left_size);
+                if(finish_size == 0)
+                    return false;
+                byte_cursor += finish_size;
+                left_size -= finish_size;
+                list_.push_back(std::move(e));
+            }
         }
         return true;
     }
