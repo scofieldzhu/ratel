@@ -1,0 +1,11 @@
+prefix=F:/Program Files/protobuf
+exec_prefix=${prefix}
+libdir=F:/Program Files/protobuf/lib
+includedir=F:/Program Files/protobuf/include
+
+Name: abseil_dll
+Description: Abseil DLL library
+URL: https://abseil.io/
+Version: 20230802
+Libs: -L${libdir} -labseil_dll 
+Cflags: -I${includedir}

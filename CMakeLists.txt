@@ -9,6 +9,7 @@ project (${proj_name})
 
 set(trd_incl "${CMAKE_SOURCE_DIR}/3rd/include")
 set(trd_bin "${CMAKE_SOURCE_DIR}/3rd/bin")
+set(trd_lib "${CMAKE_SOURCE_DIR}/3rd/lib")
 set(build_bin "${CMAKE_BINARY_DIR}/bin")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${build_bin})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${build_bin})
@@ -20,7 +21,7 @@ include_directories(
 )
 
 link_directories(
-	${trd_bin} 
+	${trd_lib} 
 )
 
 add_compile_options(/wd4996 /wd4275 /wd4251)
