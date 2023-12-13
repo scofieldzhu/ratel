@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+// 定义一个简单的消息类型
+message Person {
+  string name = 1;
+  int32 age = 2;
+  repeated string hobbies = 3;
+}
+
+// 定义一个消息类型，其中包含 Person 对象的列表
+message AddressBook {
+  repeated Person contacts = 1;
+}

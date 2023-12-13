@@ -2,15 +2,37 @@ set(proj_name "geometry")
 
 project(${proj_name})
 
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 set(Protobuf_INCLUDE_DIR ${trd_incl})
 set(Protobuf_LIBRARIES ${trd_lib})
+
+set(Protobuf_PROTOC_EXECUTABLE ${trd_bin}/protoc.exe)
+
 find_package(Protobuf REQUIRED)
+
+set(msg_proto_dir ${CMAKE_CURRENT_SOURCE_DIR}/protos)
+file(GLOB msg_protos "${msg_proto_dir}/*.proto")
+set(proto_files "")
+foreach(full_path ${msg_protos})
+	get_filename_component(filename ${full_path} NAME)
+	list(APPEND proto_files ${filename})
+endforeach()
+
+message("PROTO_FILES=${proto_files}")
+
+execute_process(
+    COMMAND ${Protobuf_PROTOC_EXECUTABLE} --cpp_out=. -I ${msg_proto_dir} ${proto_files}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+)
 
 file(GLOB
 	 SOURCE_FILES 
 	 "*.cpp"
 	 "*.h"
 	 "*.hpp"
+	 "*.cc"
 )
 add_library(${proj_name} SHARED ${SOURCE_FILES})
 
@@ -25,11 +47,12 @@ target_compile_definitions(${proj_name} PRIVATE
 )
 
 if(WIN32)
-	target_compile_definitions(${proj_name} PRIVATE GEOMETRY_EXPORTS)
+	target_compile_definitions(${proj_name} PRIVATE GEOMETRY_EXPORTS PROTOBUF_USE_DLLS _CRT_SECURE_NO_WARNINGS NOMINMAX)
+	#
 endif()
 
-set(deplibs_dbg spdlogd)
-set(deplibs_opt spdlog)
+set(deplibs_dbg spdlogd libprotobufd)
+set(deplibs_opt spdlog libprotobuf)
 target_link_libraries(${proj_name} debug ${deplibs_dbg} optimized ${deplibs_opt})
 
 # configure_file(

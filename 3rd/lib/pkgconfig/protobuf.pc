@@ -5,8 +5,7 @@ includedir=F:/Program Files/protobuf/include
 
 Name: Protocol Buffers
 Description: Google's Data Interchange Format
-Version: 25.1.0
-Requires: abseil_dll utf8_range
+Version: 3.20.1.0
 Libs: -L${libdir} -lprotobuf 
-Cflags: -I${includedir} -DPROTOBUF_USE_DLLS
+Cflags: -I${includedir}
 Conflicts: protobuf-lite

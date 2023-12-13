@@ -156,7 +156,7 @@ if(NOT Protobuf_PROTOC_EXECUTABLE AND TARGET protobuf::protoc)
 endif()
 
 # Version info variable
-set(Protobuf_VERSION "25.1.0")
+set(Protobuf_VERSION "3.20.1.0")
 
 include(FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(Protobuf

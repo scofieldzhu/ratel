@@ -1,4 +1,4 @@
-set(PACKAGE_VERSION "25.1.0")
+set(PACKAGE_VERSION "3.20.1.0")
 set(${PACKAGE_FIND_NAME}_VERSION_PRERELEASE "" PARENT_SCOPE)
 
 # Prerelease versions cannot be passed in directly via the find_package command,
@@ -18,7 +18,7 @@ endif()
 set(PACKAGE_VERSION_COMPATIBLE TRUE) #Assume true until shown otherwise
 
 if(PACKAGE_FIND_VERSION) #Only perform version checks if one is given
-  if(NOT PACKAGE_FIND_VERSION_MAJOR EQUAL "4")
+  if(NOT PACKAGE_FIND_VERSION_MAJOR EQUAL "3")
     set(PACKAGE_VERSION_COMPATIBLE FALSE)
   elseif(PACKAGE_FIND_VERSION VERSION_GREATER PACKAGE_VERSION)
     set(PACKAGE_VERSION_COMPATIBLE FALSE)

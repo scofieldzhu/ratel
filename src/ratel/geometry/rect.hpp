@@ -19,6 +19,14 @@ class Rect
 {
 public:
 	using value_type = std::enable_if_t<std::is_same_v<T, int> || std::is_same_v<T, float>, T>;
+	using point_type = Vec2<value_type>;
+	using size_type = Vec2<value_type>;
+
+	void setPoint(const point_type& pt){ lt_ = pt; }
+	const point_type& lt()const{ return lt_; }
+	void setSize(wh_type)
+	const wh_type& size()const{ return size_; }
+	auto angle()const{return angle_;}
 
 	Rect()
 	{}
@@ -26,6 +34,10 @@ public:
 	Rect()
 	{}
 
+private:
+	point_type lt_{value_type(0), value_type(0)};
+	wh_type size_{value_type(0), value_type(0)};
+	float angle_ = 0.0f;
 };
 
 RATEL_NAMESPACE_END

@@ -58,9 +58,7 @@ add_library(protobuf::libprotobuf-lite SHARED IMPORTED)
 
 set_target_properties(protobuf::libprotobuf-lite PROPERTIES
   INTERFACE_COMPILE_DEFINITIONS "PROTOBUF_USE_DLLS"
-  INTERFACE_COMPILE_FEATURES "cxx_std_14"
   INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include"
-  INTERFACE_LINK_LIBRARIES "absl::abseil_dll"
 )
 
 # Create imported target protobuf::libprotobuf
@@ -68,9 +66,7 @@ add_library(protobuf::libprotobuf SHARED IMPORTED)
 
 set_target_properties(protobuf::libprotobuf PROPERTIES
   INTERFACE_COMPILE_DEFINITIONS "PROTOBUF_USE_DLLS"
-  INTERFACE_COMPILE_FEATURES "cxx_std_14"
   INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include"
-  INTERFACE_LINK_LIBRARIES "absl::abseil_dll"
 )
 
 # Create imported target protobuf::libprotoc
@@ -78,17 +74,11 @@ add_library(protobuf::libprotoc SHARED IMPORTED)
 
 set_target_properties(protobuf::libprotoc PROPERTIES
   INTERFACE_COMPILE_DEFINITIONS "PROTOBUF_USE_DLLS"
-  INTERFACE_COMPILE_FEATURES "cxx_std_14"
   INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include"
-  INTERFACE_LINK_LIBRARIES "absl::abseil_dll"
 )
 
 # Create imported target protobuf::protoc
 add_executable(protobuf::protoc IMPORTED)
-
-if(CMAKE_VERSION VERSION_LESS 2.8.12)
-  message(FATAL_ERROR "This file relies on consumers using CMake 2.8.12 or greater.")
-endif()
 
 # Load information for each installed configuration.
 file(GLOB _cmake_config_files "${CMAKE_CURRENT_LIST_DIR}/protobuf-targets-*.cmake")
@@ -122,24 +112,8 @@ endforeach()
 unset(_cmake_target)
 unset(_cmake_import_check_targets)
 
-# Make sure the targets which have been exported in some other
-# export set exist.
-unset(${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE_targets)
-foreach(_target "absl::abseil_dll" )
-  if(NOT TARGET "${_target}" )
-    set(${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE_targets "${${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE_targets} ${_target}")
-  endif()
-endforeach()
-
-if(DEFINED ${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE_targets)
-  if(CMAKE_FIND_PACKAGE_NAME)
-    set( ${CMAKE_FIND_PACKAGE_NAME}_FOUND FALSE)
-    set( ${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE "The following imported targets are referenced, but are missing: ${${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE_targets}")
-  else()
-    message(FATAL_ERROR "The following imported targets are referenced, but are missing: ${${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE_targets}")
-  endif()
-endif()
-unset(${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE_targets)
+# This file does not depend on other imported targets which have
+# been exported from the same project but in a separate export set.
 
 # Commands beyond this point should not need to know the version.
 set(CMAKE_IMPORT_FILE_VERSION)
