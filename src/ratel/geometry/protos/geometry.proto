@@ -1,0 +1,95 @@
+syntax = "proto3";
+
+package ratel;
+
+message Vec2F
+{
+	float x = 1;
+	float y = 2;
+}
+
+message Vec2fList
+{
+	repeated Vec2F list = 1;
+}
+
+message Vec2I
+{
+	int32 x = 1;
+	int32 y = 2;
+}
+
+message Vec3F
+{
+	float x = 1;
+	float y = 2;
+	float z = 3;
+}
+
+message Vec3I
+{
+	int32 x = 1;
+	int32 y = 2;
+	int32 z = 3;
+}
+
+message SizeI
+{
+	uint32 w = 1;
+	uint32 h = 2;
+}
+
+message SizeF
+{
+	float w = 1;
+	float h = 2;
+}
+
+message Line2I
+{
+	Vec2I p0 = 1;
+	Vec2I p1 = 2;
+}
+
+message Line2F
+{
+	Vec2F p0 = 1;
+	Vec2F p1 = 2;
+}
+
+message CircleI
+{
+	Vec2I center = 1;
+	float r  = 2;
+}
+
+message CircleF
+{
+	Vec2F center = 1;
+	float r = 2;
+}
+
+message RectI
+{
+	Vec2I lt = 1;
+	SizeI size = 2;
+	float angle = 3;
+}
+
+message RectF
+{
+	Vec2F lt = 1;
+	SizeF size = 2;
+	float angle = 3;
+}
+
+message Poly2I
+{
+	repeated Vec2I pts = 1;
+}
+
+message Poly2F
+{
+	repeated Vec2F pts = 1;
+}
+

@@ -22,10 +22,17 @@ endforeach()
 
 message("PROTO_FILES=${proto_files}")
 
-execute_process(
-    COMMAND ${Protobuf_PROTOC_EXECUTABLE} --cpp_out=. -I ${msg_proto_dir} ${proto_files}
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-)
+# if(WIN32)
+# 	execute_process(
+# 		COMMAND ${Protobuf_PROTOC_EXECUTABLE} --cpp_out=dllexport_decl=RATEL_GEOMETRY_API:. -I ${msg_proto_dir} ${proto_files}
+# 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+# 	)
+# else()
+# 	execute_process(
+# 		COMMAND ${Protobuf_PROTOC_EXECUTABLE} --cpp_out=. -I ${msg_proto_dir} ${proto_files}
+# 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+# 	)
+# endif()
 
 file(GLOB
 	 SOURCE_FILES 
