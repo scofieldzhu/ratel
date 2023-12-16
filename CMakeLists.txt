@@ -38,5 +38,9 @@ add_subdirectory(src/ratel/geometry)
 
 add_subdirectory(src/ratel/test)
 
-file(GLOB HEADERS "${trd_bin}/*d.dll")
-install(FILES ${HEADERS} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+# install third-party libraries
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+	install(FILES ${trd_bin}/spdlogd.dll DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+else()
+	install(FILES ${trd_bin}/spdlog.dll DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+endif()

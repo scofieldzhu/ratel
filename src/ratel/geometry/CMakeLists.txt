@@ -2,25 +2,20 @@ set(proj_name "geometry")
 
 project(${proj_name})
 
-set(CMAKE_CXX_STANDARD 23)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+# set(Protobuf_INCLUDE_DIR ${trd_incl})
+# set(Protobuf_LIBRARIES ${trd_lib})
 
-set(Protobuf_INCLUDE_DIR ${trd_incl})
-set(Protobuf_LIBRARIES ${trd_lib})
+# set(Protobuf_PROTOC_EXECUTABLE ${trd_bin}/protoc.exe)
 
-set(Protobuf_PROTOC_EXECUTABLE ${trd_bin}/protoc.exe)
+# find_package(Protobuf REQUIRED)
 
-find_package(Protobuf REQUIRED)
-
-set(msg_proto_dir ${CMAKE_CURRENT_SOURCE_DIR}/protos)
-file(GLOB msg_protos "${msg_proto_dir}/*.proto")
-set(proto_files "")
-foreach(full_path ${msg_protos})
-	get_filename_component(filename ${full_path} NAME)
-	list(APPEND proto_files ${filename})
-endforeach()
-
-message("PROTO_FILES=${proto_files}")
+# set(msg_proto_dir ${CMAKE_CURRENT_SOURCE_DIR}/protos)
+# file(GLOB msg_protos "${msg_proto_dir}/*.proto")
+# set(proto_files "")
+# foreach(full_path ${msg_protos})
+# 	get_filename_component(filename ${full_path} NAME)
+# 	list(APPEND proto_files ${filename})
+# endforeach()
 
 # if(WIN32)
 # 	execute_process(
@@ -39,7 +34,7 @@ file(GLOB
 	 "*.cpp"
 	 "*.h"
 	 "*.hpp"
-	 "*.cc"
+	 #"*.cc"
 )
 add_library(${proj_name} SHARED ${SOURCE_FILES})
 
@@ -54,13 +49,21 @@ target_compile_definitions(${proj_name} PRIVATE
 )
 
 if(WIN32)
-	target_compile_definitions(${proj_name} PRIVATE GEOMETRY_EXPORTS PROTOBUF_USE_DLLS _CRT_SECURE_NO_WARNINGS NOMINMAX)
+	target_compile_definitions(${proj_name} PRIVATE GEOMETRY_EXPORTS)
+	#target_compile_definitions(${proj_name} PRIVATE GEOMETRY_EXPORTS PROTOBUF_USE_DLLS _CRT_SECURE_NO_WARNINGS NOMINMAX)
 	#
 endif()
 
-set(deplibs_dbg spdlogd libprotobufd)
-set(deplibs_opt spdlog libprotobuf)
+set(deplibs_dbg spdlogd)
+set(deplibs_opt spdlog)
 target_link_libraries(${proj_name} debug ${deplibs_dbg} optimized ${deplibs_opt})
+
+if(WIN32)
+	set_target_properties(${PROJECT_NAME} PROPERTIES
+		PREFIX "ratel."
+		SUFFIX ".dll"
+	)
+endif()
 
 # configure_file(
 #     ${license_file}

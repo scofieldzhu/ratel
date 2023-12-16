@@ -22,21 +22,20 @@ public:
 	using point_type = Vec2<value_type>;
 	using size_type = Vec2<value_type>;
 
-	void setPoint(const point_type& pt){ lt_ = pt; }
+	void setLT(const point_type& pt){ lt_ = pt; }
 	const point_type& lt()const{ return lt_; }
-	void setSize(wh_type)
-	const wh_type& size()const{ return size_; }
+	void setSize(const size_type& s){ size_ = s; }
+	const auto& size()const{ return size_; }
 	auto angle()const{return angle_;}
 
 	Rect()
 	{}
 
-	Rect()
-	{}
+	~Rect() = default;
 
 private:
 	point_type lt_{value_type(0), value_type(0)};
-	wh_type size_{value_type(0), value_type(0)};
+	size_type size_{value_type(0), value_type(0)};
 	float angle_ = 0.0f;
 };
 

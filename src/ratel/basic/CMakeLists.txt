@@ -28,6 +28,13 @@ set(deplibs_dbg spdlogd)
 set(deplibs_opt spdlog)
 target_link_libraries(${proj_name} debug ${deplibs_dbg} optimized ${deplibs_opt})
 
+if(WIN32)
+	set_target_properties(${PROJECT_NAME} PROPERTIES
+		PREFIX "ratel."
+		SUFFIX ".dll"
+	)
+endif()
+
 # configure_file(
 #     ${license_file}
 #     COPYONLY
