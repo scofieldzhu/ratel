@@ -2,7 +2,6 @@ Ratel is a application framework, which provides some convenient librarys
 for for those c++ developers pursuing fast-developement.
 
 File: %(File) 
-Create Time: %(Date)  
 Copyright (c) %(CreationYear)-%(CurrentYear) %(Username)
 
 MIT License

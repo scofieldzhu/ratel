@@ -3,7 +3,6 @@
  *  for for those c++ developers pursuing fast-developement.
  *  
  *  File: geo_inst.cpp 
- *  Create Time: Tue Dec 19 2023  
  *  Copyright (c) 2023-2023 scofieldzhu
  *  
  *  MIT License

@@ -3,7 +3,6 @@
  *  for for those c++ developers pursuing fast-developement.
  *  
  *  File: base_type.h  
- *  Create Time: Tue Dec 19 2023
  *  Copyright (c) 2023-2023 scofieldzhu
  *  
  *  MIT License
@@ -27,15 +26,6 @@
  *  SOFTWARE.
  */
 
-/*=======================================================================
-Ratel is a application framework, which provides some convenient librarys
-for for those c++ developers pursuing fast-developement.
-Copyright (c) scofieldzhu. All rights reserved.
-
-Project: ratel.geometry
-Module: base_type.h
-Create time: 2023/12/08 08:48:45
-=========================================================================*/
 #ifndef __base_type_h__
 #define __base_type_h__
 

@@ -3,7 +3,6 @@
  *  for for those c++ developers pursuing fast-developement.
  *  
  *  File: langext.h  
- *  Create Time: Tue Dec 19 2023
  *  Copyright (c) 2023-2023 scofieldzhu
  *  
  *  MIT License
@@ -26,7 +25,6 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *  SOFTWARE.
  */
-
 #ifndef __langext_h__
 #define __langext_h__
 
