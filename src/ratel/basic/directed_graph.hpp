@@ -40,6 +40,7 @@ public:
 	using ArcInfoList = std::vector<ArcInfo>;
 
 	void addVertex(const_vertex_key_reference key, const vertex_data_type& data);
+	void getVertexData(const_vertex_key_reference key, vertex_data_type& out_data)const;
 	void removeVertex(const_vertex_key_reference key);
 	bool existVertex(const_vertex_key_reference key)const;
 	void addArc(const_vertex_key_reference source_vertex, const_vertex_key_reference target_vertex, const arc_data_type& data);
@@ -91,6 +92,14 @@ inline void DirectedGraph<VDT, ADT, VKT>::addVertex(const_vertex_key_reference k
 	VertexNode vnode;
 	vnode.data = data;
 	vertex_node_map_[key] = std::move(vnode);
+}
+
+template <class VDT, class ADT, class VKT>
+inline void DirectedGraph<VDT, ADT, VKT>::getVertexData(const_vertex_key_reference key, vertex_data_type& out_data) const
+{
+	if(!existVertex(key))
+		return;
+	out_data = vertex_node_map_.at(key).data;
 }
 
 template<class VDT, class ADT, class VKT>

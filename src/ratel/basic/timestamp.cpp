@@ -2,8 +2,8 @@
  *  Ratel is a application framework, which provides some convenient librarys
  *  for for those c++ developers pursuing fast-developement.
  *  
- *  File: win_header.h  
- *  Create Time: Tue Dec 19 2023
+ *  File: timestamp.cpp 
+ *  Create Time: Tue Dec 19 2023  
  *  Copyright (c) 2023-2023 scofieldzhu
  *  
  *  MIT License
@@ -27,10 +27,32 @@
  *  SOFTWARE.
  */
 
-#ifndef __win_header_h__
-#define __win_header_h__
+#include "timestamp.h"
 
-#define WIN32_LEAN_AND_MEAN 
-#include <windows.h>
+RATEL_NAMESPACE_BEGIN
 
-#endif
+Timestamp::Timestamp(uint64_t init_val)
+    :value_(init_val)
+{
+}
+
+Timestamp::~Timestamp()
+{
+}
+
+void Timestamp::force(uint64_t v)
+{
+    value_ = v;
+}
+
+uint64_t Timestamp::next()
+{
+    return ++value_;
+}
+
+uint64_t Timestamp::value() const
+{
+    return value_.load();
+}
+
+RATEL_NAMESPACE_END
