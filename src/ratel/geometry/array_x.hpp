@@ -39,7 +39,7 @@
 RATEL_NAMESPACE_BEGIN
 
 template <typename T, size_t S>
-class ArrayX
+class ArrayX final
 {
 public:
     using value_type = std::enable_if_t<std::is_arithmetic_v<T>, T>;    
@@ -131,6 +131,11 @@ public:
     ArrayX(value_type (&d)[N])
     {
         memcpy(arry_, d, ByteSize);
+    }
+
+    ArrayX(std::initializer_list<value_type> il)
+    {
+        *this = il;
     }
 
     ArrayX(const ArrayX& other)

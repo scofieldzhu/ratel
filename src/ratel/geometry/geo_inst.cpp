@@ -25,25 +25,21 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *  SOFTWARE.
  */
-
-#include "vec2.hpp"
-//#include "vec3.hpp"
-#include "vec_proxy.hpp"
-#include "array_x.hpp"
 #include "geometry.h"
 
 using namespace ratel;
 
 void Test()
 {
-	
-	ArrayX<float, 2> fv2;
-	ArrayX<float, 3> fv3;
-	using Pt2f = Vec2<float>;
+	using Arry2f = ArrayX<float, 2>;
+	Arry2f fv2;
+	using Arry3f = ArrayX<float, 3>;
+	Arry3f fv3;
+	using Pt2f = Arry2f;
 	VecProxy<Pt2f> pt2f_vp;
 	auto byte_vec = pt2f_vp.serializeToBytes();
 
-	using Pt2i = Vec2<int>;
+	using Pt2i = ArrayX<int, 2>;
 	VecProxy<Pt2i> pt2i_vp;
 
 	VecProxy<int> vpi;

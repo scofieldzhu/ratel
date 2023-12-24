@@ -28,7 +28,7 @@
 #ifndef __rect_hpp__
 #define __rect_hpp__
 
-#include "vec2.hpp"
+#include "ratel/geometry/array_x.hpp"
 
 RATEL_NAMESPACE_BEGIN
 
@@ -37,18 +37,87 @@ class Rect
 {
 public:
 	using value_type = std::enable_if_t<std::is_same_v<T, int> || std::is_same_v<T, float>, T>;
-	using point_type = Vec2<value_type>;
-	using size_type = Vec2<value_type>;
+	using point_type = ArrayX<value_type, 2>;
+	using size_type = ArrayX<value_type, 2>;
+	static constexpr size_t ByteSize = point_type::GetByteSize() + size_type::GetByteSize() + sizeof(float);
 
-	void setLT(const point_type& pt){ lt_ = pt; }
+	static constexpr size_t GetByteSize()
+    {
+        return ByteSize;
+    }
+
+    size_t serializeToBytes(BytePtr buffer, size_t size)const
+    {
+        if(buffer == nullptr || size < ByteSize)
+            return 0;
+		auto left_size = size;
+		auto cur_buffer = buffer;
+		auto finish_bytes = lt_.serializeToBytes(cur_buffer, left_size);
+		left_size -= finish_bytes;
+		cur_buffer += finish_bytes;
+		finish_bytes = size_.serializeToBytes(cur_buffer, left_size);
+		left_size -= finish_bytes;
+		cur_buffer += finish_bytes;
+        memcpy(cur_buffer, (void*)&angle_, sizeof(float));
+		left_size -= sizeof(float);
+		cur_buffer += sizeof(float);
+        return size - left_size;
+    }
+
+    size_t loadBytes(ConsBytePtr buffer, size_t size)
+    {
+        if(buffer == nullptr || size < ByteSize)
+            return 0;
+		auto left_size = size;
+		auto cur_buffer = buffer;
+        auto finish_bytes = lt_.loadBytes(cur_buffer, left_size);
+		left_size -= finish_bytes;
+		cur_buffer += finish_bytes;
+		finish_bytes = size_.loadBytes(cur_buffer, left_size);
+		left_size -= finish_bytes;
+		cur_buffer += finish_bytes;
+		memcpy((void*)&angle_, cur_buffer, sizeof(float));
+		left_size -= sizeof(float);
+		cur_buffer += sizeof(float);
+        return size - left_size;
+    }
+	void setLeftTop(const point_type& pt){ lt_ = pt; }
 	const point_type& lt()const{ return lt_; }
 	void setSize(const size_type& s){ size_ = s; }
 	const auto& size()const{ return size_; }
-	auto angle()const{return angle_;}
-
-	Rect()
-	{}
-
+	void setAngle(float a){ angle_ = a; }
+	auto angle()const{ return angle_; }
+	Rect& operator=(const Rect& other)
+	{
+		lt_ = other.lt_;
+		size_ = other.size_;
+		angle_ = other.angle_;
+		return *this;
+	}
+	Rect& operator=(Rect&& other)
+	{
+		lt_ = std::move(other.lt_);
+		size_ = std::move(other.size_);
+		angle_ = std::move(other.angle_);
+		return *this;
+	}
+	Rect(){}
+	Rect(const point_type& pt, const size_type& size, float a)
+		:lt_(pt),
+		size_(size),
+		angle_(a){}
+	Rect(value_type x, value_type y, value_type w, value_type h, float a)
+		:lt_({x, y}),
+		size_({w, h}),
+		angle_(a){}
+	Rect(const Rect& rt)
+		:lt_(rt.lt_),
+		size_(rt.size_),
+		angle_(rt.angle_){}
+	Rect(Rect&& rt)
+		:lt_(std::move(rt.lt_)),
+		size_(std::move(rt.size_)),
+		angle_(std::move(rt.angle_)){}
 	~Rect() = default;
 
 private:
