@@ -49,7 +49,7 @@ target_compile_definitions(${proj_name} PRIVATE
 )
 
 if(WIN32)
-	target_compile_definitions(${proj_name} PRIVATE GEOMETRY_EXPORTS)
+	target_compile_definitions(${proj_name} PRIVATE RATEL_GEOMETRY_EXPORTS)
 	#target_compile_definitions(${proj_name} PRIVATE GEOMETRY_EXPORTS PROTOBUF_USE_DLLS _CRT_SECURE_NO_WARNINGS NOMINMAX)
 	#
 endif()

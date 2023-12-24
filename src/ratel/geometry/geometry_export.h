@@ -33,7 +33,7 @@
 #include "ratel/basic/ratel_nsp.h"
 
 #ifdef PLATFORM_WIN
-	#ifdef GEOMETRY_EXPORTS
+	#ifdef RATEL_GEOMETRY_EXPORTS
 		#define RATEL_GEOMETRY_API __declspec(dllexport)
 	#else
 		#define RATEL_GEOMETRY_API __declspec(dllimport)

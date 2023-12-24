@@ -78,7 +78,7 @@ public:
 
     const_reference operator[](int idx)const
     {
-        return dynamic_cast<Vec2&>(*this).operator[](idx);
+        return const_cast<Vec2&>(*this).operator[](idx);
     }
 
     std::array<value_type, 2> toArray()const
@@ -105,8 +105,10 @@ public:
 
     Vec2& operator=(std::initializer_list<value_type> il)
     {
-        arry_[0] = *(il.begin());
-        arry_[1] = *(++il.begin());
+        if(il.size() >= 2){
+            arry_[0] = *(il.begin());
+            arry_[1] = *(il.begin() + 1);
+        }
         return *this;
     }
 

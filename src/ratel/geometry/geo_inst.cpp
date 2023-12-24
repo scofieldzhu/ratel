@@ -27,15 +27,18 @@
  */
 
 #include "vec2.hpp"
-#include "vec3.hpp"
+//#include "vec3.hpp"
 #include "vec_proxy.hpp"
+#include "array_x.hpp"
+#include "geometry.h"
 
 using namespace ratel;
 
 void Test()
 {
-	Vec2<float> fv2;
-	Vec3<float> fv3;
+	
+	ArrayX<float, 2> fv2;
+	ArrayX<float, 3> fv3;
 	using Pt2f = Vec2<float>;
 	VecProxy<Pt2f> pt2f_vp;
 	auto byte_vec = pt2f_vp.serializeToBytes();

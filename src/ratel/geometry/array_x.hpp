@@ -1,8 +1,8 @@
- /*
+/* 
  *  Ratel is a application framework, which provides some convenient librarys
  *  for for those c++ developers pursuing fast-developement.
  *  
- *  File: vec3.hpp  
+ *  File: array_x.h  
  *  Copyright (c) 2023-2023 scofieldzhu
  *  
  *  MIT License
@@ -25,137 +25,126 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *  SOFTWARE.
  */
-#ifndef __vec3_hpp__
-#define __vec3_hpp__
 
-#include "vec2.hpp"
+#ifndef __array_x_hpp__
+#define __array_x_hpp__
+
+#include <type_traits>
+#include <format>
+#include <array>
+#include <stdexcept>
+#include <initializer_list>
+#include "ratel/geometry/base_type.h"
 
 RATEL_NAMESPACE_BEGIN
 
-template <typename T>
-class Vec3
+template <typename T, size_t S>
+class ArrayX
 {
 public:
-    using value_type = std::enable_if_t<std::is_arithmetic_v<T> && sizeof(T) >= 4, T>;
+    using value_type = std::enable_if_t<std::is_arithmetic_v<T>, T>;    
     using reference = value_type&;
     using const_reference = const value_type&;
-    using array_type = value_type[3];
-    static constexpr size_t kArrayByteSize = sizeof(value_type) * 3;
+    using pointer = value_type*;
+    using const_pointer = const value_type*;
+    static constexpr size_t N = S;
+    using array_type = value_type[N];
+    static constexpr size_t ByteSize = sizeof(value_type) * N;
 
     static constexpr size_t GetByteSize()
     {
-        return kArrayByteSize;
+        return ByteSize;
     }
 
     size_t serializeToBytes(BytePtr buffer, size_t size)const
     {
-        if(buffer == nullptr || size < kArrayByteSize)
+        if(buffer == nullptr || size < ByteSize)
             return 0;
-        memcpy(buffer, (void*)&arry_, kArrayByteSize);
-        return kArrayByteSize;
+        memcpy(buffer, (void*)&arry_, ByteSize);
+        return ByteSize;
     }
 
     size_t loadBytes(ConsBytePtr buffer, size_t size)
     {
-        if(buffer == nullptr || size < kArrayByteSize)
+        if(buffer == nullptr || size < ByteSize)
             return 0;
-        memcpy((void*)&arry_, buffer, kArrayByteSize);
-        return kArrayByteSize;
+        memcpy((void*)&arry_, buffer, ByteSize);
+        return ByteSize;
     }
 
     reference operator[](int idx)
     {
-        if(idx != 0 && idx != 1 && idx != 2)
-            throw std::out_of_range("Invalid index value, only 0\1\2 allowed!");
+        if(idx >= N)
+            throw std::out_of_range(std::format("Invalid index value:{}, array size:{}!", idx, N));
         return arry_[idx];
     }
 
     const_reference operator[](int idx)const
     {
-        return const_cast<Vec3&>(*this).operator[](idx);
+        return const_cast<ArrayX&>(*this).operator[](idx);
     }
 
-    std::array<value_type, 3> toArray()const
+    std::array<value_type, N> toArray()const
     {
         return std::to_array(arry_);
     }
 
-    value_type* data()
+    pointer data()
     {
         return arry_;
     }
 
-    const value_type* data()const
+    const_pointer data()const
     {
         return arry_;
     }
 
-    Vec3& operator=(array_type a)
+    ArrayX& operator=(array_type a)
     {
-        arry_[0]= a[0];
-        arry_[1]= a[1];
-        arry_[2]= a[2];
+        memcpy(arry_, a, ByteSize);
         return *this;
     }
 
-    Vec3& operator=(std::initializer_list<value_type> il)
+    ArrayX& operator=(std::initializer_list<value_type> il)
     {
-        if(il.size() >= 3){
-            arry_[0] = *(il.begin());
-            arry_[1] = *(il.begin() + 1);
-            arry_[2] = *(il.begin() + 2);
-        }
+        for(auto i = 0; i < il.size(); ++i)
+            arry_[i] = *(il.begin() + i);
         return *this;
     }
 
-    Vec3& operator=(Vec3&& other)
+    ArrayX& operator=(const ArrayX& other)
     {
-        arry_[0] = std::move(other.arry_[0]);
-        arry_[1] = std::move(other.arry_[1]);
-        arry_[2] = std::move(other.arry_[2]);
+        if(this != std::addressof(other))
+            memcpy(arry_, other.arry_, ByteSize);
         return *this;
     }
 
-    Vec3& operator=(const Vec3& other)
+    ArrayX& operator=(ArrayX&& other)
     {
-        arry_[0] = other.arry_[0];
-        arry_[1] = other.arry_[1];
-        arry_[2] = other.arry_[2];
+        arry_ = std::move(other.arry_);
         return *this;
     }
 
-    Vec3()
+    ArrayX()
     {}
 
-    Vec3(const Vec2<value_type>& other, value_type v)
+    ArrayX(value_type (&d)[N])
     {
-        arry_[0] = other[0];
-        arry_[1] = other[1];
-        arry_[2] = v;
+        memcpy(arry_, d, ByteSize);
     }
 
-    Vec3(value_type v1, value_type v2, value_type v3)
+    ArrayX(const ArrayX& other)
     {
-        arry_[0] = v1;
-        arry_[1] = v2;
-        arry_[2] = v3;
+        if(this != std::addressof(other))
+            memcpy(arry_, other.arry_, ByteSize);
     }
 
-    Vec3(Vec3&& other)
+    ArrayX(ArrayX&& other)
     {
-        arry_[0] = std::move(other.arry_[0]);
-        arry_[1] = std::move(other.arry_[1]);
-        arry_[2] = std::move(other.arry_[2]);
+        arry_ = std::move(other.arry_);
     }
 
-    Vec3(const Vec3& other)
-    {
-        arry_[0] = other.arry_[0];
-        arry_[1] = other.arry_[1];
-        arry_[2] = other.arry_[2];
-    }
-
-    ~Vec3() = default;
+    ~ArrayX() = default;
 
 private:
     array_type arry_ = {value_type(0)};

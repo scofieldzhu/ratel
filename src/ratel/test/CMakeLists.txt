@@ -16,8 +16,10 @@ target_compile_definitions(${proj_name} PRIVATE
 	SPDLOG_USE_STD_FORMAT
 )
 
-set(deplibs_dbg ratel.basic spdlogd)
-set(deplibs_opt ratel.basic spdlog)
+target_link_libraries(${proj_name} ratel.basic ratel.geometry)
+
+set(deplibs_dbg spdlogd)
+set(deplibs_opt spdlog)
 target_link_libraries(${proj_name} 
                       debug ${deplibs_dbg} 
                       optimized ${deplibs_opt})
