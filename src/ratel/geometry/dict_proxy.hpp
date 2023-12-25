@@ -36,39 +36,38 @@
 RATEL_NAMESPACE_BEGIN
 
 template <typename T>
-concept ArithStringType = std::is_arithmetic_v<T> || std::same_as<T, StringProxy>;
+concept ArithStringType = std::is_arithmetic_v<T> || std::same_as<T, std::string>;
 
 template <class K, class V>
 class DictProxy 
 {
 public:
-    static_assert(ArithStringType<K> && IsSerializable<V>);
-    using key_type = K;
+    static_assert(ArithStringType<K>);
+    static_assert(VecProxyMember<V>);
+    using key_type = std::conditional_t<std::is_same_v<K, std::string>, StringProxy, K>;
     using key_vec_proxy_type = VecProxy<key_type>;
-    using value_type = V;
+    using value_type = std::conditional_t<std::is_same_v<V, std::string>, StringProxy, V>;;
     using value_vec_proxy_type = VecProxy<value_type>;
-    using map_type = std::map<key_type, value_type>;
-    static constexpr bool FixedSize = false;
-
-    static constexpr size_t GetByteSize()
-    {
-        return 0;
-    }
+    using map_type = std::map<K, V>;
 
     size_t getByteSize()const
     {
         size_t keys_byte_size = 0;
         size_t vals_byte_size = 0;
-        for(const auto& kv : map_){
-            if constexpr(key_type::FixedSize){
-                keys_byte_size += key_type::GetByteSize();
+        for(const auto& p : map_){
+            if constexpr(std::is_arithmetic_v<K>){
+                keys_byte_size += sizeof(K);
+            }else if constexpr(std::same_as<K, std::string>){
+                keys_byte_size += StringProxy(p.first).getByteSize();
             }else{
-                keys_byte_size += kv.first.GetByteSize();
+                keys_byte_size += p.first.getByteSize();
             }
-            if constexpr(value_type::FixedSize){
-                vals_byte_size += value_type::GetByteSize();
+            if constexpr(std::is_arithmetic_v<V>){
+                vals_byte_size += sizeof(V);
+            }else if constexpr(std::same_as<V, std::string>){
+                vals_byte_size += StringProxy(p.second).getByteSize();
             }else{
-                vals_byte_size += kv.second.GetByteSize();
+                vals_byte_size += p.second.getByteSize();
             }
         }
         return keys_byte_size + vals_byte_size + kUIntSize * 2; // number and keys_byte_size
@@ -79,18 +78,26 @@ public:
         key_vec_proxy_type keys;
         value_vec_proxy_type values;
         for(const auto& kv : map_){
-            keys.mutableData().push_back(kv.first);
-            values.mutableData().push_back(kv.second);
+            if constexpr(std::same_as<K, std::string>){
+                keys.mutableData().push_back(StringProxy(kv.first));
+            }else{
+                keys.mutableData().push_back(kv.first);
+            }
+            if constexpr(std::same_as<V, std::string>){
+                values.mutableData().push_back(StringProxy(kv.second));
+            }else{
+                values.mutableData().push_back(kv.second);
+            }
         }
         ByteVec bv_k = keys.serializeToBytes();
         ByteVec bv_v = values.serializeToBytes();
         size_t total_size = bv_k.size() + bv_v.size() + kUIntSize * 2;
         ByteVec bv(total_size);
-        unsigned int number = map_.size();
+        unsigned int number = (unsigned int)map_.size();
         auto cur_data = bv.data();
         memcpy(cur_data, &number, kUIntSize);
         cur_data += kUIntSize;
-        unsigned int key_byte_size = bv_k.size();
+        unsigned int key_byte_size = (unsigned int)bv_k.size();
         memcpy(cur_data, &key_byte_size, kUIntSize);
         cur_data += kUIntSize;
         if(key_byte_size){
@@ -101,35 +108,46 @@ public:
         return bv;
     }
 
-    bool loadBytes(ConsBytePtr byte_data, size_t size)
+    size_t loadBytes(ConsBytePtr byte_data, size_t size)
     {
         if(byte_data == nullptr || size < kUIntSize)
-            return false;
+            return 0;
         map_.clear();
         auto number = *(const unsigned int*)(byte_data);
         if(number == 0){            
-            return true;
+            return kUIntSize;
         }
         auto cur_data = byte_data + kUIntSize;
         auto left_size = size - kUIntSize;
         unsigned int key_byte_size = 0;
         memcpy(&key_byte_size, cur_data, kUIntSize);
-        cur_data = byte_data + kUIntSize;
+        cur_data += kUIntSize;
         left_size = size - kUIntSize;
         key_vec_proxy_type keys;
         if(!keys.loadBytes(cur_data, key_byte_size))
-            return false;
+            return 0;
         left_size -= key_byte_size;
         cur_data += key_byte_size;
         value_vec_proxy_type values;
         if(!values.loadBytes(cur_data, left_size))
-            return false;     
-        for(auto i = 0 ; i< number; ++i)
-            map_.insert({std::move(keys[i]), std::move(values[i])});
-        return true;
+            return 0;     
+        for(unsigned int i = 0 ; i< number; ++i){
+            if constexpr(std::same_as<key_type, StringProxy>){
+                if constexpr(std::same_as<value_type, StringProxy>){
+                    map_.insert({keys.data().at(i).stdStr(), values.data().at(i).stdStr()});
+                }else{
+                    map_.insert({keys.data().at(i).stdStr(), values.data().at(i)});
+                }
+            }else if constexpr(std::same_as<value_type, StringProxy>){
+                map_.insert({keys.data().at(i), values.data().at(i).stdStr()});
+            }else{
+                map_.insert({keys.data().at(i), values.data().at(i)});
+            }
+        }
+        return size - left_size;
     }
 
-    map_type& mutableData()const
+    map_type& mutableData()
     {
         return map_;
     }

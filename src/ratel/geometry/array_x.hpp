@@ -51,24 +51,17 @@ public:
     static constexpr size_t N = S;    
     using array_type = value_type[N];
     static constexpr size_t ByteSize = sizeof(value_type) * N;
-    static constexpr bool FixedSize = true;
-
-    static constexpr size_t GetByteSize()
-    {
-        return ByteSize;
-    }
 
     size_t getByteSize()const
     {
         return ByteSize;
     }
 
-    size_t serializeToBytes(BytePtr buffer, size_t size)const
+    ByteVec serializeToBytes()const
     {
-        if(buffer == nullptr || size < ByteSize)
-            return 0;
-        memcpy(buffer, (void*)&arry_, ByteSize);
-        return ByteSize;
+        ByteVec bv(ByteSize, 0);
+        memcpy(bv.data(), (void*)&arry_, ByteSize);
+        return bv;
     }
 
     size_t loadBytes(ConsBytePtr buffer, size_t size)
@@ -153,7 +146,7 @@ public:
 
     ArrayX(ArrayX&& other)
     {
-        arry_ = std::move(other.arry_);
+        *this = other;
     }
 
     ~ArrayX() = default;

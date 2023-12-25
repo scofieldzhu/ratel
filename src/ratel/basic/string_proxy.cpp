@@ -317,15 +317,14 @@ size_t StringProxy::getByteSize()const
 	return stdstr_.size() + kUIntSize;
 }
 
-size_t StringProxy::serializeToBytes(BytePtr buffer, size_t size)const
+ByteVec StringProxy::serializeToBytes()const
 {
-	if(buffer == nullptr || size < getByteSize())
-		return 0;
+	ByteVec bv(getByteSize(), 0);
 	unsigned int required_size = (unsigned int)stdstr_.size();
-	memcpy(buffer, &required_size, kUIntSize);	
+	memcpy(bv.data(), &required_size, kUIntSize);	
 	if(!stdstr_.empty())
-		memcpy(buffer + kUIntSize, stdstr_.data(), required_size);
-	return getByteSize();
+		memcpy(bv.data() + kUIntSize, stdstr_.data(), required_size);
+	return bv;
 }
 
 size_t StringProxy::loadBytes(ConsBytePtr buffer, size_t size)

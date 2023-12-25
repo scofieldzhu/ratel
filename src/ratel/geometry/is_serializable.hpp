@@ -30,7 +30,7 @@
 #define __is_serializable_hpp__
 
 #include <concepts>
-#include "ratel/basic/ratel_nsp.h"
+#include "ratel/basic/base_type.h"
 
 RATEL_NAMESPACE_BEGIN
 
@@ -39,9 +39,7 @@ concept IsSerializable = requires(T t1, T t2, const T t3, B b, CB cb, size_t s)
 {
     T();
     {t1 = std::move(t2)};
-    {T::FixedSize}->std::convertible_to<const bool>;
-    {T::GetByteSize()}->std::same_as<size_t>;
-    {t3.serializeToBytes(b, s)}->std::same_as<size_t>;
+    {t3.serializeToBytes()}->std::same_as<ByteVec>;
     {t1.loadBytes(cb, s)}->std::same_as<size_t>;
     {t3.getByteSize()}->std::same_as<size_t>;
 };

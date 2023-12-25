@@ -31,6 +31,7 @@
 #include "test_string_proxy.h"
 #include "test_directed_graph.h"
 #include "test_notifier.h"
+#include "test_geometry.h"
 using namespace std;
 
 int main()
@@ -38,8 +39,9 @@ int main()
 	cout << "Hello world!" << endl;
 	TestCase_SPDLogger();
 	//TestCase_StringProxy();
-	TestCase_DirectedGraph();
+	//TestCase_DirectedGraph();
 	//TestCase_Notifier();
+	TestCase_Geometry();
 	getchar();
 	return 0;
 }

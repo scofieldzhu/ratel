@@ -40,10 +40,8 @@ RATEL_NAMESPACE_BEGIN
 class RATEL_BASIC_API StringProxy final
 {
 public:
-	static constexpr bool FixedSize = false;
-	static constexpr size_t GetByteSize(){ return 0; }
 	size_t getByteSize()const;
-    size_t serializeToBytes(BytePtr buffer, size_t size)const;
+    ByteVec serializeToBytes()const;
     size_t loadBytes(ConsBytePtr buffer, size_t size);
 	const std::string& stdStr()const { return stdstr_;  }
 	static StringProxy NewUID();

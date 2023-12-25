@@ -2,7 +2,7 @@
  *  Ratel is a application framework, which provides some convenient librarys
  *  for for those c++ developers pursuing fast-developement.
  *  
- *  File: geo_inst.cpp 
+ *  File: test_array_x.h  
  *  Copyright (c) 2023-2023 scofieldzhu
  *  
  *  MIT License
@@ -26,26 +26,6 @@
  *  SOFTWARE.
  */
 
-#include "geometry.h"
+#pragma once
 
-using namespace ratel;
-
-void Test()
-{
-	using Arry2f = ArrayX<float, 2>;
-	Arry2f fv2;
-	using Arry3f = ArrayX<float, 3>;
-	Arry3f fv3;
-	using Pt2f = Arry2f;
-	VecProxy<Pt2f> pt2f_vp;
-	auto byte_vec = pt2f_vp.serializeToBytes();
-
-	using Pt2i = ArrayX<int, 2>;
-	VecProxy<Pt2i> pt2i_vp;
-
-	VecProxy<int> vpi;
-	vpi.loadBytes(byte_vec.data(), byte_vec.size());
-
-	DictProxy<int, float> dp;
-
-}
+void TestCase_Geometry();

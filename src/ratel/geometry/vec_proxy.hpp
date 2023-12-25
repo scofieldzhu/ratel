@@ -36,86 +36,78 @@
 RATEL_NAMESPACE_BEGIN
 
 template <class E>
+concept VecProxyMember = IsSerializable<E, BytePtr, ConsBytePtr> || std::is_arithmetic_v<E>;
+
+template <class E>
 class VecProxy
 {
 public:
-    static_assert(IsSerializable<E, BytePtr, ConsBytePtr> || std::is_arithmetic_v<E>);
+    static_assert(VecProxyMember<E>);
     using element_type = E;
     using list_type = std::vector<element_type>;
-    static constexpr bool FixedSize = false;
-
-    static constexpr size_t GetByteSize()
-    {
-        return 0;
-    }
 
     size_t getByteSize()const
     {
         if constexpr(std::is_arithmetic_v<element_type>){
             return sizeof(element_type) * list_.size() + kUIntSize;
         }else{
-            if constexpr(element_type::FixedSize){
-                return E::GetByteSize() * list_.size() + kUIntSize;
-            }else{
-                size_t calc_size = kUIntSize;
-                std::for_each(list_.begin(), list_.end(), [&calc_size](const auto& it){ calc_size += it.getByteSize(); });
-                return calc_size;
-            }
-        }        
+            size_t calc_size = kUIntSize;
+            std::for_each(list_.begin(), list_.end(), [&calc_size](const auto& it){ calc_size += it.getByteSize(); });
+            return calc_size;
+        }  
     }
 
     ByteVec serializeToBytes()const
     {
-        const size_t kTotalByteSize = getByteSize();
-        ByteVec bv(kTotalByteSize, 0);
+        size_t calc_size = getByteSize();
+        ByteVec bv(calc_size, 0);
         unsigned int element_count = (unsigned int)list_.size();
-        BytePtr p_data = bv.data();
-        memcpy(p_data, &element_count, kUIntSize);
-        p_data += kUIntSize;
+        BytePtr cur_data = bv.data();
+        memcpy(cur_data, &element_count, kUIntSize);
+        cur_data += kUIntSize;
         size_t finish_bytes = kUIntSize;
         if constexpr(std::is_arithmetic_v<element_type>){
-            memcpy(p_data, (void*)list_.data(), kTotalByteSize - kUIntSize);
+            memcpy(cur_data, (void*)list_.data(), calc_size - kUIntSize);
         }else{
             for(const auto& v : list_){
-                auto cur_size = v.serializeToBytes(p_data, bv.size() - finish_bytes);
-                if(!cur_size)
-                    return ByteVec();
-                finish_bytes += cur_size;
-                p_data += cur_size;
+                auto mbv = v.serializeToBytes();
+                if(mbv.empty())
+                    return {};
+                memcpy(cur_data, mbv.data(), mbv.size());
+                cur_data += mbv.size();
             }
         }
         return bv;
     }
 
-    bool loadBytes(ConsBytePtr byte_data, size_t size)
+    size_t loadBytes(ConsBytePtr byte_data, size_t size)
     {
         if(byte_data == nullptr || size < kUIntSize)
-            return false;
+            return 0;
         auto byte_cursor = byte_data;
         unsigned int element_count = 0;
         memcpy(&element_count, byte_cursor, kUIntSize);
         byte_cursor += kUIntSize;
-        size_t left_size = size - kUIntSize;
         if constexpr(std::is_arithmetic_v<element_type>){
-            const size_t kTotalByteSize = getByteSize();
             list_.resize(element_count);
-            memcpy((void*)list_.data(), byte_cursor, kTotalByteSize - kUIntSize);
+            memcpy((void*)list_.data(), byte_cursor, element_count * sizeof(element_type));
         }else{
             list_.clear();
-            for(auto i = 0; i < element_count; ++i){
+            size_t left_size = size - kUIntSize;
+            for(unsigned int i = 0; i < element_count; ++i){
                 element_type e;
                 auto finish_size = e.loadBytes(byte_cursor, left_size);
                 if(finish_size == 0)
-                    return false;
+                    return 0;
                 byte_cursor += finish_size;
                 left_size -= finish_size;
                 list_.push_back(std::move(e));
             }
         }
-        return true;
+        return getByteSize();
     }
 
-    list_type& mutableData()const
+    list_type& mutableData()
     {
         return list_;
     }

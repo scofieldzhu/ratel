@@ -40,34 +40,24 @@ public:
 	using point_type = ArrayX<value_type, 2>;
 	using size_type = ArrayX<value_type, 2>;
 	static constexpr size_t ByteSize = point_type::GetByteSize() + size_type::GetByteSize() + sizeof(float);
-	static constexpr bool FixedSize = true;
-
-	static constexpr size_t GetByteSize()
-    {
-        return ByteSize;
-    }
 
 	size_t getByteSize()const
     {
 		return ByteSize;
 	}
 
-    size_t serializeToBytes(BytePtr buffer, size_t size)const
+    ByteVec serializeToBytes()const
     {
-        if(buffer == nullptr || size < ByteSize)
-            return 0;
-		auto left_size = size;
-		auto cur_buffer = buffer;
-		auto finish_bytes = lt_.serializeToBytes(cur_buffer, left_size);
-		left_size -= finish_bytes;
-		cur_buffer += finish_bytes;
-		finish_bytes = size_.serializeToBytes(cur_buffer, left_size);
-		left_size -= finish_bytes;
-		cur_buffer += finish_bytes;
-        memcpy(cur_buffer, (void*)&angle_, kFloatSize);
-		left_size -= kFloatSize;
-		cur_buffer += kFloatSize;
-        return size - left_size;
+		ByteVec bv(ByteSize, 0);
+		auto lt_bv = lt_.serializeToBytes();
+		auto cur_data = bv.data();
+		memcpy(cur_data, lt_bv.data(), lt_bv.size());
+		cur_data += lt_bv.size();
+		auto s_bv = size_.serializeToBytes();
+		memcpy(cur_data, s_bv.data(), s_bv.size());
+		cur_data += s_bv.size();
+        memcpy(cur_data, (void*)&angle_, kFloatSize);
+        return bv;
     }
 
     size_t loadBytes(ConsBytePtr buffer, size_t size)
