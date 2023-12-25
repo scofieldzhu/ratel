@@ -28,52 +28,53 @@
 #ifndef __vec_proxy_h__
 #define __vec_proxy_h__
 
-#include "base_type.h"
-#include <concepts>
 #include <type_traits>
+#include <algorithm>
+#include "ratel/basic/base_type.h"
+#include "ratel/geometry/is_serializable.hpp"
 
 RATEL_NAMESPACE_BEGIN
-
-template <typename T, typename B, typename CB>
-concept SerializableType = requires(T t1, T t2, B b, CB cb, size_t s){
-    T();
-    {t1 = std::move(t2)};
-    {T::GetByteSize()}->std::same_as<size_t>;
-    {t1.serializeToBytes(b, s)}->std::same_as<size_t>;
-    {t1.loadBytes(cb, s)}->std::same_as<size_t>;
-};
-
-template <typename T>
-concept ArithmeticType = std::is_arithmetic_v<T>;
 
 template <class E>
 class VecProxy
 {
 public:
-    static_assert(SerializableType<E, BytePtr, ConsBytePtr> || ArithmeticType<E>);
+    static_assert(IsSerializable<E, BytePtr, ConsBytePtr> || std::is_arithmetic_v<E>);
     using element_type = E;
     using list_type = std::vector<element_type>;
+    static constexpr bool FixedSize = false;
 
-    size_t getSerializedByteSize()const
+    static constexpr size_t GetByteSize()
     {
-        if constexpr(ArithmeticType<element_type>){
-            return sizeof(element_type) * list_.size() + sizeof(int);
+        return 0;
+    }
+
+    size_t getByteSize()const
+    {
+        if constexpr(std::is_arithmetic_v<element_type>){
+            return sizeof(element_type) * list_.size() + kUIntSize;
         }else{
-            return E::GetByteSize() * list_.size() + sizeof(int);
+            if constexpr(element_type::FixedSize){
+                return E::GetByteSize() * list_.size() + kUIntSize;
+            }else{
+                size_t calc_size = kUIntSize;
+                std::for_each(list_.begin(), list_.end(), [&calc_size](const auto& it){ calc_size += it.getByteSize(); });
+                return calc_size;
+            }
         }        
     }
 
     ByteVec serializeToBytes()const
     {
-        const size_t kTotalByteSize = getSerializedByteSize();
+        const size_t kTotalByteSize = getByteSize();
         ByteVec bv(kTotalByteSize, 0);
-        int element_count = (int)list_.size();
+        unsigned int element_count = (unsigned int)list_.size();
         BytePtr p_data = bv.data();
-        memcpy(p_data, &element_count, sizeof(int));
-        p_data += sizeof(int);
-        size_t finish_bytes = sizeof(int);
-        if constexpr(ArithmeticType<element_type>){
-            memcpy(p_data, (void*)list_.data(), kTotalByteSize - sizeof(int));
+        memcpy(p_data, &element_count, kUIntSize);
+        p_data += kUIntSize;
+        size_t finish_bytes = kUIntSize;
+        if constexpr(std::is_arithmetic_v<element_type>){
+            memcpy(p_data, (void*)list_.data(), kTotalByteSize - kUIntSize);
         }else{
             for(const auto& v : list_){
                 auto cur_size = v.serializeToBytes(p_data, bv.size() - finish_bytes);
@@ -88,17 +89,17 @@ public:
 
     bool loadBytes(ConsBytePtr byte_data, size_t size)
     {
-        const size_t kTotalByteSize = getSerializedByteSize();
-        if(byte_data == nullptr || size < sizeof(int))
+        if(byte_data == nullptr || size < kUIntSize)
             return false;
         auto byte_cursor = byte_data;
-        int element_count = 0;
-        memcpy(&element_count, byte_cursor, sizeof(int));
-        byte_cursor += sizeof(int);
-        size_t left_size = size - sizeof(int);
-        if constexpr(ArithmeticType<element_type>){
+        unsigned int element_count = 0;
+        memcpy(&element_count, byte_cursor, kUIntSize);
+        byte_cursor += kUIntSize;
+        size_t left_size = size - kUIntSize;
+        if constexpr(std::is_arithmetic_v<element_type>){
+            const size_t kTotalByteSize = getByteSize();
             list_.resize(element_count);
-            memcpy((void*)list_.data(), byte_cursor, kTotalByteSize - sizeof(int));
+            memcpy((void*)list_.data(), byte_cursor, kTotalByteSize - kUIntSize);
         }else{
             list_.clear();
             for(auto i = 0; i < element_count; ++i){

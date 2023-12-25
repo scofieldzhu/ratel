@@ -29,16 +29,22 @@
 #ifndef __string_proxy_h__
 #define __string_proxy_h__
 
-#include "ratel/basic/basic_export.h"
 #include <cstdint>
 #include <initializer_list>
 #include <string>
+#include "ratel/basic/base_type.h"
+#include "ratel/basic/basic_export.h"
 
 RATEL_NAMESPACE_BEGIN
 
 class RATEL_BASIC_API StringProxy final
 {
 public:
+	static constexpr bool FixedSize = false;
+	static constexpr size_t GetByteSize(){ return 0; }
+	size_t getByteSize()const;
+    size_t serializeToBytes(BytePtr buffer, size_t size)const;
+    size_t loadBytes(ConsBytePtr buffer, size_t size);
 	const std::string& stdStr()const { return stdstr_;  }
 	static StringProxy NewUID();
 	void toLower();
@@ -74,19 +80,16 @@ public:
 	StringProxy(const char* s);
 	template< class InputIt >
 	StringProxy(InputIt first, InputIt last)
-		:stdstr_(first, last)
-	{}
+		:stdstr_(first, last){}
 	StringProxy(const StringProxy& other);
 	StringProxy(StringProxy&& other) noexcept;
 	StringProxy(std::initializer_list<char> ilist);
 	template< class StringViewLike >
 	explicit StringProxy(const StringViewLike& t)
-		:stdstr_(t)
-	{}
+		:stdstr_(t){}
 	template< class StringViewLike >
 	StringProxy(const StringViewLike& t, size_t pos, size_t n)
-		:stdstr_(t, pos, n)
-	{}
+		:stdstr_(t, pos, n){}
 	StringProxy(std::nullptr_t) = delete;
 	~StringProxy();
 

@@ -39,6 +39,10 @@ using BytePtr = Byte*;
 using ConsBytePtr = const Byte*;
 using ByteVec = std::vector<Byte>;
 
+constexpr size_t kIntSize = sizeof(int);
+constexpr size_t kUIntSize = sizeof(unsigned int);
+constexpr size_t kFloatSize = sizeof(float);
+
 RATEL_NAMESPACE_END
 
 #endif // base_type_h

@@ -2,7 +2,7 @@
  *  Ratel is a application framework, which provides some convenient librarys
  *  for for those c++ developers pursuing fast-developement.
  *  
- *  File: geometry.h  
+ *  File: is_serializable_type.h  
  *  Copyright (c) 2023-2023 scofieldzhu
  *  
  *  MIT License
@@ -26,35 +26,26 @@
  *  SOFTWARE.
  */
 
-#ifndef __geometry_h__
-#define __geometry_h__
+#ifndef __is_serializable_hpp__
+#define __is_serializable_hpp__
 
-#include "ratel/geometry/array_x.hpp"
-#include "ratel/geometry/vec_proxy.hpp"
-#include "ratel/geometry/dict_proxy.hpp"
-#include "ratel/geometry/rect.hpp"
-#include "ratel/geometry/geometry_export.h"
+#include <concepts>
+#include "ratel/basic/ratel_nsp.h"
 
 RATEL_NAMESPACE_BEGIN
 
-
-
-// using Pt2i = Vec2<int32_t>;
-// using Pt2u = Vec2<uint32_t>;
-// using Pt2f = Vec2<float>;
-// using VPPt2i = VecProxy<Pt2i>;
-// using VPPt2u = VecProxy<Pt2u>;
-// using VPPt2f = VecProxy<Pt2f>;
-
-//  using Pt3i = Vec3<int32_t>;
-// using Pt3u = Vec3<uint32_t>;
-// using Pt3f = Vec3<float>;
-// using VPPt3i = VecProxy<Pt3i>;
-// using VPPt3u = VecProxy<Pt3u>;
-// using VPPt3f = VecProxy<Pt3f>;
+template <typename T, typename B, typename CB>
+concept IsSerializable = requires(T t1, T t2, const T t3, B b, CB cb, size_t s)
+{
+    T();
+    {t1 = std::move(t2)};
+    {T::FixedSize}->std::convertible_to<const bool>;
+    {T::GetByteSize()}->std::same_as<size_t>;
+    {t3.serializeToBytes(b, s)}->std::same_as<size_t>;
+    {t1.loadBytes(cb, s)}->std::same_as<size_t>;
+    {t3.getByteSize()}->std::same_as<size_t>;
+};
 
 RATEL_NAMESPACE_END
-
-RATEL_GEOMETRY_API void Test();
 
 #endif

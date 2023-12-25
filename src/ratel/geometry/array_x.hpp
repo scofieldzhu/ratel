@@ -34,7 +34,7 @@
 #include <array>
 #include <stdexcept>
 #include <initializer_list>
-#include "ratel/geometry/base_type.h"
+#include "ratel/basic/base_type.h"
 
 RATEL_NAMESPACE_BEGIN
 
@@ -42,16 +42,23 @@ template <typename T, size_t S>
 class ArrayX final
 {
 public:
+    static_assert(S);
     using value_type = std::enable_if_t<std::is_arithmetic_v<T>, T>;    
     using reference = value_type&;
     using const_reference = const value_type&;
     using pointer = value_type*;
-    using const_pointer = const value_type*;
-    static constexpr size_t N = S;
+    using const_pointer = const value_type*;    
+    static constexpr size_t N = S;    
     using array_type = value_type[N];
     static constexpr size_t ByteSize = sizeof(value_type) * N;
+    static constexpr bool FixedSize = true;
 
     static constexpr size_t GetByteSize()
+    {
+        return ByteSize;
+    }
+
+    size_t getByteSize()const
     {
         return ByteSize;
     }

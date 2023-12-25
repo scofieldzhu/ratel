@@ -40,11 +40,17 @@ public:
 	using point_type = ArrayX<value_type, 2>;
 	using size_type = ArrayX<value_type, 2>;
 	static constexpr size_t ByteSize = point_type::GetByteSize() + size_type::GetByteSize() + sizeof(float);
+	static constexpr bool FixedSize = true;
 
 	static constexpr size_t GetByteSize()
     {
         return ByteSize;
     }
+
+	size_t getByteSize()const
+    {
+		return ByteSize;
+	}
 
     size_t serializeToBytes(BytePtr buffer, size_t size)const
     {
@@ -58,9 +64,9 @@ public:
 		finish_bytes = size_.serializeToBytes(cur_buffer, left_size);
 		left_size -= finish_bytes;
 		cur_buffer += finish_bytes;
-        memcpy(cur_buffer, (void*)&angle_, sizeof(float));
-		left_size -= sizeof(float);
-		cur_buffer += sizeof(float);
+        memcpy(cur_buffer, (void*)&angle_, kFloatSize);
+		left_size -= kFloatSize;
+		cur_buffer += kFloatSize;
         return size - left_size;
     }
 
@@ -76,9 +82,9 @@ public:
 		finish_bytes = size_.loadBytes(cur_buffer, left_size);
 		left_size -= finish_bytes;
 		cur_buffer += finish_bytes;
-		memcpy((void*)&angle_, cur_buffer, sizeof(float));
-		left_size -= sizeof(float);
-		cur_buffer += sizeof(float);
+		memcpy((void*)&angle_, cur_buffer, kFloatSize);
+		left_size -= kFloatSize;
+		cur_buffer += kFloatSize;
         return size - left_size;
     }
 	void setLeftTop(const point_type& pt){ lt_ = pt; }

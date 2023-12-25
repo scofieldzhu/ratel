@@ -312,4 +312,36 @@ StringProxy StringProxy::FromDouble(double val)
 	return StringProxy(ConvertNumberToString(val));
 }
 
+size_t StringProxy::getByteSize()const
+{
+	return stdstr_.size() + kUIntSize;
+}
+
+size_t StringProxy::serializeToBytes(BytePtr buffer, size_t size)const
+{
+	if(buffer == nullptr || size < getByteSize())
+		return 0;
+	unsigned int required_size = (unsigned int)stdstr_.size();
+	memcpy(buffer, &required_size, kUIntSize);	
+	if(!stdstr_.empty())
+		memcpy(buffer + kUIntSize, stdstr_.data(), required_size);
+	return getByteSize();
+}
+
+size_t StringProxy::loadBytes(ConsBytePtr buffer, size_t size)
+{
+	if(buffer == nullptr || size < kUIntSize)
+		return 0;
+	unsigned int required_size = *(const unsigned int*)buffer;
+	if(required_size == 0){
+		stdstr_.clear();
+	}else{
+		if(size < required_size + kUIntSize) //data lost!
+			return 0;
+		stdstr_.resize(required_size);
+		memcpy((void*)stdstr_.data(), buffer + kUIntSize, required_size);
+	}
+	return getByteSize();
+}
+
 RATEL_NAMESPACE_END
