@@ -52,11 +52,6 @@ public:
     using array_type = value_type[N];
     static constexpr size_t ByteSize = sizeof(value_type) * N;
 
-    size_t getByteSize()const
-    {
-        return ByteSize;
-    }
-
     ByteVec serializeToBytes()const
     {
         ByteVec bv(ByteSize, 0);

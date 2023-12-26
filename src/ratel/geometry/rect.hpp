@@ -39,12 +39,7 @@ public:
 	using value_type = std::enable_if_t<std::is_same_v<T, int> || std::is_same_v<T, float>, T>;
 	using point_type = ArrayX<value_type, 2>;
 	using size_type = ArrayX<value_type, 2>;
-	static constexpr size_t ByteSize = point_type::GetByteSize() + size_type::GetByteSize() + sizeof(float);
-
-	size_t getByteSize()const
-    {
-		return ByteSize;
-	}
+	static constexpr size_t ByteSize = point_type::ByteSize + size_type::ByteSize + kFloatSize;
 
     ByteVec serializeToBytes()const
     {

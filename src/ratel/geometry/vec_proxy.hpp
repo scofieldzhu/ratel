@@ -30,6 +30,7 @@
 
 #include <type_traits>
 #include <algorithm>
+#include <iterator>
 #include "ratel/basic/base_type.h"
 #include "ratel/geometry/is_serializable.hpp"
 
@@ -46,38 +47,28 @@ public:
     using element_type = E;
     using list_type = std::vector<element_type>;
 
-    size_t getByteSize()const
-    {
-        if constexpr(std::is_arithmetic_v<element_type>){
-            return sizeof(element_type) * list_.size() + kUIntSize;
-        }else{
-            size_t calc_size = kUIntSize;
-            std::for_each(list_.begin(), list_.end(), [&calc_size](const auto& it){ calc_size += it.getByteSize(); });
-            return calc_size;
-        }  
-    }
-
     ByteVec serializeToBytes()const
     {
-        size_t calc_size = getByteSize();
-        ByteVec bv(calc_size, 0);
-        unsigned int element_count = (unsigned int)list_.size();
-        BytePtr cur_data = bv.data();
-        memcpy(cur_data, &element_count, kUIntSize);
-        cur_data += kUIntSize;
-        size_t finish_bytes = kUIntSize;
         if constexpr(std::is_arithmetic_v<element_type>){
-            memcpy(cur_data, (void*)list_.data(), calc_size - kUIntSize);
+            size_t calc_size = sizeof(element_type) * list_.size() + kUIntSize;
+            ByteVec bv(calc_size, 0);
+            unsigned int element_count = (unsigned int)list_.size();
+            BytePtr cur_data = bv.data();
+            memcpy(cur_data, &element_count, kUIntSize);
+            memcpy(cur_data + kUIntSize, (void*)list_.data(), calc_size - kUIntSize);
+            return bv;
         }else{
+            ByteVec bv(kUIntSize, 0);
+            unsigned int element_count = (unsigned int)list_.size();
+            memcpy(bv.data(), &element_count, kUIntSize);
             for(const auto& v : list_){
                 auto mbv = v.serializeToBytes();
                 if(mbv.empty())
                     return {};
-                memcpy(cur_data, mbv.data(), mbv.size());
-                cur_data += mbv.size();
+                std::copy(mbv.begin(), mbv.end(), std::back_inserter(bv));
             }
+            return bv;
         }
-        return bv;
     }
 
     size_t loadBytes(ConsBytePtr byte_data, size_t size)
@@ -88,12 +79,13 @@ public:
         unsigned int element_count = 0;
         memcpy(&element_count, byte_cursor, kUIntSize);
         byte_cursor += kUIntSize;
+        size_t left_size = size - kUIntSize;
         if constexpr(std::is_arithmetic_v<element_type>){
             list_.resize(element_count);
             memcpy((void*)list_.data(), byte_cursor, element_count * sizeof(element_type));
+            left_size -= element_count * sizeof(element_type);
         }else{
             list_.clear();
-            size_t left_size = size - kUIntSize;
             for(unsigned int i = 0; i < element_count; ++i){
                 element_type e;
                 auto finish_size = e.loadBytes(byte_cursor, left_size);
@@ -104,7 +96,7 @@ public:
                 list_.push_back(std::move(e));
             }
         }
-        return getByteSize();
+        return size - left_size;
     }
 
     list_type& mutableData()

@@ -312,14 +312,10 @@ StringProxy StringProxy::FromDouble(double val)
 	return StringProxy(ConvertNumberToString(val));
 }
 
-size_t StringProxy::getByteSize()const
-{
-	return stdstr_.size() + kUIntSize;
-}
-
 ByteVec StringProxy::serializeToBytes()const
 {
-	ByteVec bv(getByteSize(), 0);
+	const auto total_byte_size = stdstr_.size() + kUIntSize;
+	ByteVec bv(total_byte_size, 0);
 	unsigned int required_size = (unsigned int)stdstr_.size();
 	memcpy(bv.data(), &required_size, kUIntSize);	
 	if(!stdstr_.empty())
@@ -340,7 +336,7 @@ size_t StringProxy::loadBytes(ConsBytePtr buffer, size_t size)
 		stdstr_.resize(required_size);
 		memcpy((void*)stdstr_.data(), buffer + kUIntSize, required_size);
 	}
-	return getByteSize();
+	return stdstr_.size() + kUIntSize;
 }
 
 RATEL_NAMESPACE_END

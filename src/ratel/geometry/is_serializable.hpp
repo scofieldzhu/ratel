@@ -41,7 +41,6 @@ concept IsSerializable = requires(T t1, T t2, const T t3, B b, CB cb, size_t s)
     {t1 = std::move(t2)};
     {t3.serializeToBytes()}->std::same_as<ByteVec>;
     {t1.loadBytes(cb, s)}->std::same_as<size_t>;
-    {t3.getByteSize()}->std::same_as<size_t>;
 };
 
 RATEL_NAMESPACE_END

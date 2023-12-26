@@ -40,7 +40,6 @@ RATEL_NAMESPACE_BEGIN
 class RATEL_BASIC_API StringProxy final
 {
 public:
-	size_t getByteSize()const;
     ByteVec serializeToBytes()const;
     size_t loadBytes(ConsBytePtr buffer, size_t size);
 	const std::string& stdStr()const { return stdstr_;  }

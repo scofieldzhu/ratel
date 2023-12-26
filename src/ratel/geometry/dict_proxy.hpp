@@ -50,29 +50,6 @@ public:
     using value_vec_proxy_type = VecProxy<value_type>;
     using map_type = std::map<K, V>;
 
-    size_t getByteSize()const
-    {
-        size_t keys_byte_size = 0;
-        size_t vals_byte_size = 0;
-        for(const auto& p : map_){
-            if constexpr(std::is_arithmetic_v<K>){
-                keys_byte_size += sizeof(K);
-            }else if constexpr(std::same_as<K, std::string>){
-                keys_byte_size += StringProxy(p.first).getByteSize();
-            }else{
-                keys_byte_size += p.first.getByteSize();
-            }
-            if constexpr(std::is_arithmetic_v<V>){
-                vals_byte_size += sizeof(V);
-            }else if constexpr(std::same_as<V, std::string>){
-                vals_byte_size += StringProxy(p.second).getByteSize();
-            }else{
-                vals_byte_size += p.second.getByteSize();
-            }
-        }
-        return keys_byte_size + vals_byte_size + kUIntSize * 2; // number and keys_byte_size
-    }
-
     ByteVec serializeToBytes()const
     {
         key_vec_proxy_type keys;
