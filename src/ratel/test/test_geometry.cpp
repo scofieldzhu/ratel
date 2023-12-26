@@ -2,7 +2,7 @@
  *  Ratel is a application framework, which provides some convenient librarys
  *  for for those c++ developers pursuing fast-developement.
  *  
- *  File: test_array_x.cpp 
+ *  File: test_geometry.cpp 
  *  Copyright (c) 2023-2023 scofieldzhu
  *  
  *  MIT License
@@ -25,6 +25,7 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *  SOFTWARE.
  */
+
 #include "test_geometry.h"
 #include "ratel/geometry/geometry.h"
 #include <iostream>
@@ -43,6 +44,25 @@ using Vec3f = VecProxy<Arry3f>;
 using Vec3i = VecProxy<Arry3i>;
 using VecString = VecProxy<StringProxy>;
 using VecByte = VecProxy<char>;
+
+void TestCase_ElementProxy()
+{
+    {
+        ElementProxy<int> ep(234);
+        auto ibv = ep.serializeToBytes();
+        ElementProxy<int> ep_cpy;
+        ep_cpy.loadBytes(ibv.data(), ibv.size());
+        cout << "ep_cpy:" << ep_cpy.element() << endl;
+    }
+    {
+        ElementProxy<StringProxy> ep("sfdfsdf");
+        auto ibv = ep.serializeToBytes();
+        ElementProxy<StringProxy> ep_cpy;
+        ep_cpy.loadBytes(ibv.data(), ibv.size());
+        cout << "string ep_cpy:" << ep_cpy.element().stdStr().c_str() << endl;
+
+    }
+}
 
 template <typename T, size_t N>
 void PrintArrayX(const ArrayX<T, N>& a)
@@ -156,6 +176,7 @@ void TestCase_DictProxy()
 
 void TestCase_Geometry()
 {
+    TestCase_ElementProxy();
     TestCase_ArrayX();
     TestCase_VecProxy();
     TestCase_DictProxy();

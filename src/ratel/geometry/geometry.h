@@ -29,6 +29,7 @@
 #ifndef __geometry_h__
 #define __geometry_h__
 
+#include "ratel/geometry/element_proxy.hpp"
 #include "ratel/geometry/array_x.hpp"
 #include "ratel/geometry/vec_proxy.hpp"
 #include "ratel/geometry/dict_proxy.hpp"
