@@ -42,6 +42,7 @@ using Vec2i = VecProxy<Arry2i>;
 using Vec3f = VecProxy<Arry3f>;
 using Vec3i = VecProxy<Arry3i>;
 using VecString = VecProxy<StringProxy>;
+using VecByte = VecProxy<char>;
 
 template <typename T, size_t N>
 void PrintArrayX(const ArrayX<T, N>& a)
@@ -88,6 +89,29 @@ void TestCase_VecProxy()
     for(const auto& l : v2f_cpy.data()){
         cout << arry2_str_f(l) << " ";
     }
+
+    VecProxy<VecByte> vvbp;
+    VecByte vb1;
+    vb1.mutableData().resize(10);
+    memcpy(vb1.mutableData().data(), "hello vb1vb1vb1", 10);
+    vvbp.mutableData().push_back(std::move(vb1));
+    VecByte vb2;
+    vb2.mutableData().resize(11);
+    memcpy(vb2.mutableData().data(), "hello vb2vb2vb2", 11);
+    vvbp.mutableData().push_back(std::move(vb2));
+    VecByte vb3;
+    vb3.mutableData().resize(12);
+    memcpy(vb3.mutableData().data(), "hello vb3vb3vb3", 12);
+    vvbp.mutableData().push_back(std::move(vb3));
+    auto sbytes = vvbp.serializeToBytes();
+    VecProxy<VecByte> vvbp_cpy;
+    vvbp_cpy.loadBytes(sbytes.data(), sbytes.size());
+    cout << endl << "vvbp_cpy elements:";
+    for(const auto& l : vvbp_cpy.data()){
+        std::string p(l.data().data(), l.data().size());
+        cout << p.c_str() << endl;
+    }
+
 }
 
 void TestCase_DictProxy()
