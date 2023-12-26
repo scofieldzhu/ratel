@@ -30,6 +30,7 @@
 #define __dict_proxy_hpp__
 
 #include <map>
+#include <cassert>
 #include "ratel/basic/string_proxy.h"
 #include "ratel/geometry/vec_proxy.hpp"
 
@@ -43,7 +44,7 @@ class DictProxy
 {
 public:
     static_assert(ArithStringType<K>);
-    static_assert(VecProxyMember<V>);
+    static_assert(VecProxyMember<V> || std::same_as<V, std::string>);
     using key_type = std::conditional_t<std::is_same_v<K, std::string>, StringProxy, K>;
     using key_vec_proxy_type = VecProxy<key_type>;
     using value_type = std::conditional_t<std::is_same_v<V, std::string>, StringProxy, V>;;
@@ -77,37 +78,43 @@ public:
         unsigned int key_byte_size = (unsigned int)bv_k.size();
         memcpy(cur_data, &key_byte_size, kUIntSize);
         cur_data += kUIntSize;
-        if(key_byte_size){
-            memcpy(cur_data, bv_k.data(), bv_k.size());
-            cur_data += bv_k.size();
-            memcpy(cur_data, bv_v.data(), bv_v.size());
-        }
+        memcpy(cur_data, bv_k.data(), bv_k.size());
+        cur_data += bv_k.size();
+        memcpy(cur_data, bv_v.data(), bv_v.size());
         return bv;
     }
 
     size_t loadBytes(ConsBytePtr byte_data, size_t size)
     {
-        if(byte_data == nullptr || size < kUIntSize)
-            return 0;
-        map_.clear();
-        auto number = *(const unsigned int*)(byte_data);
-        if(number == 0){            
-            return kUIntSize;
-        }
-        auto cur_data = byte_data + kUIntSize;
+        if(byte_data == nullptr || size < 2 * kUIntSize)
+            return 0;        
+        auto cur_data = byte_data;
+        auto number = *(const unsigned int*)(cur_data);
+        cur_data += kUIntSize;
         auto left_size = size - kUIntSize;
+
         unsigned int key_byte_size = 0;
         memcpy(&key_byte_size, cur_data, kUIntSize);
         cur_data += kUIntSize;
         left_size = size - kUIntSize;
+
         key_vec_proxy_type keys;
-        if(!keys.loadBytes(cur_data, key_byte_size))
+        auto finish_bytes = keys.loadBytes(cur_data, key_byte_size);
+        if(finish_bytes == 0)
             return 0;
-        left_size -= key_byte_size;
-        cur_data += key_byte_size;
+        assert(finish_bytes == key_byte_size);
+        left_size -= finish_bytes;
+        cur_data += finish_bytes;
+
         value_vec_proxy_type values;
-        if(!values.loadBytes(cur_data, left_size))
-            return 0;     
+        finish_bytes = values.loadBytes(cur_data, left_size);
+        if(finish_bytes == 0)
+            return 0;
+        left_size -= finish_bytes;
+        cur_data += finish_bytes;
+
+        //restore key/value pairs' data
+        map_.clear();
         for(unsigned int i = 0 ; i< number; ++i){
             if constexpr(std::same_as<key_type, StringProxy>){
                 if constexpr(std::same_as<value_type, StringProxy>){

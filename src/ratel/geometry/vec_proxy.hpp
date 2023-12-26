@@ -53,9 +53,9 @@ public:
             size_t calc_size = sizeof(element_type) * list_.size() + kUIntSize;
             ByteVec bv(calc_size, 0);
             unsigned int element_count = (unsigned int)list_.size();
-            BytePtr cur_data = bv.data();
-            memcpy(cur_data, &element_count, kUIntSize);
-            memcpy(cur_data + kUIntSize, (void*)list_.data(), calc_size - kUIntSize);
+            memcpy(bv.data(), &element_count, kUIntSize);
+            if(element_count)
+                memcpy(bv.data() + kUIntSize, (void*)list_.data(), calc_size - kUIntSize);
             return bv;
         }else{
             ByteVec bv(kUIntSize, 0);
@@ -80,12 +80,14 @@ public:
         memcpy(&element_count, byte_cursor, kUIntSize);
         byte_cursor += kUIntSize;
         size_t left_size = size - kUIntSize;
+        list_.clear();
         if constexpr(std::is_arithmetic_v<element_type>){
-            list_.resize(element_count);
-            memcpy((void*)list_.data(), byte_cursor, element_count * sizeof(element_type));
-            left_size -= element_count * sizeof(element_type);
-        }else{
-            list_.clear();
+            if(element_count){
+                list_.resize(element_count);
+                memcpy((void*)list_.data(), byte_cursor, element_count * sizeof(element_type));
+                left_size -= element_count * sizeof(element_type);
+            }
+        }else{            
             for(unsigned int i = 0; i < element_count; ++i){
                 element_type e;
                 auto finish_size = e.loadBytes(byte_cursor, left_size);

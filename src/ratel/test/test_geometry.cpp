@@ -116,21 +116,41 @@ void TestCase_VecProxy()
 
 void TestCase_DictProxy()
 {
-    DictProxy<std::string, float> vs;
-    vs.mutableData().insert({"AA", 2.3f});
-    vs.mutableData().insert({"BB", 2.4f});
-    vs.mutableData().insert({"CC", 2.5f});
-    cout << endl << "vs elements:";
-    for(const auto& l : vs.data()){
-        cout << std::format("[{} : {}]", l.first, l.second).c_str() << " ";
-    }
+    {
+        DictProxy<std::string, float> vs;
+        vs.mutableData().insert({"AA", 2.3f});
+        vs.mutableData().insert({"BB", 2.4f});
+        vs.mutableData().insert({"CC", 2.5f});
+        cout << endl << "vs elements:";
+        for(const auto& l : vs.data()){
+            cout << std::format("['{}' : {}]", l.first, l.second).c_str() << " ";
+        }
 
-    DictProxy<std::string, float> vs_cpy;
-    auto d = vs.serializeToBytes();
-    vs_cpy.loadBytes(d.data(), d.size());
-    cout << endl << "vs_cpy elements:";
-    for(const auto& l : vs_cpy.data()){
-        cout << std::format("[{} : {}]", l.first, l.second).c_str() << " ";
+        DictProxy<std::string, float> vs_cpy;
+        auto d = vs.serializeToBytes();
+        vs_cpy.loadBytes(d.data(), d.size());
+        cout << endl << "vs_cpy elements:";
+        for(const auto& l : vs_cpy.data()){
+            cout << std::format("['{}' : {}]", l.first, l.second).c_str() << " ";
+        }
+    }
+    {
+        DictProxy<int, std::string> vs1;
+        vs1.mutableData().insert({2, "AA"});
+        vs1.mutableData().insert({3, "BBB"});
+        vs1.mutableData().insert({4, "CCC"});
+        cout << endl << "vs1 elements:";
+        for(const auto& l : vs1.data()){
+            cout << std::format("[{} : '{}']", l.first, l.second).c_str() << " ";
+        }
+
+        DictProxy<int, std::string> vs1_cpy;
+        auto d = vs1.serializeToBytes();
+        vs1_cpy.loadBytes(d.data(), d.size());
+        cout << endl << "vs1_cpy elements:";
+        for(const auto& l : vs1_cpy.data()){
+            cout << std::format("[{} : '{}']", l.first, l.second).c_str() << " ";
+        }
     }
 }
 
