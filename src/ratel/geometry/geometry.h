@@ -33,6 +33,7 @@
 #include "ratel/geometry/array_x.hpp"
 #include "ratel/geometry/vec_proxy.hpp"
 #include "ratel/geometry/dict_proxy.hpp"
+#include "ratel/geometry/proxy_combine.hpp"
 #include "ratel/geometry/rect.hpp"
 #include "ratel/geometry/geometry_export.h"
 

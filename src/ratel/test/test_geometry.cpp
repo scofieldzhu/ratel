@@ -174,10 +174,50 @@ void TestCase_DictProxy()
     }
 }
 
+void TestCase_ProxyCombine()
+{
+    Vec2f v2f;
+    v2f.mutableData().push_back({101.3f, 90.3f});
+    v2f.mutableData().push_back({102.3f, 91.3f});
+    v2f.mutableData().push_back({1.3f, 1.3f});
+
+    Vec2i v2i;
+    v2i.mutableData().push_back({101, 90});
+    v2i.mutableData().push_back({102, 91});
+    v2i.mutableData().push_back({1, 1});
+
+    ProxyCombine<Vec2f, Vec2i> pc(v2f, v2i);
+    auto bv = pc.serializeToBytes();
+
+    Vec2f v2f_1;
+    Vec2i v2i_1;
+    ProxyCombine<Vec2f, Vec2i> pc_cpy(v2f_1, v2i_1);
+    pc_cpy.loadBytes(bv.data(), bv.size());
+
+    auto arry2_str_f = [](const Arry2f& a2){
+        return std::format("[{}, {}]", a2[0], a2[1]);
+    };
+
+    cout << endl << "v2f_1 elements:";
+    for(const auto& l : v2f_1.data()){
+        cout << arry2_str_f(l) << " ";
+    }
+
+    auto arry2_str_i = [](const Arry2i& a2){
+        return std::format("[{}, {}]", a2[0], a2[1]);
+    };
+
+    cout << endl << "v2i_1 elements:";
+    for(const auto& l : v2i_1.data()){
+        cout << arry2_str_i(l) << " ";
+    }
+}
+
 void TestCase_Geometry()
 {
     TestCase_ElementProxy();
     TestCase_ArrayX();
     TestCase_VecProxy();
     TestCase_DictProxy();
+    TestCase_ProxyCombine();
 }
