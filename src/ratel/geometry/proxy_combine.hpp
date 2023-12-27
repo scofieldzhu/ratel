@@ -69,14 +69,18 @@ public:
 
     ProxyA& proxyA(){ return pa_; }
     ProxyB& proxyB(){ return pb_; }
-    ProxyCombine(ProxyA& pa, ProxyB& pb)
-        :pa_(pa),
-        pb_(pb){}
-    ~ProxyCombine() = default;
+    ProxyCombine()
+    {};
+    ProxyCombine(ProxyA&& a, ProxyB&& b)
+        :pa_(std::move(a)),
+        pb_(std::move(b))
+    {}
+    ~ProxyCombine()
+    {};
 
 private:
-    ProxyA& pa_;
-    ProxyB& pb_;
+    ProxyA pa_;
+    ProxyB pb_;
 };
 
 RATEL_NAMESPACE_END

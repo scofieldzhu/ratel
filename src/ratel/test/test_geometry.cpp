@@ -186,13 +186,13 @@ void TestCase_ProxyCombine()
     v2i.mutableData().push_back({102, 91});
     v2i.mutableData().push_back({1, 1});
 
-    ProxyCombine<Vec2f, Vec2i> pc(v2f, v2i);
+    ProxyCombine<Vec2f, Vec2i> pc(std::move(v2f), std::move(v2i));
     auto bv = pc.serializeToBytes();
 
-    Vec2f v2f_1;
-    Vec2i v2i_1;
-    ProxyCombine<Vec2f, Vec2i> pc_cpy(v2f_1, v2i_1);
+    ProxyCombine<Vec2f, Vec2i> pc_cpy;
     pc_cpy.loadBytes(bv.data(), bv.size());
+    Vec2f& v2f_1 = pc_cpy.proxyA();
+    Vec2i& v2i_1 = pc_cpy.proxyB();
 
     auto arry2_str_f = [](const Arry2f& a2){
         return std::format("[{}, {}]", a2[0], a2[1]);

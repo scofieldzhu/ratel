@@ -118,6 +118,10 @@ public:
         :list_(list)
     {}
 
+    VecProxy(list_type&& list)
+        :list_(std::move(list))
+    {}
+
     ~VecProxy()
     {}
 
