@@ -28,6 +28,7 @@
 
 #include "test_geometry.h"
 #include "ratel/geometry/geometry.h"
+#include "ratel/basic/dbg_tracker.h"
 #include <iostream>
 #include <iterator>
 
@@ -215,6 +216,7 @@ void TestCase_ProxyCombine()
 
 void TestCase_Geometry()
 {
+    _AUTO_FUNC_TRACK_
     TestCase_ElementProxy();
     TestCase_ArrayX();
     TestCase_VecProxy();

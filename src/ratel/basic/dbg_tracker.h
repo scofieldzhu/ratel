@@ -2,7 +2,7 @@
  *  Ratel is a application framework, which provides some convenient librarys
  *  for for those c++ developers pursuing fast-developement.
  *  
- *  File: main.cpp 
+ *  File: dbg_tracker.h  
  *  Copyright (c) 2023-2023 scofieldzhu
  *  
  *  MIT License
@@ -25,26 +25,29 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *  SOFTWARE.
  */
+#ifndef __dbg_tracker_h__
+#define __dbg_tracker_h__
 
-#include <iostream>
-#include "test_logger.h"
-#include "test_string_proxy.h"
-#include "test_directed_graph.h"
-#include "test_notifier.h"
-#include "test_geometry.h"
-#include "ratel/basic/time_util.h"
-using namespace std;
+#include <string>
+#include "time_util.h"
 
-int main()
+RATEL_NAMESPACE_BEGIN
+
+class RATEL_BASIC_API DbgTracker 
 {
-	ratel::TimeTracker tt;
-	cout << "Hello world!" << endl;
-	TestCase_SPDLogger();
-	//TestCase_StringProxy();
-	//TestCase_DirectedGraph();
-	//TestCase_Notifier();
-	TestCase_Geometry();
-	cout << endl << "elapsed:" << tt.elapsed() << endl;
-	getchar();
-	return 0;
-}
+public:
+    DbgTracker(const char* fn, const char* func, unsigned int line_no);
+    ~DbgTracker();
+
+private:
+    std::string filename_;
+    std::string funcname_;
+    unsigned int lineno_;
+    TimeTracker time_tracker_;
+};
+
+RATEL_NAMESPACE_END
+
+#define _AUTO_FUNC_TRACK_ ratel::DbgTracker __tmp_dt__(__FILE__, __FUNCTION__, __LINE__);
+
+#endif

@@ -29,6 +29,7 @@
 #ifndef __base_type_h__
 #define __base_type_h__
 
+#include <cstdint>
 #include <vector>
 #include "ratel/basic/ratel_nsp.h"
 

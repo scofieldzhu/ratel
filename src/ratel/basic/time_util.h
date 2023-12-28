@@ -2,7 +2,7 @@
  *  Ratel is a application framework, which provides some convenient librarys
  *  for for those c++ developers pursuing fast-developement.
  *  
- *  File: main.cpp 
+ *  File: time_util.h  
  *  Copyright (c) 2023-2023 scofieldzhu
  *  
  *  MIT License
@@ -26,25 +26,28 @@
  *  SOFTWARE.
  */
 
-#include <iostream>
-#include "test_logger.h"
-#include "test_string_proxy.h"
-#include "test_directed_graph.h"
-#include "test_notifier.h"
-#include "test_geometry.h"
-#include "ratel/basic/time_util.h"
-using namespace std;
+#ifndef __time_util_h__
+#define __time_util_h__
 
-int main()
+#include <chrono>
+#include "ratel/basic/base_type.h"
+#include "ratel/basic/basic_export.h"
+
+RATEL_NAMESPACE_BEGIN
+
+class RATEL_BASIC_API TimeTracker 
 {
-	ratel::TimeTracker tt;
-	cout << "Hello world!" << endl;
-	TestCase_SPDLogger();
-	//TestCase_StringProxy();
-	//TestCase_DirectedGraph();
-	//TestCase_Notifier();
-	TestCase_Geometry();
-	cout << endl << "elapsed:" << tt.elapsed() << endl;
-	getchar();
-	return 0;
-}
+public:
+    void restart();    
+    double elapsed();
+    TimeTracker(bool auto_start = true);
+    ~TimeTracker();
+
+private:
+    bool auto_start_;
+    std::chrono::time_point<std::chrono::high_resolution_clock> start_time_;
+};
+
+RATEL_NAMESPACE_END
+
+#endif

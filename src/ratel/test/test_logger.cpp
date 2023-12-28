@@ -31,7 +31,9 @@
 
 void TestCase_SPDLogger()
 {
-	spdlog::set_pattern("[%H:%M:%S %z] [%^%L%$] [thread %t] %v");
+	//[%H:%M:%S %z] [thread %t] [%l] %v (%s:%# %!)
+	spdlog::set_pattern("[%H:%M:%S][%s:%!:%#][%^%L%$][%t] %v");
+	spdlog::set_level(spdlog::level::trace);
 	spdlog::info("Welcome to spdlog version {}.{}.{}  !", SPDLOG_VER_MAJOR, SPDLOG_VER_MINOR,
 		SPDLOG_VER_PATCH);
 
