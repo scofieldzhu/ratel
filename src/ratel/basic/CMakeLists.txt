@@ -1,4 +1,4 @@
-set(proj_name "basic")
+set(proj_name "ratel.basic")
 
 project(${proj_name})
 
@@ -28,6 +28,13 @@ set(deplibs_dbg spdlogd)
 set(deplibs_opt spdlog)
 target_link_libraries(${proj_name} debug ${deplibs_dbg} optimized ${deplibs_opt})
 
+# if(WIN32)
+# 	set_target_properties(${PROJECT_NAME} PROPERTIES
+# 		PREFIX "ratel."
+# 		SUFFIX ".dll"
+# 	)
+# endif()
+
 # configure_file(
 #     ${license_file}
 #     COPYONLY
@@ -38,9 +45,10 @@ target_link_libraries(${proj_name} debug ${deplibs_dbg} optimized ${deplibs_opt}
 # )
 # add_dependencies(${proj_name} UpdateLicenseHeader)
 
-install(TARGETS ${proj_name} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+install(TARGETS ${proj_name} RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+install(TARGETS ${proj_name} ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 file(GLOB HEADERS "*.h" "*.hpp")
-install(FILES ${HEADERS} DESTINATION ${CMAKE_ISNTALL_INCLUDE}/${proj_name})
+install(FILES ${HEADERS} DESTINATION ${CMAKE_ISNTALL_INCLUDE}/basic)
 
 
 

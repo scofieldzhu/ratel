@@ -1,12 +1,30 @@
-/*=======================================================================
-Ratel is a application framework, which provides some convenient librarys
-for for those c++ developers pursuing fast-developement.
-Copyright (c) scofieldzhu. All rights reserved.	
-
-Project: ratel.basic 
-Module: directed_graph.h 
-Create time: 2023/12/02 09:39:48
-=========================================================================*/
+ /*
+ *  Ratel is a application framework, which provides some convenient librarys
+ *  for for those c++ developers pursuing fast-developement.
+ *  
+ *  File: directed_graph.hpp  
+ *  Copyright (c) 2023-2023 scofieldzhu
+ *  
+ *  MIT License
+ *  
+ *  Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  of this software and associated documentation files (the "Software"), to deal
+ *  in the Software without restriction, including without limitation the rights
+ *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  copies of the Software, and to permit persons to whom the Software is
+ *  furnished to do so, subject to the following conditions:
+ *  
+ *  The above copyright notice and this permission notice shall be included in all
+ *  copies or substantial portions of the Software.
+ *  
+ *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ *  SOFTWARE.
+ */
 #ifndef __directed_graph_h__
 #define __directed_graph_h__
 
@@ -40,6 +58,7 @@ public:
 	using ArcInfoList = std::vector<ArcInfo>;
 
 	void addVertex(const_vertex_key_reference key, const vertex_data_type& data);
+	void getVertexData(const_vertex_key_reference key, vertex_data_type& out_data)const;
 	void removeVertex(const_vertex_key_reference key);
 	bool existVertex(const_vertex_key_reference key)const;
 	void addArc(const_vertex_key_reference source_vertex, const_vertex_key_reference target_vertex, const arc_data_type& data);
@@ -91,6 +110,14 @@ inline void DirectedGraph<VDT, ADT, VKT>::addVertex(const_vertex_key_reference k
 	VertexNode vnode;
 	vnode.data = data;
 	vertex_node_map_[key] = std::move(vnode);
+}
+
+template <class VDT, class ADT, class VKT>
+inline void DirectedGraph<VDT, ADT, VKT>::getVertexData(const_vertex_key_reference key, vertex_data_type& out_data) const
+{
+	if(!existVertex(key))
+		return;
+	out_data = vertex_node_map_.at(key).data;
 }
 
 template<class VDT, class ADT, class VKT>
