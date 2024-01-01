@@ -3,7 +3,7 @@
  *  for for those c++ developers pursuing fast-developement.
  *  
  *  File: base_type.h  
- *  Copyright (c) 2023-2023 scofieldzhu
+ *  Copyright (c) 2023-2024 scofieldzhu
  *  
  *  MIT License
  *  
@@ -31,6 +31,7 @@
 
 #include <cstdint>
 #include <vector>
+#include <memory>
 #include "ratel/basic/ratel_nsp.h"
 
 RATEL_NAMESPACE_BEGIN

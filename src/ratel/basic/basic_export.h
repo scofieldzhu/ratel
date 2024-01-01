@@ -3,7 +3,7 @@
  *  for for those c++ developers pursuing fast-developement.
  *  
  *  File: basic_export.h  
- *  Copyright (c) 2023-2023 scofieldzhu
+ *  Copyright (c) 2023-2024 scofieldzhu
  *  
  *  MIT License
  *  

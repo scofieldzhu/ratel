@@ -2,7 +2,7 @@
  *  Ratel is a application framework, which provides some convenient librarys
  *  for for those c++ developers pursuing fast-developement.
  *  
- *  File: geo_inst.cpp 
+ *  File: asio_export.h  
  *  Copyright (c) 2023-2024 scofieldzhu
  *  
  *  MIT License
@@ -26,26 +26,17 @@
  *  SOFTWARE.
  */
 
-#include "geometry.h"
+#ifndef __asio_export_h__
+#define __asio_export_h__
 
-using namespace ratel;
+#include "ratel/basic/cross_platform.h"
 
-void Test()
-{
-	using Arry2f = ArrayX<float, 2>;
-	Arry2f fv2;
-	using Arry3f = ArrayX<float, 3>;
-	Arry3f fv3;
-	using Pt2f = Arry2f;
-	VecProxy<Pt2f> pt2f_vp;
-	auto byte_vec = pt2f_vp.serializeToBytes();
+#ifdef PLATFORM_WIN
+    #ifdef RATEL_ASIO_EXPORTS
+        #define RATEL_ASIO_API __declspec(dllexport)
+    #else
+        #define RATEL_ASIO_API __declspec(dllimport)
+    #endif
+#endif
 
-	using Pt2i = ArrayX<int, 2>;
-	VecProxy<Pt2i> pt2i_vp;
-
-	VecProxy<int> vpi;
-	vpi.loadBytes(byte_vec.data(), byte_vec.size());
-
-	DictProxy<int, float> dp;
-
-}
+#endif

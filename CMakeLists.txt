@@ -36,6 +36,8 @@ add_subdirectory(src/ratel/basic)
 
 add_subdirectory(src/ratel/geometry)
 
+add_subdirectory(src/ratel/asio)
+
 add_subdirectory(src/ratel/test)
 
 # install third-party libraries
