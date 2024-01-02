@@ -45,11 +45,12 @@ struct TcpSession::Impl
     std::size_t read_bytes_size = 0;
     Byte write_buf[kMaxBufferSize] = {0};
     std::size_t write_bytes_size = 0;
+    bool async_mode;
     TcpSession* owner;
     
-    Impl(TcpSession* ts, SCK_CTX ctx)
-        :owner(ts),
-        socket(*reinterpret_cast<IoContext*>(ctx))
+    Impl(SCK_CTX ctx, bool m)
+        :socket(*reinterpret_cast<IoContext*>(ctx)),
+        async_mode(m)
     {
     }
 
@@ -110,20 +111,21 @@ struct TcpSession::Impl
     }
 };
 
-TcpSession::TcpSession(SCK_CTX ctx)
-    : impl_(new Impl(this, ctx))
+TcpSession::TcpSession(SCK_CTX ctx, bool asyn_mode)
+    :impl_(new Impl(ctx, asyn_mode))
 {
+    impl_->owner = this;
 }
 
 TcpSession::~TcpSession()
 {
 }
 
-TcpSessionPtr TcpSession::Create(SCK_CTX ctx)
+TcpSessionPtr TcpSession::Create(SCK_CTX ctx, bool asyn_mode)
 {
     if(ctx == nullptr)
         return nullptr;
-    return TcpSessionPtr(new TcpSession(ctx));
+    return TcpSessionPtr(new TcpSession(ctx, asyn_mode));
 }
 
 void TcpSession::start()

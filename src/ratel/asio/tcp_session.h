@@ -46,7 +46,7 @@ public:
     RcvSignal rcv_signal;
     using CloseSignal = Notifier<TcpSession*, int>;
     CloseSignal close_signal;
-    static TcpSessionPtr Create(SCK_CTX);    
+    static TcpSessionPtr Create(SCK_CTX, bool asyn_mode);    
     int send(const Byte* data, std::size_t size);
     static size_t GetMaxSendRcvSize();
     std::tuple<const Byte*, std::size_t> getRcvBuffer();
@@ -57,7 +57,7 @@ private:
     friend class TcpClient;
     void start();
     SCK_HANDLE socket();
-    TcpSession(SCK_CTX ctx);
+    TcpSession(SCK_CTX ctx, bool asyn_mode);
     struct Impl;
     std::unique_ptr<Impl> impl_;
 };

@@ -31,17 +31,23 @@
 
 #include <string>
 #include "ratel/asio/asio_base_type.h"
+#include "ratel/basic/notifier.hpp"
 
 RATEL_NAMESPACE_BEGIN
 
 class RATEL_ASIO_API TcpClient 
 {
-public:
+public:    
+    using ConnectSignal = Notifier<TcpSessionPtr, std::string>;
+    ConnectSignal conn_signal;
+    //async connect method
+    void connect(const std::string& server, short port);
     SCK_CTX context();
-    void run();
-    void exit();
-    TcpSessionPtr connect(const std::string& server, short port, std::string* detail_err = nullptr);
-    TcpClient();
+    void run(); //only for async mode
+    void exit(); //only for async mode
+    TcpSessionPtr syncConnect(const std::string& server, short port, std::string* detail_err = nullptr);
+    bool asyncMode()const;
+    TcpClient(bool async_mode);
     ~TcpClient();
 
 private:

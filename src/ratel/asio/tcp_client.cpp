@@ -28,6 +28,7 @@
 #include "tcp_client.h"
 #include <boost/asio.hpp>
 #include <boost/bind/bind.hpp>
+#include "spdlog/spdlog.h"
 #include "tcp_session.h"
 
 namespace ba = boost::asio;
@@ -40,16 +41,41 @@ RATEL_NAMESPACE_BEGIN
 struct TcpClient::Impl 
 {
     ba::io_context io_context;
+    bool async_mode;
+    TcpClient* owner = nullptr;
 
-    Impl()
+    Impl(bool m)
+        :async_mode(m)
     {
     }
 
-    TcpSessionPtr connect(const std::string& server, short port, std::string* detail_err)
+    void connect(const std::string& server, short port)
     {
         tcp_type::resolver resolver(io_context);
         tcp_type::resolver::results_type endpoints = resolver.resolve(server, std::to_string(port));
-        TcpSessionPtr new_session = TcpSession::Create(&io_context);
+        auto new_session = TcpSession::Create(&io_context, async_mode);
+        auto self(new_session->shared_from_this());
+        ba::async_connect(*reinterpret_cast<tcp_socket*>(self->socket()),
+                          endpoints,
+                          boost::bind(&TcpClient::Impl::onConnect, this, self, ba::placeholders::error)
+        );
+    }
+
+    void onConnect(TcpSessionPtr new_session, const boost::system::error_code& error) 
+    {
+        if(!error) {
+            owner->conn_signal.invoke(new_session, "no error");
+        }else{
+            spdlog::error("Connect failed, error:{}", error.message());
+            owner->conn_signal.invoke(new_session, error.message());
+        }
+    }
+
+    TcpSessionPtr synConnect(const std::string& server, short port, std::string* detail_err)
+    {
+        tcp_type::resolver resolver(io_context);
+        tcp_type::resolver::results_type endpoints = resolver.resolve(server, std::to_string(port));
+        TcpSessionPtr new_session = TcpSession::Create(&io_context, async_mode);
         try{
             ba::connect(*reinterpret_cast<tcp_socket*>(new_session->socket()), endpoints);
         }catch(const boost::system::error_code& ec){
@@ -64,10 +90,10 @@ struct TcpClient::Impl
     }
 };
 
-TcpClient::TcpClient()
-    :impl_(new Impl())
+TcpClient::TcpClient(bool m)
+    :impl_(new Impl(m))
 {
-
+    impl_->owner = this;
 }
 
 TcpClient::~TcpClient()
@@ -75,24 +101,31 @@ TcpClient::~TcpClient()
 
 }
 
+void TcpClient::connect(const std::string& server, short port)
+{
+    impl_->connect(server, port);
+}
+
 SCK_CTX TcpClient::context()
 {
-    return &impl_->io_context;
+    return impl_->async_mode ? &impl_->io_context : nullptr;
 }
 
 void TcpClient::run()
 {
-    impl_->io_context.run();
+    if(impl_->async_mode)
+        impl_->io_context.run();
 }
 
 void TcpClient::exit()
 {
-    impl_->io_context.stop();
+    if(impl_->async_mode)
+        impl_->io_context.stop();
 }
 
-TcpSessionPtr TcpClient::connect(const std::string &server, short port, std::string *detail_err)
+TcpSessionPtr TcpClient::syncConnect(const std::string &server, short port, std::string* detail_err)
 {
-    return impl_->connect(server, port, detail_err);
+    return impl_->synConnect(server, port, detail_err);
 }
 
 RATEL_NAMESPACE_END

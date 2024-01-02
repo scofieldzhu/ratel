@@ -40,12 +40,14 @@ RATEL_NAMESPACE_BEGIN
 
 struct TcpServer::Impl 
 {
+    bool async_mode;
     IoContext io_context;
     std::unique_ptr<baip::tcp::acceptor> acceptor;
+    TcpServer* owner = nullptr;
 
     void startNextAccept()
     {
-        auto new_session = TcpSession::Create(&io_context);
+        auto new_session = TcpSession::Create(&io_context, async_mode);
         TcpSocket& sck = *reinterpret_cast<TcpSocket*>(new_session->socket());
         acceptor->async_accept(sck, 
                                boost::bind(&TcpServer::Impl::handleAccept, this, new_session, boost::asio::placeholders::error)
@@ -56,42 +58,53 @@ struct TcpServer::Impl
     {
         if(!ec){
             new_session->start();
+            owner->conn_signal.invoke(new_session);
+            if(!io_context.stopped())
+                startNextAccept();
         }else{
             spdlog::error("Accept error:{}", ec.message());
-        } 
-        startNextAccept();
+            return;
+        }         
     }
 
-    Impl(short port)
+    Impl(short port, bool m)
+        :async_mode(m)
     {
         acceptor = std::make_unique<baip::tcp::acceptor>(io_context, baip::tcp::endpoint(baip::tcp::v4(), port));
     }
 };
 
-TcpServer::TcpServer(short port)
-    :impl_(new Impl(port))
+TcpServer::TcpServer(short port, bool async_mode)
+    :impl_(new Impl(port, async_mode))
 {
+    impl_->owner = this;
     impl_->startNextAccept();
 }
 
 TcpServer::~TcpServer()
 {
-
 }
 
 SCK_CTX TcpServer::context()
 {
-    return &impl_->io_context;
+    return impl_->async_mode ? &impl_->io_context : nullptr;
 }
 
 void TcpServer::run()
 {
-    impl_->io_context.run();
+    if(impl_->async_mode)
+        impl_->io_context.run();
 }
 
 void TcpServer::exit()
 {
-    impl_->io_context.stop();
+    if(impl_->async_mode)
+        impl_->io_context.stop();
+}
+
+bool TcpServer::asynMode() const
+{
+    return impl_->async_mode;
 }
 
 RATEL_NAMESPACE_END

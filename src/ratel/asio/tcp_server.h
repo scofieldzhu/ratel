@@ -30,16 +30,20 @@
 #define __tcp_server_h__
 
 #include "ratel/asio/asio_base_type.h"
+#include "ratel/basic/notifier.hpp"
 
 RATEL_NAMESPACE_BEGIN
 
 class RATEL_ASIO_API TcpServer 
 {
 public:
+    using ConnectSignal = Notifier<TcpSessionPtr>;
+    ConnectSignal conn_signal;
     SCK_CTX context();
     void run();
     void exit();
-    TcpServer(short port);
+    bool asynMode()const;
+    TcpServer(short port, bool async_mode);
     ~TcpServer();
 
 private:
