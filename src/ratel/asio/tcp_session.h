@@ -35,7 +35,7 @@
 
 RATEL_NAMESPACE_BEGIN
 
-class RATEL_ASIO_API TcpSession : public std::enable_shared_from_this<TcpSession>
+class RATEL_ASIO_API TcpSession final : public std::enable_shared_from_this<TcpSession>
 {
 public:
     using ErrSignal = Notifier<TcpSession*, std::string>;
@@ -48,8 +48,11 @@ public:
     CloseSignal close_signal;
     static TcpSessionPtr Create(SCK_CTX, bool asyn_mode);    
     int send(const Byte* data, std::size_t size);
-    static size_t GetMaxSendRcvSize();
+    std::size_t syncSend(const Byte* data, std::size_t size, std::string* detail_err = nullptr);
+    std::size_t syncRead(std::string* detail_err = nullptr);
+    static std::size_t GetMaxSendRcvSize();
     std::tuple<const Byte*, std::size_t> getRcvBuffer();
+    bool asynMode()const;
     ~TcpSession();
 
 private:

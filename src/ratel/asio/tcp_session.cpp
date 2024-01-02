@@ -54,6 +54,12 @@ struct TcpSession::Impl
     {
     }
 
+    ~Impl()
+    {
+        if(socket.is_open())
+            socket.close();
+    }
+
     IoContext* getIoContext()
     {
         return reinterpret_cast<IoContext*>(&socket.get_executor().context());
@@ -109,6 +115,40 @@ struct TcpSession::Impl
             self->err_signal.invoke(self.get(), msg);
         }
     }
+
+    std::size_t syncRead(std::string* detail_err)
+    {
+        boost::system::error_code error;
+        std::size_t len = socket.read_some(boost::asio::buffer(read_buf, kMaxBufferSize), error);
+        if(error == boost::asio::error::eof){ // Connection closed cleanly by peer
+            if(detail_err)
+                *detail_err = "connection closed by peer";
+            return 0;
+        }
+        if(error){
+            if(detail_err)
+                *detail_err = error.message();
+            return 0;
+        }
+        return len;
+    }
+
+    std::size_t syncSend(const Byte* data, std::size_t size, std::string* detail_err)
+    {
+        boost::system::error_code ec;
+        auto finish_len = boost::asio::write(socket,
+            boost::asio::const_buffer(data, size),
+            boost::asio::transfer_all(),
+            ec
+        );
+        if(ec){
+            if(detail_err)
+                *detail_err = ec.message();
+            spdlog::error("sync write buffer data to socket stream failed! err:{}", ec.message());
+            return 0;
+        }
+        return finish_len;
+    }
 };
 
 TcpSession::TcpSession(SCK_CTX ctx, bool asyn_mode)
@@ -135,6 +175,10 @@ void TcpSession::start()
 
 int TcpSession::send(const Byte* data, std::size_t size)
 {
+    if(!impl_->async_mode){
+        spdlog::error("Cannot call send method in synchorous mode!");
+        return 2;
+    }
     if(data == nullptr || size > kMaxBufferSize){
         spdlog::error("Empty data or too large size:{}", size);
         return 1;
@@ -145,7 +189,20 @@ int TcpSession::send(const Byte* data, std::size_t size)
     return 0;
 }
 
-size_t TcpSession::GetMaxSendRcvSize()
+std::size_t TcpSession::syncSend(const Byte* data, std::size_t size, std::string* detail_err)
+{
+    if(impl_->async_mode){
+        spdlog::error("Cannot call syncSend method in asynchorous mode!");
+        return 2;
+    }
+    if(data == nullptr || size == 0){
+        spdlog::error("Empty data passed");
+        return 0;
+    }
+    return impl_->syncSend(data, size, detail_err);
+}
+
+std::size_t TcpSession::GetMaxSendRcvSize()
 {
     return kMaxBufferSize;
 }
@@ -160,39 +217,16 @@ std::tuple<const Byte*, std::size_t> TcpSession::getRcvBuffer()
     return std::make_tuple(impl_->read_buf, impl_->read_bytes_size);
 }
 
-// vtkMatrix* CalcTransform(glm::vec3 source_pt, 
-//                          glm::vec source_rotation,
-//                          glm::vec3 target_pt, 
-//                          glm::vec target_rotation)
-// {
-//     auto s_pt1 = source_pt;
-//     auto s_n_rotation = glm::normalize(source_rotation);
-//     auto s_pt2 = glm::vec3(source_pt[0] + n_rotation[0], source_pt[1], source_pt[2]);
-//     auto s_pt3 = glm::vec3(source_pt[0], source_pt[1] + n_rotation[1], source_pt[2]);
-//     auto s_pt4 = glm::vec3(source_pt[0], source_pt[1], source_pt[2] + n_rotation[2]);
-//     auto source_pts = vtkPoints::New();
-//     source_pts->insertPoint(s_pt1);
-//     source_pts->insertPoint(s_pt2);
-//     source_pts->insertPoint(s_pt3);
-//     source_pts->insertPoint(s_pt4);
+bool TcpSession::asynMode() const
+{
+    return impl_->async_mode;
+}
 
-//     auto t_pt1 = target_pt;
-//     auto t_n_rotation = glm::normalize(target_rotation);
-//     auto t_pt2 = glm::vec3(target_pt[0] + t_n_rotation[0], target_pt[1], target_pt[2]);
-//     auto t_pt3 = glm::vec3(target_pt[0], target_pt[1] + t_n_rotation[1], target_pt[2]);
-//     auto t_pt4 = glm::vec3(target_pt[0], target_pt[1], target_pt[2] + t_n_rotation[2]);
-//     auto target_pts = vtkPoints::New();
-//     target_pts->insertPoint(t_pt1);
-//     target_pts->insertPoint(t_pt2);
-//     target_pts->insertPoint(t_pt3);
-//     target_pts->insertPoint(t_pt4);
-
-//     auto lm_trans = vtkLandmarkTransform::New();
-//     lm_trans->setTranformToRigidBody();
-//     lm_trans->SetSourceLandmarks(source_pts);
-//     lm_trans->SetTargetLandmarks(target_pts);
-//     lm_trans->update();
-//     return lm_trans->GetMatrix();
-// }
+std::size_t TcpSession::syncRead(std::string* detail_err)
+{
+    if(impl_->async_mode)
+        return impl_->syncRead(detail_err);
+    return 0; // not in synchorous mode!
+}
 
 RATEL_NAMESPACE_END

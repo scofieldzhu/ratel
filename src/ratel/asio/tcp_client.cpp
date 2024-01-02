@@ -40,12 +40,13 @@ RATEL_NAMESPACE_BEGIN
 
 struct TcpClient::Impl 
 {
-    ba::io_context io_context;
+    ba::io_context& io_context;
     bool async_mode;
     TcpClient* owner = nullptr;
 
-    Impl(bool m)
-        :async_mode(m)
+    Impl(SCK_CTX ctx, bool m)
+        :io_context(*reinterpret_cast<ba::io_context*>(ctx)),
+        async_mode(m)
     {
     }
 
@@ -90,8 +91,8 @@ struct TcpClient::Impl
     }
 };
 
-TcpClient::TcpClient(bool m)
-    :impl_(new Impl(m))
+TcpClient::TcpClient(SCK_CTX context, bool m)
+    :impl_(new Impl(context, m))
 {
     impl_->owner = this;
 }

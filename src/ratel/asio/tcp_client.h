@@ -35,7 +35,7 @@
 
 RATEL_NAMESPACE_BEGIN
 
-class RATEL_ASIO_API TcpClient 
+class RATEL_ASIO_API TcpClient final
 {
 public:    
     using ConnectSignal = Notifier<TcpSessionPtr, std::string>;
@@ -47,7 +47,7 @@ public:
     void exit(); //only for async mode
     TcpSessionPtr syncConnect(const std::string& server, short port, std::string* detail_err = nullptr);
     bool asyncMode()const;
-    TcpClient(bool async_mode);
+    TcpClient(SCK_CTX context, bool async_mode);
     ~TcpClient();
 
 private:

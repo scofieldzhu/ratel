@@ -41,7 +41,7 @@ RATEL_NAMESPACE_BEGIN
 struct TcpServer::Impl 
 {
     bool async_mode;
-    IoContext io_context;
+    IoContext& io_context;
     std::unique_ptr<baip::tcp::acceptor> acceptor;
     TcpServer* owner = nullptr;
 
@@ -67,15 +67,16 @@ struct TcpServer::Impl
         }         
     }
 
-    Impl(short port, bool m)
-        :async_mode(m)
+    Impl(SCK_CTX ctx, short port, bool m)
+        :io_context(*reinterpret_cast<IoContext*>(ctx)),
+        async_mode(m)
     {
         acceptor = std::make_unique<baip::tcp::acceptor>(io_context, baip::tcp::endpoint(baip::tcp::v4(), port));
     }
 };
 
-TcpServer::TcpServer(short port, bool async_mode)
-    :impl_(new Impl(port, async_mode))
+TcpServer::TcpServer(SCK_CTX ctx, short port, bool async_mode)
+    :impl_(new Impl(ctx, port, async_mode))
 {
     impl_->owner = this;
     impl_->startNextAccept();

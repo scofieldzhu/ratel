@@ -34,7 +34,7 @@
 
 RATEL_NAMESPACE_BEGIN
 
-class RATEL_ASIO_API TcpServer 
+class RATEL_ASIO_API TcpServer final
 {
 public:
     using ConnectSignal = Notifier<TcpSessionPtr>;
@@ -43,7 +43,7 @@ public:
     void run();
     void exit();
     bool asynMode()const;
-    TcpServer(short port, bool async_mode);
+    TcpServer(SCK_CTX ctx, short port, bool async_mode);
     ~TcpServer();
 
 private:
