@@ -2,7 +2,7 @@
  *  Ratel is a application framework, which provides some convenient librarys
  *  for for those c++ developers pursuing fast-developement.
  *  
- *  File: tcp_server.cpp 
+ *  File: tcp_client.cpp 
  *  Copyright (c) 2023-2024 scofieldzhu
  *  
  *  MIT License
@@ -25,73 +25,74 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *  SOFTWARE.
  */
-
-#include "tcp_server.h"
+#include "tcp_client.h"
 #include <boost/asio.hpp>
 #include <boost/bind/bind.hpp>
 #include "tcp_session.h"
-#include "spdlog/spdlog.h"
 
-namespace baip = boost::asio::ip;
-using TcpSocket = baip::tcp::socket;
-using IoContext = boost::asio::io_context;
+namespace ba = boost::asio;
+namespace ba_ip = boost::asio::ip;
+using tcp_type = ba_ip::tcp;
+using tcp_socket = tcp_type::socket;
 
 RATEL_NAMESPACE_BEGIN
 
-struct TcpServer::Impl 
+struct TcpClient::Impl 
 {
-    IoContext io_context;
-    std::unique_ptr<baip::tcp::acceptor> acceptor;
+    ba::io_context io_context;
 
-    void startNextAccept()
+    Impl()
     {
-        auto new_session = TcpSession::Create(&io_context);
-        TcpSocket& sck = *reinterpret_cast<TcpSocket*>(new_session->socket());
-        acceptor->async_accept(sck, 
-                               boost::bind(&TcpServer::Impl::handleAccept, this, new_session, boost::asio::placeholders::error)
-        );
     }
 
-    void handleAccept(TcpSessionPtr new_session, const boost::system::error_code& ec)
+    TcpSessionPtr connect(const std::string& server, short port, std::string* detail_err)
     {
-        if(!ec){
-            new_session->start();
-        }else{
-            spdlog::error("Accept error:{}", ec.message());
-        } 
-        startNextAccept();
-    }
-
-    Impl(short port)
-    {
-        acceptor = std::make_unique<baip::tcp::acceptor>(io_context, baip::tcp::endpoint(baip::tcp::v4(), port));
+        tcp_type::resolver resolver(io_context);
+        tcp_type::resolver::results_type endpoints = resolver.resolve(server, std::to_string(port));
+        TcpSessionPtr new_session = TcpSession::Create(&io_context);
+        try{
+            ba::connect(*reinterpret_cast<tcp_socket*>(new_session->socket()), endpoints);
+        }catch(const boost::system::error_code& ec){
+            if(detail_err)
+                *detail_err = ec.message();
+            return TcpSessionPtr();
+        }
+        if(detail_err)
+            *detail_err = "no error";
+        new_session->start(); //avoid reference count to zero
+        return new_session;        
     }
 };
 
-TcpServer::TcpServer(short port)
-    :impl_(new Impl(port))
-{
-    impl_->startNextAccept();
-}
-
-TcpServer::~TcpServer()
+TcpClient::TcpClient()
+    :impl_(new Impl())
 {
 
 }
 
-SCK_CTX TcpServer::context()
+TcpClient::~TcpClient()
+{
+
+}
+
+SCK_CTX TcpClient::context()
 {
     return &impl_->io_context;
 }
 
-void TcpServer::run()
+void TcpClient::run()
 {
     impl_->io_context.run();
 }
 
-void TcpServer::exit()
+void TcpClient::exit()
 {
     impl_->io_context.stop();
+}
+
+TcpSessionPtr TcpClient::connect(const std::string &server, short port, std::string *detail_err)
+{
+    return impl_->connect(server, port, detail_err);
 }
 
 RATEL_NAMESPACE_END

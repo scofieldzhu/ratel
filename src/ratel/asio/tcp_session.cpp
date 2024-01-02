@@ -53,6 +53,11 @@ struct TcpSession::Impl
     {
     }
 
+    IoContext* getIoContext()
+    {
+        return reinterpret_cast<IoContext*>(&socket.get_executor().context());
+    }
+
     void postNextRead()
     {
         auto self(owner->shared_from_this());
@@ -62,13 +67,13 @@ struct TcpSession::Impl
         );
     }
 
-    void onReadFinished(TcpSession::pointer self, const boost::system::error_code& ec, std::size_t len)
+    void onReadFinished(TcpSessionPtr self, const boost::system::error_code& ec, std::size_t len)
     {
         read_bytes_size = len;
         if(!ec){ //no error
             self->rcv_signal.invoke(self.get(), read_buf, len);
-            //trigger next read
-            postNextRead();            
+            if(!getIoContext()->stopped()) //trigger next read if not stopped            
+                postNextRead();            
         }else if(ec == boost::asio::error::eof) {
             // ther other party close connection!
             self->close_signal.invoke(self.get(), ec.value());
@@ -89,7 +94,7 @@ struct TcpSession::Impl
         );
     }
 
-    void onWriteFinished(TcpSession::pointer self, const boost::system::error_code& ec, std::size_t len)
+    void onWriteFinished(TcpSessionPtr self, const boost::system::error_code& ec, std::size_t len)
     {
         if(!ec){
             self->sent_signal.invoke(self.get(), len);
@@ -114,11 +119,11 @@ TcpSession::~TcpSession()
 {
 }
 
-TcpSession::pointer TcpSession::Create(SCK_CTX ctx)
+TcpSessionPtr TcpSession::Create(SCK_CTX ctx)
 {
     if(ctx == nullptr)
         return nullptr;
-    return pointer(new TcpSession(ctx));
+    return TcpSessionPtr(new TcpSession(ctx));
 }
 
 void TcpSession::start()

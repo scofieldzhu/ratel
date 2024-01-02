@@ -2,7 +2,7 @@
  *  Ratel is a application framework, which provides some convenient librarys
  *  for for those c++ developers pursuing fast-developement.
  *  
- *  File: tcp_session.h  
+ *  File: tcp_client.h  
  *  Copyright (c) 2023-2024 scofieldzhu
  *  
  *  MIT License
@@ -26,38 +26,25 @@
  *  SOFTWARE.
  */
 
-#ifndef __tcp_session_h__
-#define __tcp_session_h__
+#ifndef __tpc_client_h__
+#define __tpc_client_h__
 
-#include <tuple>
+#include <string>
 #include "ratel/asio/asio_base_type.h"
-#include "ratel/basic/notifier.hpp"
 
 RATEL_NAMESPACE_BEGIN
 
-class RATEL_ASIO_API TcpSession : public std::enable_shared_from_this<TcpSession>
+class RATEL_ASIO_API TcpClient 
 {
 public:
-    using ErrSignal = Notifier<TcpSession*, std::string>;
-    ErrSignal err_signal;
-    using SentSignal = Notifier<TcpSession*, std::size_t>;
-    SentSignal sent_signal;
-    using RcvSignal = Notifier<TcpSession*, ConsBytePtr, std::size_t>;
-    RcvSignal rcv_signal;
-    using CloseSignal = Notifier<TcpSession*, int>;
-    CloseSignal close_signal;
-    static TcpSessionPtr Create(SCK_CTX);    
-    int send(const Byte* data, std::size_t size);
-    static size_t GetMaxSendRcvSize();
-    std::tuple<const Byte*, std::size_t> getRcvBuffer();
-    ~TcpSession();
+    SCK_CTX context();
+    void run();
+    void exit();
+    TcpSessionPtr connect(const std::string& server, short port, std::string* detail_err = nullptr);
+    TcpClient();
+    ~TcpClient();
 
 private:
-    friend class TcpServer;
-    friend class TcpClient;
-    void start();
-    SCK_HANDLE socket();
-    TcpSession(SCK_CTX ctx);
     struct Impl;
     std::unique_ptr<Impl> impl_;
 };
@@ -65,3 +52,4 @@ private:
 RATEL_NAMESPACE_END
 
 #endif
+

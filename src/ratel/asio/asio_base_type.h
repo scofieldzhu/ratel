@@ -37,6 +37,12 @@ RATEL_NAMESPACE_BEGIN
 using SCK_CTX = void*;
 using SCK_HANDLE = void*;
 
+class TcpSession;
+using TcpSessionPtr = std::shared_ptr<TcpSession>;
+
+class TcpClient;
+class TcpServer;
+
 RATEL_NAMESPACE_END
 
 #endif

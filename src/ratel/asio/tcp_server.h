@@ -36,7 +36,7 @@ RATEL_NAMESPACE_BEGIN
 class RATEL_ASIO_API TcpServer 
 {
 public:
-    SCK_CTX socketContext();
+    SCK_CTX context();
     void run();
     void exit();
     TcpServer(short port);
