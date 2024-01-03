@@ -3,7 +3,7 @@
  *  for for those c++ developers pursuing fast-developement.
  *  
  *  File: string_proxy.cpp 
- *  Copyright (c) 2023-2023 scofieldzhu
+ *  Copyright (c) 2023-2024 scofieldzhu
  *  
  *  MIT License
  *  
@@ -245,7 +245,7 @@ std::string StringProxy::decodeToLocale() const
 	std::wstring ustr = MultiBytesToUnicode<CP_UTF8>(stdstr_);
 	return UnicodeToMultiBytes<CP_ACP>(ustr);
 #else
-	SPDLOG_ERROR("Method not implmented in non-win platform!");
+	spdlog::error("Method not implmented in non-win platform!");
 	return "";
 #endif
 }

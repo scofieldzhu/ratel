@@ -2,7 +2,7 @@
  *  Ratel is a application framework, which provides some convenient librarys
  *  for for those c++ developers pursuing fast-developement.
  *  
- *  File: geo_inst.cpp 
+ *  File: tcp_server.h  
  *  Copyright (c) 2023-2024 scofieldzhu
  *  
  *  MIT License
@@ -26,26 +26,31 @@
  *  SOFTWARE.
  */
 
-#include "geometry.h"
+#ifndef __tcp_server_h__
+#define __tcp_server_h__
 
-using namespace ratel;
+#include "ratel/asio/asio_base_type.h"
+#include "ratel/basic/notifier.hpp"
 
-void Test()
+RATEL_NAMESPACE_BEGIN
+
+class RATEL_ASIO_API TcpServer final
 {
-	using Arry2f = ArrayX<float, 2>;
-	Arry2f fv2;
-	using Arry3f = ArrayX<float, 3>;
-	Arry3f fv3;
-	using Pt2f = Arry2f;
-	VecProxy<Pt2f> pt2f_vp;
-	auto byte_vec = pt2f_vp.serializeToBytes();
+public:
+    using ConnectSignal = Notifier<TcpSessionPtr>;
+    ConnectSignal conn_signal;
+    ASIO_CTX context();
+    // void run();
+    // void exit();
+    bool asynMode()const;
+    TcpServer(ASIO_CTX ctx, short port, bool async_mode);
+    ~TcpServer();
 
-	using Pt2i = ArrayX<int, 2>;
-	VecProxy<Pt2i> pt2i_vp;
+private:
+    struct Impl;
+    std::unique_ptr<Impl> impl_;
+};
 
-	VecProxy<int> vpi;
-	vpi.loadBytes(byte_vec.data(), byte_vec.size());
+RATEL_NAMESPACE_END
 
-	DictProxy<int, float> dp;
-
-}
+#endif

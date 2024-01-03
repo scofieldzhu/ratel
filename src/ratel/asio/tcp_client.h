@@ -2,7 +2,7 @@
  *  Ratel is a application framework, which provides some convenient librarys
  *  for for those c++ developers pursuing fast-developement.
  *  
- *  File: geo_inst.cpp 
+ *  File: tcp_client.h  
  *  Copyright (c) 2023-2024 scofieldzhu
  *  
  *  MIT License
@@ -26,26 +26,36 @@
  *  SOFTWARE.
  */
 
-#include "geometry.h"
+#ifndef __tpc_client_h__
+#define __tpc_client_h__
 
-using namespace ratel;
+#include <string>
+#include "ratel/asio/asio_base_type.h"
+#include "ratel/basic/notifier.hpp"
 
-void Test()
+RATEL_NAMESPACE_BEGIN
+
+class RATEL_ASIO_API TcpClient final
 {
-	using Arry2f = ArrayX<float, 2>;
-	Arry2f fv2;
-	using Arry3f = ArrayX<float, 3>;
-	Arry3f fv3;
-	using Pt2f = Arry2f;
-	VecProxy<Pt2f> pt2f_vp;
-	auto byte_vec = pt2f_vp.serializeToBytes();
+public:    
+    using ConnectSignal = Notifier<TcpSessionPtr, std::string>;
+    ConnectSignal conn_signal;
+    //async connect method
+    void connect(const std::string& server, short port);
+    ASIO_CTX context();
+    // void run(); //only for async mode
+    // void exit(); //only for async mode
+    TcpSessionPtr syncConnect(const std::string& server, short port, std::string* detail_err = nullptr);
+    bool asyncMode()const;
+    TcpClient(ASIO_CTX context, bool async_mode);
+    ~TcpClient();
 
-	using Pt2i = ArrayX<int, 2>;
-	VecProxy<Pt2i> pt2i_vp;
+private:
+    struct Impl;
+    std::unique_ptr<Impl> impl_;
+};
 
-	VecProxy<int> vpi;
-	vpi.loadBytes(byte_vec.data(), byte_vec.size());
+RATEL_NAMESPACE_END
 
-	DictProxy<int, float> dp;
+#endif
 
-}

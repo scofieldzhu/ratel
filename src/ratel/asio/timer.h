@@ -2,7 +2,7 @@
  *  Ratel is a application framework, which provides some convenient librarys
  *  for for those c++ developers pursuing fast-developement.
  *  
- *  File: geo_inst.cpp 
+ *  File: timer.h  
  *  Copyright (c) 2023-2024 scofieldzhu
  *  
  *  MIT License
@@ -26,26 +26,36 @@
  *  SOFTWARE.
  */
 
-#include "geometry.h"
+#ifndef __timer_h__
+#define __timer_h__
 
-using namespace ratel;
+#include <chrono>
+#include "ratel/asio/asio_base_type.h"
+#include "ratel/basic/notifier.hpp"
 
-void Test()
+RATEL_NAMESPACE_BEGIN
+
+class RATEL_ASIO_API Timer final
 {
-	using Arry2f = ArrayX<float, 2>;
-	Arry2f fv2;
-	using Arry3f = ArrayX<float, 3>;
-	Arry3f fv3;
-	using Pt2f = Arry2f;
-	VecProxy<Pt2f> pt2f_vp;
-	auto byte_vec = pt2f_vp.serializeToBytes();
+public:
+    using TimeoutSignal = Notifier<int>;
+    TimeoutSignal timeout_signal;
+    bool start(std::chrono::milliseconds interval, bool single_shot);
+    std::chrono::milliseconds interval()const;
+    bool singleShot()const;
+    bool isStarted()const;
+    void stop();    
+    void synSingleShot();
+    ASIO_CTX context();
+    bool asynMode()const;
+    Timer(ASIO_CTX ctx, bool asyn_mode);
+    ~Timer();
 
-	using Pt2i = ArrayX<int, 2>;
-	VecProxy<Pt2i> pt2i_vp;
+private:
+    struct Impl;
+    std::unique_ptr<Impl> impl_;
+};
 
-	VecProxy<int> vpi;
-	vpi.loadBytes(byte_vec.data(), byte_vec.size());
+RATEL_NAMESPACE_END
 
-	DictProxy<int, float> dp;
-
-}
+#endif

@@ -3,7 +3,7 @@
  *  for for those c++ developers pursuing fast-developement.
  *  
  *  File: test_logger.h  
- *  Copyright (c) 2023-2023 scofieldzhu
+ *  Copyright (c) 2023-2024 scofieldzhu
  *  
  *  MIT License
  *  

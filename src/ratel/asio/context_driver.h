@@ -2,8 +2,8 @@
  *  Ratel is a application framework, which provides some convenient librarys
  *  for for those c++ developers pursuing fast-developement.
  *  
- *  File: geo_inst.cpp 
- *  Copyright (c) 2023-2024 scofieldzhu
+ *  File: context_driver.h  
+ *  Copyright (c) 2024-2024 scofieldzhu
  *  
  *  MIT License
  *  
@@ -26,26 +26,20 @@
  *  SOFTWARE.
  */
 
-#include "geometry.h"
+#ifndef __context_driver_h__
+#define __context_driver_h__
 
-using namespace ratel;
+#include "ratel/asio/asio_base_type.h"
 
-void Test()
-{
-	using Arry2f = ArrayX<float, 2>;
-	Arry2f fv2;
-	using Arry3f = ArrayX<float, 3>;
-	Arry3f fv3;
-	using Pt2f = Arry2f;
-	VecProxy<Pt2f> pt2f_vp;
-	auto byte_vec = pt2f_vp.serializeToBytes();
+RATEL_NAMESPACE_BEGIN
 
-	using Pt2i = ArrayX<int, 2>;
-	VecProxy<Pt2i> pt2i_vp;
+RATEL_ASIO_API ASIO_CTX CreateAsioContext();
+RATEL_ASIO_API void RunAsioContext(ASIO_CTX ctx);
+RATEL_ASIO_API bool IsAsioContextStopped(ASIO_CTX ctx);
+RATEL_ASIO_API void StopAsioContext(ASIO_CTX ctx);
+RATEL_ASIO_API void DestroyAsioContext(ASIO_CTX ctx);
 
-	VecProxy<int> vpi;
-	vpi.loadBytes(byte_vec.data(), byte_vec.size());
+RATEL_NAMESPACE_END
 
-	DictProxy<int, float> dp;
+#endif
 
-}

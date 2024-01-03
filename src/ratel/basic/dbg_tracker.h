@@ -3,7 +3,7 @@
  *  for for those c++ developers pursuing fast-developement.
  *  
  *  File: dbg_tracker.h  
- *  Copyright (c) 2023-2023 scofieldzhu
+ *  Copyright (c) 2023-2024 scofieldzhu
  *  
  *  MIT License
  *  
@@ -25,6 +25,7 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *  SOFTWARE.
  */
+
 #ifndef __dbg_tracker_h__
 #define __dbg_tracker_h__
 

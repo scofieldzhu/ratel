@@ -2,7 +2,7 @@
  *  Ratel is a application framework, which provides some convenient librarys
  *  for for those c++ developers pursuing fast-developement.
  *  
- *  File: geo_inst.cpp 
+ *  File: tcp_session.h  
  *  Copyright (c) 2023-2024 scofieldzhu
  *  
  *  MIT License
@@ -26,26 +26,45 @@
  *  SOFTWARE.
  */
 
-#include "geometry.h"
+#ifndef __tcp_session_h__
+#define __tcp_session_h__
 
-using namespace ratel;
+#include <tuple>
+#include "ratel/asio/asio_base_type.h"
+#include "ratel/basic/notifier.hpp"
 
-void Test()
+RATEL_NAMESPACE_BEGIN
+
+class RATEL_ASIO_API TcpSession final : public std::enable_shared_from_this<TcpSession>
 {
-	using Arry2f = ArrayX<float, 2>;
-	Arry2f fv2;
-	using Arry3f = ArrayX<float, 3>;
-	Arry3f fv3;
-	using Pt2f = Arry2f;
-	VecProxy<Pt2f> pt2f_vp;
-	auto byte_vec = pt2f_vp.serializeToBytes();
+public:
+    using ErrSignal = Notifier<TcpSession*, std::string>;
+    ErrSignal err_signal;
+    using SentSignal = Notifier<TcpSession*, std::size_t>;
+    SentSignal sent_signal;
+    using RcvSignal = Notifier<TcpSession*, ConsBytePtr, std::size_t>;
+    RcvSignal rcv_signal;
+    using CloseSignal = Notifier<TcpSession*, int>;
+    CloseSignal close_signal;
+    static TcpSessionPtr Create(ASIO_CTX, bool asyn_mode);    
+    int send(const Byte* data, std::size_t size);
+    std::size_t syncSend(const Byte* data, std::size_t size, std::string* detail_err = nullptr);
+    std::size_t syncRead(std::string* detail_err = nullptr);
+    static std::size_t GetMaxSendRcvSize();
+    std::tuple<const Byte*, std::size_t> getRcvBuffer();
+    bool asynMode()const;
+    ~TcpSession();
 
-	using Pt2i = ArrayX<int, 2>;
-	VecProxy<Pt2i> pt2i_vp;
+private:
+    friend class TcpServer;
+    friend class TcpClient;
+    void start();
+    SCK_HANDLE socket();
+    TcpSession(ASIO_CTX ctx, bool asyn_mode);
+    struct Impl;
+    std::unique_ptr<Impl> impl_;
+};
 
-	VecProxy<int> vpi;
-	vpi.loadBytes(byte_vec.data(), byte_vec.size());
+RATEL_NAMESPACE_END
 
-	DictProxy<int, float> dp;
-
-}
+#endif
