@@ -2,7 +2,7 @@
  *  Ratel is a application framework, which provides some convenient librarys
  *  for for those c++ developers pursuing fast-developement.
  *  
- *  File: tcp_client.h  
+ *  File: timer.h  
  *  Copyright (c) 2023-2024 scofieldzhu
  *  
  *  MIT License
@@ -26,29 +26,30 @@
  *  SOFTWARE.
  */
 
-#ifndef __tpc_client_h__
-#define __tpc_client_h__
+#ifndef __timer_h__
+#define __timer_h__
 
-#include <string>
+#include <chrono>
 #include "ratel/asio/asio_base_type.h"
 #include "ratel/basic/notifier.hpp"
 
 RATEL_NAMESPACE_BEGIN
 
-class RATEL_ASIO_API TcpClient final
+class RATEL_ASIO_API Timer final
 {
-public:    
-    using ConnectSignal = Notifier<TcpSessionPtr, std::string>;
-    ConnectSignal conn_signal;
-    //async connect method
-    void connect(const std::string& server, short port);
+public:
+    using TimeoutSignal = Notifier<int>;
+    TimeoutSignal timeout_signal;
+    bool start(std::chrono::milliseconds interval, bool single_shot);
+    std::chrono::milliseconds interval()const;
+    bool singleShot()const;
+    bool isStarted()const;
+    void stop();    
+    void synSingleShot();
     ASIO_CTX context();
-    // void run(); //only for async mode
-    // void exit(); //only for async mode
-    TcpSessionPtr syncConnect(const std::string& server, short port, std::string* detail_err = nullptr);
-    bool asyncMode()const;
-    TcpClient(ASIO_CTX context, bool async_mode);
-    ~TcpClient();
+    bool asynMode()const;
+    Timer(ASIO_CTX ctx, bool asyn_mode);
+    ~Timer();
 
 private:
     struct Impl;
@@ -58,4 +59,3 @@ private:
 RATEL_NAMESPACE_END
 
 #endif
-

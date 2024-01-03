@@ -67,7 +67,7 @@ struct TcpServer::Impl
         }         
     }
 
-    Impl(SCK_CTX ctx, short port, bool m)
+    Impl(ASIO_CTX ctx, short port, bool m)
         :io_context(*reinterpret_cast<IoContext*>(ctx)),
         async_mode(m)
     {
@@ -75,7 +75,7 @@ struct TcpServer::Impl
     }
 };
 
-TcpServer::TcpServer(SCK_CTX ctx, short port, bool async_mode)
+TcpServer::TcpServer(ASIO_CTX ctx, short port, bool async_mode)
     :impl_(new Impl(ctx, port, async_mode))
 {
     impl_->owner = this;
@@ -86,22 +86,22 @@ TcpServer::~TcpServer()
 {
 }
 
-SCK_CTX TcpServer::context()
+ASIO_CTX TcpServer::context()
 {
     return impl_->async_mode ? &impl_->io_context : nullptr;
 }
 
-void TcpServer::run()
-{
-    if(impl_->async_mode)
-        impl_->io_context.run();
-}
+// void TcpServer::run()
+// {
+//     if(impl_->async_mode)
+//         impl_->io_context.run();
+// }
 
-void TcpServer::exit()
-{
-    if(impl_->async_mode)
-        impl_->io_context.stop();
-}
+// void TcpServer::exit()
+// {
+//     if(impl_->async_mode)
+//         impl_->io_context.stop();
+// }
 
 bool TcpServer::asynMode() const
 {

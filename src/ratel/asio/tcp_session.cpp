@@ -48,7 +48,7 @@ struct TcpSession::Impl
     bool async_mode;
     TcpSession* owner;
     
-    Impl(SCK_CTX ctx, bool m)
+    Impl(ASIO_CTX ctx, bool m)
         :socket(*reinterpret_cast<IoContext*>(ctx)),
         async_mode(m)
     {
@@ -151,7 +151,7 @@ struct TcpSession::Impl
     }
 };
 
-TcpSession::TcpSession(SCK_CTX ctx, bool asyn_mode)
+TcpSession::TcpSession(ASIO_CTX ctx, bool asyn_mode)
     :impl_(new Impl(ctx, asyn_mode))
 {
     impl_->owner = this;
@@ -161,7 +161,7 @@ TcpSession::~TcpSession()
 {
 }
 
-TcpSessionPtr TcpSession::Create(SCK_CTX ctx, bool asyn_mode)
+TcpSessionPtr TcpSession::Create(ASIO_CTX ctx, bool asyn_mode)
 {
     if(ctx == nullptr)
         return nullptr;

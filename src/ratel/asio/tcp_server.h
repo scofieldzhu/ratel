@@ -39,11 +39,11 @@ class RATEL_ASIO_API TcpServer final
 public:
     using ConnectSignal = Notifier<TcpSessionPtr>;
     ConnectSignal conn_signal;
-    SCK_CTX context();
-    void run();
-    void exit();
+    ASIO_CTX context();
+    // void run();
+    // void exit();
     bool asynMode()const;
-    TcpServer(SCK_CTX ctx, short port, bool async_mode);
+    TcpServer(ASIO_CTX ctx, short port, bool async_mode);
     ~TcpServer();
 
 private:

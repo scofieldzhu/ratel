@@ -25,6 +25,7 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *  SOFTWARE.
  */
+
 #include "tcp_client.h"
 #include <boost/asio.hpp>
 #include <boost/bind/bind.hpp>
@@ -44,7 +45,7 @@ struct TcpClient::Impl
     bool async_mode;
     TcpClient* owner = nullptr;
 
-    Impl(SCK_CTX ctx, bool m)
+    Impl(ASIO_CTX ctx, bool m)
         :io_context(*reinterpret_cast<ba::io_context*>(ctx)),
         async_mode(m)
     {
@@ -91,7 +92,7 @@ struct TcpClient::Impl
     }
 };
 
-TcpClient::TcpClient(SCK_CTX context, bool m)
+TcpClient::TcpClient(ASIO_CTX context, bool m)
     :impl_(new Impl(context, m))
 {
     impl_->owner = this;
@@ -107,22 +108,22 @@ void TcpClient::connect(const std::string& server, short port)
     impl_->connect(server, port);
 }
 
-SCK_CTX TcpClient::context()
+ASIO_CTX TcpClient::context()
 {
     return impl_->async_mode ? &impl_->io_context : nullptr;
 }
 
-void TcpClient::run()
-{
-    if(impl_->async_mode)
-        impl_->io_context.run();
-}
+// void TcpClient::run()
+// {
+//     if(impl_->async_mode)
+//         impl_->io_context.run();
+// }
 
-void TcpClient::exit()
-{
-    if(impl_->async_mode)
-        impl_->io_context.stop();
-}
+// void TcpClient::exit()
+// {
+//     if(impl_->async_mode)
+//         impl_->io_context.stop();
+// }
 
 TcpSessionPtr TcpClient::syncConnect(const std::string &server, short port, std::string* detail_err)
 {

@@ -2,8 +2,8 @@
  *  Ratel is a application framework, which provides some convenient librarys
  *  for for those c++ developers pursuing fast-developement.
  *  
- *  File: tcp_client.h  
- *  Copyright (c) 2023-2024 scofieldzhu
+ *  File: context_driver.h  
+ *  Copyright (c) 2024-2024 scofieldzhu
  *  
  *  MIT License
  *  
@@ -26,34 +26,18 @@
  *  SOFTWARE.
  */
 
-#ifndef __tpc_client_h__
-#define __tpc_client_h__
+#ifndef __context_driver_h__
+#define __context_driver_h__
 
-#include <string>
 #include "ratel/asio/asio_base_type.h"
-#include "ratel/basic/notifier.hpp"
 
 RATEL_NAMESPACE_BEGIN
 
-class RATEL_ASIO_API TcpClient final
-{
-public:    
-    using ConnectSignal = Notifier<TcpSessionPtr, std::string>;
-    ConnectSignal conn_signal;
-    //async connect method
-    void connect(const std::string& server, short port);
-    ASIO_CTX context();
-    // void run(); //only for async mode
-    // void exit(); //only for async mode
-    TcpSessionPtr syncConnect(const std::string& server, short port, std::string* detail_err = nullptr);
-    bool asyncMode()const;
-    TcpClient(ASIO_CTX context, bool async_mode);
-    ~TcpClient();
-
-private:
-    struct Impl;
-    std::unique_ptr<Impl> impl_;
-};
+RATEL_ASIO_API ASIO_CTX CreateAsioContext();
+RATEL_ASIO_API void RunAsioContext(ASIO_CTX ctx);
+RATEL_ASIO_API bool IsAsioContextStopped(ASIO_CTX ctx);
+RATEL_ASIO_API void StopAsioContext(ASIO_CTX ctx);
+RATEL_ASIO_API void DestroyAsioContext(ASIO_CTX ctx);
 
 RATEL_NAMESPACE_END
 

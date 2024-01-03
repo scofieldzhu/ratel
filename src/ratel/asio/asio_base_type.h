@@ -34,7 +34,7 @@
 
 RATEL_NAMESPACE_BEGIN
 
-using SCK_CTX = void*;
+using ASIO_CTX = void*;
 using SCK_HANDLE = void*;
 
 class TcpSession;
