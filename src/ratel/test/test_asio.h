@@ -2,7 +2,7 @@
  *  Ratel is a application framework, which provides some convenient librarys
  *  for for those c++ developers pursuing fast-developement.
  *  
- *  File: basic_export.h  
+ *  File: test_asio.h  
  *  Copyright (c) 2024-2024 scofieldzhu
  *  
  *  MIT License
@@ -25,19 +25,6 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *  SOFTWARE.
  */
+#pragma once
 
-#ifndef __basic_export_h__
-#define __basic_export_h__
-
-#include "ratel/basic/cross_platform.h"
-#include "ratel/basic/ratel_nsp.h"
-
-#ifdef PLATFORM_WIN
-    #ifdef BASIC_EXPORTS
-        #define RATEL_BASIC_API __declspec(dllexport)
-    #else
-        #define RATEL_BASIC_API __declspec(dllimport)
-    #endif
-#endif
-
-#endif
+void TestCase_Asio();
