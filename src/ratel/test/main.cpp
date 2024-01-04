@@ -45,6 +45,7 @@ int main()
 	//TestCase_Notifier();
 	//TestCase_Geometry();
 	//TestCase_Asio_Timer();
-	TestCase_Asio_Tcp_Client();
+	//TestCase_Asio_Tcp_Client();
+	TestCase_Asio_Tcp_Server();
 	return 0;
 }

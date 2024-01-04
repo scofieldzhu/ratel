@@ -2,7 +2,7 @@
  *  Ratel is a application framework, which provides some convenient librarys
  *  for for those c++ developers pursuing fast-developement.
  *  
- *  File: tcp_client.h  
+ *  File: test_asio_tcp_server.h  
  *  Copyright (c) 2024-2024 scofieldzhu
  *  
  *  MIT License
@@ -26,32 +26,6 @@
  *  SOFTWARE.
  */
 
-#ifndef __tpc_client_h__
-#define __tpc_client_h__
+#pragma once 
 
-#include <string>
-#include "ratel/asio/asio_base_type.h"
-#include "ratel/basic/notifier.hpp"
-
-RATEL_NAMESPACE_BEGIN
-
-class RATEL_ASIO_API TcpClient final
-{
-public:    
-    using ConnectSignal = Notifier<TcpSessionPtr, std::string>;
-    ConnectSignal conn_signal;
-    void connect(const std::string& server, short port);
-    ASIO_CTX context();
-    TcpSessionPtr syncConnect(const std::string& server, short port, std::string* detail_err = nullptr);
-    TcpClient(ASIO_CTX context);
-    ~TcpClient();
-
-private:
-    struct Impl;
-    std::unique_ptr<Impl> impl_;
-};
-
-RATEL_NAMESPACE_END
-
-#endif
-
+void TestCase_Asio_Tcp_Server();

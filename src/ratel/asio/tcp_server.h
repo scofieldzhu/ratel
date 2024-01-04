@@ -40,10 +40,7 @@ public:
     using ConnectSignal = Notifier<TcpSessionPtr>;
     ConnectSignal conn_signal;
     ASIO_CTX context();
-    // void run();
-    // void exit();
-    bool asynMode()const;
-    TcpServer(ASIO_CTX ctx, short port, bool async_mode);
+    TcpServer(ASIO_CTX ctx, short port);
     ~TcpServer();
 
 private:

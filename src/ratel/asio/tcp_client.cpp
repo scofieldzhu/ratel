@@ -42,12 +42,10 @@ RATEL_NAMESPACE_BEGIN
 struct TcpClient::Impl 
 {
     ba::io_context& io_context;
-    bool async_mode;
     TcpClient* owner = nullptr;
 
-    Impl(ASIO_CTX ctx, bool m)
-        :io_context(*reinterpret_cast<ba::io_context*>(ctx)),
-        async_mode(m)
+    Impl(ASIO_CTX ctx)
+        :io_context(*reinterpret_cast<ba::io_context*>(ctx))
     {
     }
 
@@ -55,7 +53,7 @@ struct TcpClient::Impl
     {
         tcp_type::resolver resolver(io_context);
         tcp_type::resolver::results_type endpoints = resolver.resolve(server, std::to_string(port));
-        auto new_session = TcpSession::Create(&io_context, async_mode);
+        auto new_session = TcpSession::Create(&io_context);
         auto self(new_session->shared_from_this());
         ba::async_connect(*reinterpret_cast<tcp_socket*>(self->socket()),
                           endpoints,
@@ -78,7 +76,7 @@ struct TcpClient::Impl
     {
         tcp_type::resolver resolver(io_context);
         tcp_type::resolver::results_type endpoints = resolver.resolve(server, std::to_string(port));
-        TcpSessionPtr new_session = TcpSession::Create(&io_context, async_mode);
+        TcpSessionPtr new_session = TcpSession::Create(&io_context);
         try{
             ba::connect(*reinterpret_cast<tcp_socket*>(new_session->socket()), endpoints);
         }catch(const boost::system::error_code& ec){
@@ -92,8 +90,8 @@ struct TcpClient::Impl
     }
 };
 
-TcpClient::TcpClient(ASIO_CTX context, bool m)
-    :impl_(new Impl(context, m))
+TcpClient::TcpClient(ASIO_CTX context)
+    :impl_(new Impl(context))
 {
     impl_->owner = this;
 }
@@ -110,7 +108,7 @@ void TcpClient::connect(const std::string& server, short port)
 
 ASIO_CTX TcpClient::context()
 {
-    return impl_->async_mode ? &impl_->io_context : nullptr;
+    return &impl_->io_context;
 }
 
 TcpSessionPtr TcpClient::syncConnect(const std::string &server, short port, std::string* detail_err)

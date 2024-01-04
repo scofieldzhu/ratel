@@ -46,12 +46,10 @@ struct TcpSession::Impl
     std::size_t read_bytes_size = 0;
     Byte write_buf[kMaxBufferSize] = {0};
     std::size_t write_bytes_size = 0;
-    bool async_mode;
     TcpSession* owner;
     
-    Impl(ASIO_CTX ctx, bool m)
-        :socket(*reinterpret_cast<IoContext*>(ctx)),
-        async_mode(m)
+    Impl(ASIO_CTX ctx)
+        :socket(*reinterpret_cast<IoContext*>(ctx))
     {
     }
 
@@ -76,6 +74,7 @@ struct TcpSession::Impl
     void onReadFinished(TcpSessionPtr self, const boost::system::error_code& ec, std::size_t len)
     {
         read_bytes_size = len;
+        read_buf[len] = '\0';
         if(!ec){ //no error
             self->rcv_signal.invoke(self.get(), read_buf, len);
             if(!getIoContext()->stopped() && socket.is_open()) //trigger next read if not stopped            
@@ -94,6 +93,7 @@ struct TcpSession::Impl
     void postNextWrite()
     {
         auto self(owner->shared_from_this());
+        write_buf[write_bytes_size] = '\0';
         boost::asio::async_write(socket, 
                                  boost::asio::buffer(write_buf, write_bytes_size),
                                  boost::bind(&TcpSession::Impl::onWriteFinished, this, self, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred)
@@ -150,8 +150,8 @@ struct TcpSession::Impl
     }
 };
 
-TcpSession::TcpSession(ASIO_CTX ctx, bool asyn_mode)
-    :impl_(new Impl(ctx, asyn_mode))
+TcpSession::TcpSession(ASIO_CTX ctx)
+    :impl_(new Impl(ctx))
 {
     impl_->owner = this;
 }
@@ -162,11 +162,11 @@ TcpSession::~TcpSession()
     close();
 }
 
-TcpSessionPtr TcpSession::Create(ASIO_CTX ctx, bool asyn_mode)
+TcpSessionPtr TcpSession::Create(ASIO_CTX ctx)
 {
     if(ctx == nullptr)
         return nullptr;
-    return TcpSessionPtr(new TcpSession(ctx, asyn_mode));
+    return TcpSessionPtr(new TcpSession(ctx));
 }
 
 void TcpSession::start()
@@ -176,10 +176,6 @@ void TcpSession::start()
 
 int TcpSession::send(const Byte* data, std::size_t size)
 {
-    if(!impl_->async_mode){
-        spdlog::error("Cannot call send method in synchorous mode!");
-        return 2;
-    }
     if(data == nullptr || size > kMaxBufferSize){
         spdlog::error("Empty data or too large size:{}", size);
         return 1;
@@ -196,8 +192,8 @@ int TcpSession::send(const Byte* data, std::size_t size)
 
 std::size_t TcpSession::syncSend(const Byte* data, std::size_t size, std::string* detail_err)
 {
-    if(impl_->async_mode){
-        spdlog::error("Cannot call syncSend method in asynchorous mode!");
+    if(!impl_->getIoContext()->stopped()){
+        spdlog::error("Cannot call syncSend method when io_context is in running!");
         return 2;
     }
     if(data == nullptr || size == 0){
@@ -226,21 +222,17 @@ std::tuple<const Byte*, std::size_t> TcpSession::getRcvBuffer()
     return std::make_tuple(impl_->read_buf, impl_->read_bytes_size);
 }
 
-bool TcpSession::asynMode() const
-{
-    return impl_->async_mode;
-}
-
 std::size_t TcpSession::syncRead(std::string* detail_err)
 {
-    if(!impl_->async_mode){
-        if(!isOpened()){
-            spdlog::error("Not opened yet!");
-            return 0;
-        }
-        return impl_->syncRead(detail_err);
+    if(!impl_->getIoContext()->stopped()){
+        spdlog::error("Cannot call syncRead method when io_context is in running!");
+        return 2;
     }
-    return 0; // not in synchorous mode!
+    if(!isOpened()){
+        spdlog::error("Not opened yet!");
+        return 0;
+    }
+    return impl_->syncRead(detail_err);
 }
 
 ASIO_CTX TcpSession::context()

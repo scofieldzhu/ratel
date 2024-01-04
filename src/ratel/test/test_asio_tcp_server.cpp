@@ -1,9 +1,9 @@
-#include "test_asio_tcp_client.h"
+#include "test_asio_tcp_server.h"
 /*
  *  Ratel is a application framework, which provides some convenient librarys
  *  for for those c++ developers pursuing fast-developement.
  *
- *  File: test_asio_tcp_client.cpp
+ *  File: test_asio_tcp_server.cpp
  *  Copyright (c) 2024-2024 scofieldzhu
  *
  *  MIT License
@@ -26,14 +26,16 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *  SOFTWARE.
  */
-#include "test_asio_tcp_client.h"
-#include "ratel/asio/tcp_client.h"
+#include "test_asio_tcp_server.h"
+#include "ratel/asio/tcp_server.h"
 #include "ratel/asio/tcp_session.h"
 #include "ratel/asio/context_driver.h"
 #include "ratel/basic/dbg_tracker.h"
 #include "spdlog/spdlog.h"
 using namespace ratel;
 using namespace std::chrono_literals;
+
+static std::map<TcpSession*, int> sTalkCnt;
 
 static void OnClosed(TcpSession* session, bool active)
 {
@@ -43,62 +45,38 @@ static void OnClosed(TcpSession* session, bool active)
 
 static void OnRcvMsg(TcpSession* session, ConsBytePtr data, std::size_t len)
 {
-    _AUTO_FUNC_TRACK_
-    spdlog::trace("Receive msg:{}", std::string((const char*)data));
-    session->send("Acked", strlen("Acked"));
-    //StopAsioContext(session->context());
-    session->close();
+    std::string rcv_msg((const char*)data);
+    spdlog::trace("Receive msg:{}", rcv_msg);
+    std::string echo_msg = std::format("Acked :{}", rcv_msg);
+    session->send(echo_msg.c_str(), echo_msg.size());
+    sTalkCnt[session]++;
+    if(sTalkCnt[session] == 2)
+        session->close();
 }
 
-static void OnMsgSent(TcpSession* s, std::size_t size)
+static void OnConnected(TcpSessionPtr session)
 {
     _AUTO_FUNC_TRACK_
-    spdlog::trace("OnMsgSent: msg_len:{}", size);
-}
-
-static void OnConnected(TcpSessionPtr session, std::string err)
-{
-    _AUTO_FUNC_TRACK_
-    spdlog::trace("OnConnected: msg:{}", err);
-    session->sent_signal.bind(&OnMsgSent);
     session->rcv_signal.bind(&OnRcvMsg);
     session->close_signal.bind(&OnClosed);
-    std::string msg("wopappa");
-    session->send(msg.data(), msg.size());
+    std::string welcome_msg = "Welcome you, buddy!";
+    session->send(welcome_msg.c_str(), welcome_msg.size());
+    sTalkCnt[session.get()] = 0;
 }
 
-void TestCase_Asio_Tcp_Client_Async()
+void TestCase_Asio_Tcp_Server_Async()
 {
     _AUTO_FUNC_TRACK_
     auto ctx = CreateAsioContext();
-    auto client = std::make_unique<TcpClient>(ctx);
-    client->conn_signal.bind(&OnConnected);
-    client->connect("127.0.0.1", 1102);
+    auto server = std::make_unique<TcpServer>(ctx, 1102);
+    server->conn_signal.bind(&OnConnected);
     RunAsioContext(ctx);
-    client = nullptr;
+    server = nullptr;
     DestroyAsioContext(ctx);
 }
 
-void TestCase_Asio_Tcp_Client_Sync()
+void TestCase_Asio_Tcp_Server()
 {
     _AUTO_FUNC_TRACK_
-    auto ctx = CreateAsioContext();
-    auto client = std::make_unique<TcpClient>(ctx);
-    client->conn_signal.bind(&OnConnected);
-    auto session = client->syncConnect("127.0.0.1", 1102);
-    auto len = session->syncRead();
-    auto tuple = session->getRcvBuffer();
-    std::string rcv_msg = std::get<0>(tuple);
-    spdlog::trace("Rcv msg:{}", rcv_msg);
-    session = nullptr;
-    //RunAsioContext(ctx);
-    client = nullptr;
-    DestroyAsioContext(ctx);
-}
-
-void TestCase_Asio_Tcp_Client()
-{
-    _AUTO_FUNC_TRACK_
-    TestCase_Asio_Tcp_Client_Async();
-    TestCase_Asio_Tcp_Client_Sync();
+    TestCase_Asio_Tcp_Server_Async();
 }
