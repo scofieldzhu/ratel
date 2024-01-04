@@ -30,6 +30,7 @@
 #include <boost/asio.hpp>
 #include <boost/bind/bind.hpp>
 #include "spdlog/spdlog.h"
+#include "ratel/basic/dbg_tracker.h"
 
 namespace baip = boost::asio::ip;
 using IoContext = boost::asio::io_context;
@@ -55,9 +56,7 @@ struct TcpSession::Impl
     }
 
     ~Impl()
-    {
-        if(socket.is_open())
-            socket.close();
+    {        
     }
 
     IoContext* getIoContext()
@@ -79,11 +78,11 @@ struct TcpSession::Impl
         read_bytes_size = len;
         if(!ec){ //no error
             self->rcv_signal.invoke(self.get(), read_buf, len);
-            if(!getIoContext()->stopped()) //trigger next read if not stopped            
+            if(!getIoContext()->stopped() && socket.is_open()) //trigger next read if not stopped            
                 postNextRead();            
         }else if(ec == boost::asio::error::eof) {
             // ther other party close connection!
-            self->close_signal.invoke(self.get(), ec.value());
+            self->close_signal.invoke(self.get(), false);
         }else{
             //other error occur
             auto msg = ec.message();
@@ -107,7 +106,7 @@ struct TcpSession::Impl
             self->sent_signal.invoke(self.get(), len);
         }else if(ec == boost::asio::error::eof){
             // ther other party close connection!
-            self->close_signal.invoke(self.get(), ec.value());
+            self->close_signal.invoke(self.get(), false);
         }else{
             //other error occur
             auto msg = ec.message();
@@ -159,6 +158,8 @@ TcpSession::TcpSession(ASIO_CTX ctx, bool asyn_mode)
 
 TcpSession::~TcpSession()
 {
+    _AUTO_FUNC_TRACK_
+    close();
 }
 
 TcpSessionPtr TcpSession::Create(ASIO_CTX ctx, bool asyn_mode)
@@ -183,6 +184,10 @@ int TcpSession::send(const Byte* data, std::size_t size)
         spdlog::error("Empty data or too large size:{}", size);
         return 1;
     }
+    if(!isOpened()){
+        spdlog::error("Not opened yet!");
+        return 0;
+    }
     memcpy(impl_->write_buf, data, size);
     impl_->write_bytes_size = size;
     impl_->postNextWrite();
@@ -197,6 +202,10 @@ std::size_t TcpSession::syncSend(const Byte* data, std::size_t size, std::string
     }
     if(data == nullptr || size == 0){
         spdlog::error("Empty data passed");
+        return 0;
+    }
+    if(!isOpened()){
+        spdlog::error("Not opened yet!");
         return 0;
     }
     return impl_->syncSend(data, size, detail_err);
@@ -224,9 +233,32 @@ bool TcpSession::asynMode() const
 
 std::size_t TcpSession::syncRead(std::string* detail_err)
 {
-    if(impl_->async_mode)
+    if(!impl_->async_mode){
+        if(!isOpened()){
+            spdlog::error("Not opened yet!");
+            return 0;
+        }
         return impl_->syncRead(detail_err);
+    }
     return 0; // not in synchorous mode!
+}
+
+ASIO_CTX TcpSession::context()
+{
+    return impl_->getIoContext();
+}
+
+bool TcpSession::isOpened() const
+{
+    return impl_->socket.is_open();
+}
+
+void TcpSession::close()
+{
+    if(impl_->socket.is_open()){
+        impl_->socket.close();
+        close_signal.invoke(this, true);
+    }
 }
 
 RATEL_NAMESPACE_END

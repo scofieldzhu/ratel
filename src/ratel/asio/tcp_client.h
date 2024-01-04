@@ -43,8 +43,6 @@ public:
     //async connect method
     void connect(const std::string& server, short port);
     ASIO_CTX context();
-    // void run(); //only for async mode
-    // void exit(); //only for async mode
     TcpSessionPtr syncConnect(const std::string& server, short port, std::string* detail_err = nullptr);
     bool asyncMode()const;
     TcpClient(ASIO_CTX context, bool async_mode);

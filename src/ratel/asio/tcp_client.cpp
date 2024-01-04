@@ -66,6 +66,7 @@ struct TcpClient::Impl
     void onConnect(TcpSessionPtr new_session, const boost::system::error_code& error) 
     {
         if(!error) {
+            new_session->start(); //avoid io_context exit for no job!
             owner->conn_signal.invoke(new_session, "no error");
         }else{
             spdlog::error("Connect failed, error:{}", error.message());
@@ -87,7 +88,6 @@ struct TcpClient::Impl
         }
         if(detail_err)
             *detail_err = "no error";
-        new_session->start(); //avoid reference count to zero
         return new_session;        
     }
 };
@@ -112,18 +112,6 @@ ASIO_CTX TcpClient::context()
 {
     return impl_->async_mode ? &impl_->io_context : nullptr;
 }
-
-// void TcpClient::run()
-// {
-//     if(impl_->async_mode)
-//         impl_->io_context.run();
-// }
-
-// void TcpClient::exit()
-// {
-//     if(impl_->async_mode)
-//         impl_->io_context.stop();
-// }
 
 TcpSessionPtr TcpClient::syncConnect(const std::string &server, short port, std::string* detail_err)
 {

@@ -31,7 +31,9 @@
 #include "test_directed_graph.h"
 #include "test_notifier.h"
 #include "test_geometry.h"
-#include "test_asio.h"
+#include "test_asio_timer.h"
+#include "test_asio_tcp_client.h"
+#include "test_asio_tcp_server.h"
 #include "ratel/basic/dbg_tracker.h"
 
 int main()
@@ -42,6 +44,7 @@ int main()
 	//TestCase_DirectedGraph();
 	//TestCase_Notifier();
 	//TestCase_Geometry();
-	TestCase_Asio();
+	//TestCase_Asio_Timer();
+	TestCase_Asio_Tcp_Client();
 	return 0;
 }

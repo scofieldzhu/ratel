@@ -34,7 +34,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 else()
 	set(deplibs spdlog)
 endif()
-target_link_libraries(${proj_name} PRIVATE ${deplibs} Boost::boost Boost::system)
+target_link_libraries(${proj_name} PRIVATE ${deplibs} ratel.basic Boost::boost Boost::system)
 
 # if(WIN32)
 # 	set_target_properties(${PROJECT_NAME} PROPERTIES
