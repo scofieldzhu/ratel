@@ -46,21 +46,32 @@ void Timeout(Timer* t, int)
         t->stop();
 }
 
+void TestCase_SyncOneShot()
+{
+    _AUTO_FUNC_TRACK_
+    auto ctx =  CreateAsioContext();
+    auto timer = std::make_unique<Timer>(ctx);
+    timer->synOneShot(5000ms);
+    timer = nullptr;
+    DestroyAsioContext(ctx);
+}
+
 void TestCase_Timer_Loop()
 {
     _AUTO_FUNC_TRACK_
-    auto context = CreateAsioContext();
-    assert(context);
-    auto timer = std::make_unique<Timer>(context, true);
+    auto ctx =  CreateAsioContext();
+    auto timer = std::make_unique<Timer>(ctx);
     sTimeCount = 0;
     timer->timeout_signal.bind(&Timeout);
     timer->start(500ms);
-    RunAsioContext(context);
-    //DestroyAsioContext(context);
+    RunAsioContext(ctx);
+    timer = nullptr;
+    DestroyAsioContext(ctx);
 }
 
 void TestCase_Asio()
 {
     _AUTO_FUNC_TRACK_
     TestCase_Timer_Loop();
+    TestCase_SyncOneShot();
 }

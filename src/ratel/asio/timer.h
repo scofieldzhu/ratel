@@ -44,10 +44,9 @@ public:
     std::chrono::milliseconds interval()const;
     bool isStarted()const;
     void stop();    
-    void synSingleShot();
+    void synOneShot(std::chrono::milliseconds milsec);
     ASIO_CTX context();
-    bool asynMode()const;
-    Timer(ASIO_CTX ctx, bool asyn_mode);
+    Timer(ASIO_CTX ctx);
     ~Timer();
 
 private:

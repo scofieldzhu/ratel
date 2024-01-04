@@ -40,14 +40,12 @@ struct Timer::Impl
     IoContext& io_context;
     std::chrono::milliseconds interval{0};
     TimerType timer;
-    bool asyn_mode;
     bool started = false;
     Timer* owner = nullptr;
 
-    Impl(ASIO_CTX ctx, bool m)
+    Impl(ASIO_CTX ctx)
         :io_context(*reinterpret_cast<IoContext*>(ctx)),
-        timer(io_context), //initialize sequence decided by variable declaration position.
-        asyn_mode(m)
+        timer(io_context) //initialize sequence decided by variable declaration position.
     {
     }
 
@@ -65,8 +63,8 @@ struct Timer::Impl
     }
 };
 
-Timer::Timer(ASIO_CTX ctx, bool asyn_mode)
-    :impl_(new Impl(ctx, asyn_mode))
+Timer::Timer(ASIO_CTX ctx)
+    :impl_(new Impl(ctx))
 {
     impl_->owner = this;
 }
@@ -101,6 +99,12 @@ bool Timer::isStarted() const
 void Timer::stop()
 {
     impl_->started = false;
+}
+
+void Timer::synOneShot(std::chrono::milliseconds milsec)
+{
+    TimerType t(impl_->io_context, milsec);
+    t.wait();
 }
 
 RATEL_NAMESPACE_END
