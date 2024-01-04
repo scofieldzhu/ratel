@@ -3,7 +3,7 @@
  *  for for those c++ developers pursuing fast-developement.
  *  
  *  File: tcp_client.h  
- *  Copyright (c) 2023-2024 scofieldzhu
+ *  Copyright (c) 2024-2024 scofieldzhu
  *  
  *  MIT License
  *  
@@ -40,14 +40,10 @@ class RATEL_ASIO_API TcpClient final
 public:    
     using ConnectSignal = Notifier<TcpSessionPtr, std::string>;
     ConnectSignal conn_signal;
-    //async connect method
     void connect(const std::string& server, short port);
     ASIO_CTX context();
-    // void run(); //only for async mode
-    // void exit(); //only for async mode
     TcpSessionPtr syncConnect(const std::string& server, short port, std::string* detail_err = nullptr);
-    bool asyncMode()const;
-    TcpClient(ASIO_CTX context, bool async_mode);
+    TcpClient(ASIO_CTX context);
     ~TcpClient();
 
 private:

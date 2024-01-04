@@ -2,7 +2,7 @@
  *  Ratel is a application framework, which provides some convenient librarys
  *  for for those c++ developers pursuing fast-developement.
  *  
- *  File: time_util.cpp 
+ *  File: test_asio_timer.cpp 
  *  Copyright (c) 2024-2024 scofieldzhu
  *  
  *  MIT License
@@ -26,13 +26,12 @@
  *  SOFTWARE.
  */
 
-#include "time_util.h"
 /*
  *  Ratel is a application framework, which provides some convenient librarys
  *  for for those c++ developers pursuing fast-developement.
  *
- *  File: time_util.cpp
- *  Copyright (c) 2023-2023 scofieldzhu
+ *  File: test_asio.cpp
+ *  Copyright (c) 2024-2024 scofieldzhu
  *
  *  MIT License
  *
@@ -54,31 +53,49 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *  SOFTWARE.
  */
-#include "time_util.h"
+#include "test_asio_timer.h"
+#include "ratel/asio/timer.h"
+#include "ratel/asio/context_driver.h"
+#include "ratel/basic/dbg_tracker.h"
+#include "spdlog/spdlog.h"
+using namespace ratel;
+using namespace std::chrono_literals;
 
-RATEL_NAMESPACE_BEGIN
+int sTimeCount = 0;
 
-TimeTracker::TimeTracker(bool auto_start)
-    :auto_start_(auto_start)
+void Timeout(Timer* t, int)
 {
-    if(auto_start)
-        restart();
+    spdlog::trace("Timeout... {}", sTimeCount++);
+    if(sTimeCount == 20)
+        t->stop();
 }
 
-TimeTracker::~TimeTracker()
+void TestCase_SyncOneShot()
 {
+    _AUTO_FUNC_TRACK_
+    auto ctx =  CreateAsioContext();
+    auto timer = std::make_unique<Timer>(ctx);
+    timer->synOneShot(2000ms);
+    timer = nullptr;
+    DestroyAsioContext(ctx);
 }
 
-void TimeTracker::restart()
+void TestCase_Timer_Loop()
 {
-    start_time_ = std::chrono::high_resolution_clock::now();
+    _AUTO_FUNC_TRACK_
+    auto ctx =  CreateAsioContext();
+    auto timer = std::make_unique<Timer>(ctx);
+    sTimeCount = 0;
+    timer->timeout_signal.bind(&Timeout);
+    timer->start(500ms);
+    RunAsioContext(ctx);
+    timer = nullptr;
+    DestroyAsioContext(ctx);
 }
 
-double TimeTracker::elapsed()
+void TestCase_Asio_Timer()
 {
-    auto end_time = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double, std::milli> diff = end_time - start_time_;
-    return diff.count();
+    _AUTO_FUNC_TRACK_
+    TestCase_Timer_Loop();
+    TestCase_SyncOneShot();
 }
-
-RATEL_NAMESPACE_END

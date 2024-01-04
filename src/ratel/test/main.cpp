@@ -3,7 +3,7 @@
  *  for for those c++ developers pursuing fast-developement.
  *  
  *  File: main.cpp 
- *  Copyright (c) 2023-2024 scofieldzhu
+ *  Copyright (c) 2024-2024 scofieldzhu
  *  
  *  MIT License
  *  
@@ -26,25 +26,26 @@
  *  SOFTWARE.
  */
 
-#include <iostream>
 #include "test_logger.h"
 #include "test_string_proxy.h"
 #include "test_directed_graph.h"
 #include "test_notifier.h"
 #include "test_geometry.h"
-#include "ratel/basic/time_util.h"
-using namespace std;
+#include "test_asio_timer.h"
+#include "test_asio_tcp_client.h"
+#include "test_asio_tcp_server.h"
+#include "ratel/basic/dbg_tracker.h"
 
 int main()
 {
-	ratel::TimeTracker tt;
-	cout << "Hello world!" << endl;
 	TestCase_SPDLogger();
+	_AUTO_FUNC_TRACK_
 	//TestCase_StringProxy();
 	//TestCase_DirectedGraph();
 	//TestCase_Notifier();
-	TestCase_Geometry();
-	cout << endl << "elapsed:" << tt.elapsed() << endl;
-	getchar();
+	//TestCase_Geometry();
+	//TestCase_Asio_Timer();
+	//TestCase_Asio_Tcp_Client();
+	TestCase_Asio_Tcp_Server();
 	return 0;
 }

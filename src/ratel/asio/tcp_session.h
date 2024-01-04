@@ -3,7 +3,7 @@
  *  for for those c++ developers pursuing fast-developement.
  *  
  *  File: tcp_session.h  
- *  Copyright (c) 2023-2024 scofieldzhu
+ *  Copyright (c) 2024-2024 scofieldzhu
  *  
  *  MIT License
  *  
@@ -44,15 +44,17 @@ public:
     SentSignal sent_signal;
     using RcvSignal = Notifier<TcpSession*, ConsBytePtr, std::size_t>;
     RcvSignal rcv_signal;
-    using CloseSignal = Notifier<TcpSession*, int>;
+    using CloseSignal = Notifier<TcpSession*, bool>;
     CloseSignal close_signal;
-    static TcpSessionPtr Create(ASIO_CTX, bool asyn_mode);    
+    static TcpSessionPtr Create(ASIO_CTX);    
     int send(const Byte* data, std::size_t size);
     std::size_t syncSend(const Byte* data, std::size_t size, std::string* detail_err = nullptr);
     std::size_t syncRead(std::string* detail_err = nullptr);
     static std::size_t GetMaxSendRcvSize();
     std::tuple<const Byte*, std::size_t> getRcvBuffer();
-    bool asynMode()const;
+    void close();
+    bool isOpened()const;
+    ASIO_CTX context();
     ~TcpSession();
 
 private:
@@ -60,7 +62,7 @@ private:
     friend class TcpClient;
     void start();
     SCK_HANDLE socket();
-    TcpSession(ASIO_CTX ctx, bool asyn_mode);
+    TcpSession(ASIO_CTX ctx);
     struct Impl;
     std::unique_ptr<Impl> impl_;
 };

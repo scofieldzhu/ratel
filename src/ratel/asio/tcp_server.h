@@ -3,7 +3,7 @@
  *  for for those c++ developers pursuing fast-developement.
  *  
  *  File: tcp_server.h  
- *  Copyright (c) 2023-2024 scofieldzhu
+ *  Copyright (c) 2024-2024 scofieldzhu
  *  
  *  MIT License
  *  
@@ -40,10 +40,7 @@ public:
     using ConnectSignal = Notifier<TcpSessionPtr>;
     ConnectSignal conn_signal;
     ASIO_CTX context();
-    // void run();
-    // void exit();
-    bool asynMode()const;
-    TcpServer(ASIO_CTX ctx, short port, bool async_mode);
+    TcpServer(ASIO_CTX ctx, short port);
     ~TcpServer();
 
 private:

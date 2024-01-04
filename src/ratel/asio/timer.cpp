@@ -3,7 +3,7 @@
  *  for for those c++ developers pursuing fast-developement.
  *  
  *  File: timer.cpp 
- *  Copyright (c) 2023-2024 scofieldzhu
+ *  Copyright (c) 2024-2024 scofieldzhu
  *  
  *  MIT License
  *  
@@ -37,18 +37,15 @@ RATEL_NAMESPACE_BEGIN
 
 struct Timer::Impl 
 {
-    bool single_shot = false;
     IoContext& io_context;
     std::chrono::milliseconds interval{0};
-    TimerType timer_;
-    bool asyn_mode;
-    bool started_ = false;
+    TimerType timer;
+    bool started = false;
     Timer* owner = nullptr;
 
-    Impl(ASIO_CTX ctx, bool m)
+    Impl(ASIO_CTX ctx)
         :io_context(*reinterpret_cast<IoContext*>(ctx)),
-        timer_(io_context), //initialize sequence decided by variable declaration position.
-        asyn_mode(m)
+        timer(io_context) //initialize sequence decided by variable declaration position.
     {
     }
 
@@ -58,18 +55,16 @@ struct Timer::Impl
 
     void onTimeOut(const boost::system::error_code& ec)
     {
-        owner->timeout_signal.invoke(ec.value());
+        owner->timeout_signal.invoke(owner, ec.value());
         if(!owner->isStarted()) //stop at once
             return;
-        if(owner->singleShot()) //just once
-            return;
-        timer_.expires_at(timer_.expiry() + interval);
-        timer_.async_wait(std::bind(&Timer::Impl::onTimeOut, this, std::placeholders::_1));
+        timer.expires_at(timer.expiry() + interval);
+        timer.async_wait(std::bind(&Timer::Impl::onTimeOut, this, std::placeholders::_1));
     }
 };
 
-Timer::Timer(ASIO_CTX ctx, bool asyn_mode)
-    :impl_(new Impl(ctx, asyn_mode))
+Timer::Timer(ASIO_CTX ctx)
+    :impl_(new Impl(ctx))
 {
     impl_->owner = this;
 }
@@ -78,17 +73,16 @@ Timer::~Timer()
 {
 }
 
-bool Timer::start(std::chrono::milliseconds interval, bool single_shot)
+bool Timer::start(std::chrono::milliseconds interval)
 {
     if(isStarted()){
         spdlog::error("Timer is already started, please stop it!");
         return false;
     }
     impl_->interval = interval;
-    impl_->single_shot = single_shot;
-    impl_->started_ = true;
-    impl_->timer_.expires_at(std::chrono::steady_clock::now() + impl_->interval);
-    impl_->timer_.async_wait(std::bind(&Timer::Impl::onTimeOut, impl_.get(), std::placeholders::_1));
+    impl_->started = true;
+    impl_->timer.expires_at(std::chrono::steady_clock::now() + impl_->interval);
+    impl_->timer.async_wait(std::bind(&Timer::Impl::onTimeOut, impl_.get(), std::placeholders::_1));
     return true;
 }
 
@@ -97,19 +91,20 @@ std::chrono::milliseconds Timer::interval() const
     return impl_->interval;
 }
 
-bool Timer::singleShot() const
-{
-    return impl_->single_shot;
-}
-
 bool Timer::isStarted() const
 {
-    return impl_->started_;
+    return impl_->started;
 }
 
 void Timer::stop()
 {
-    impl_->started_ = false;
+    impl_->started = false;
+}
+
+void Timer::synOneShot(std::chrono::milliseconds milsec)
+{
+    TimerType t(impl_->io_context, milsec);
+    t.wait();
 }
 
 RATEL_NAMESPACE_END

@@ -3,7 +3,7 @@
  *  for for those c++ developers pursuing fast-developement.
  *  
  *  File: timer.h  
- *  Copyright (c) 2023-2024 scofieldzhu
+ *  Copyright (c) 2024-2024 scofieldzhu
  *  
  *  MIT License
  *  
@@ -38,17 +38,15 @@ RATEL_NAMESPACE_BEGIN
 class RATEL_ASIO_API Timer final
 {
 public:
-    using TimeoutSignal = Notifier<int>;
+    using TimeoutSignal = Notifier<Timer*, int>;
     TimeoutSignal timeout_signal;
-    bool start(std::chrono::milliseconds interval, bool single_shot);
+    bool start(std::chrono::milliseconds interval);
     std::chrono::milliseconds interval()const;
-    bool singleShot()const;
     bool isStarted()const;
     void stop();    
-    void synSingleShot();
+    void synOneShot(std::chrono::milliseconds milsec);
     ASIO_CTX context();
-    bool asynMode()const;
-    Timer(ASIO_CTX ctx, bool asyn_mode);
+    Timer(ASIO_CTX ctx);
     ~Timer();
 
 private:
