@@ -2,7 +2,7 @@
  *  Ratel is a application framework, which provides some convenient librarys
  *  for for those c++ developers pursuing fast-developement.
  *  
- *  File: test_asio_tcp_client.h  
+ *  File: test_asio_udp.h  
  *  Copyright (c) 2024-2024 scofieldzhu
  *  
  *  MIT License
@@ -28,4 +28,4 @@
 
 #pragma once
 
-void TestCase_Asio_Tcp_Client();
+void TestCase_Asio_Udp();

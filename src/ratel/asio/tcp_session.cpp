@@ -37,7 +37,10 @@ using IoContext = boost::asio::io_context;
 
 RATEL_NAMESPACE_BEGIN
 
-constexpr std::size_t kMaxBufferSize = 1024;
+namespace
+{
+    constexpr std::size_t kMaxBufferSize = 1024;
+}
 
 struct TcpSession::Impl 
 {
