@@ -48,4 +48,6 @@ void Test()
 
 	DictProxy<int, float> dp;
 
+	Line2 l({1, 1}, {2, 2});
+
 }

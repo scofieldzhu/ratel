@@ -1,4 +1,3 @@
-#include "test_asio_udp.h"
 /*
  *  Ratel is a application framework, which provides some convenient librarys
  *  for for those c++ developers pursuing fast-developement.
