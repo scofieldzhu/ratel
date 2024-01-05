@@ -25,6 +25,7 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *  SOFTWARE.
  */
+
 #include "test_asio_tcp_client.h"
 #include "ratel/asio/tcp_client.h"
 #include "ratel/asio/tcp_session.h"

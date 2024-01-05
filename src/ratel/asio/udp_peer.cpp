@@ -25,6 +25,7 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *  SOFTWARE.
  */
+
 #include "udp_peer.h"
 #include <boost/asio.hpp>
 #include <boost/bind/bind.hpp>
@@ -76,7 +77,7 @@ struct UdpPeer::Impl
         read_bytes_size = bytes_transferred;
         read_buf[read_bytes_size] = 0;
         if(!error){
-            owner->rcv_signal.invoke(read_buf, read_bytes_size, remote_endpoint.address().to_string(), remote_endpoint.port());
+            owner->rcv_signal.invoke(owner, read_buf, read_bytes_size, remote_endpoint.address().to_string(), remote_endpoint.port());
             if(!getIoContext()->stopped())
                 owner->startReceive();
         }else{
@@ -155,7 +156,9 @@ size_t UdpPeer::syncSendTo(const Byte* data, std::size_t size, const std::string
 std::size_t UdpPeer::syncRecvFrom(const std::string& remote_ip, short port)
 {
     EndPoint remote_endpoint(baip::address::from_string(remote_ip), port);
-    return impl_->socket.receive_from(boost::asio::buffer(impl_->read_buf, kMaxBufferSize), remote_endpoint);
+    impl_->read_bytes_size = impl_->socket.receive_from(boost::asio::buffer(impl_->read_buf, kMaxBufferSize), remote_endpoint);
+    impl_->read_buf[impl_->read_bytes_size] = 0;
+    return impl_->read_bytes_size;
 }
 
 std::tuple<const Byte*, std::size_t> UdpPeer::getRcvBuffer()

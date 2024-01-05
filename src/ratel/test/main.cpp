@@ -34,6 +34,7 @@
 #include "test_asio_timer.h"
 #include "test_asio_tcp_client.h"
 #include "test_asio_tcp_server.h"
+#include "test_asio_udp.h"
 #include "ratel/basic/dbg_tracker.h"
 
 int main()
@@ -46,6 +47,7 @@ int main()
 	//TestCase_Geometry();
 	//TestCase_Asio_Timer();
 	//TestCase_Asio_Tcp_Client();
-	TestCase_Asio_Tcp_Server();
+	//TestCase_Asio_Tcp_Server();
+	TestCase_Asio_Udp();
 	return 0;
 }
