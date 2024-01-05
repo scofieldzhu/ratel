@@ -2,7 +2,7 @@
  *  Ratel is a application framework, which provides some convenient librarys
  *  for for those c++ developers pursuing fast-developement.
  *  
- *  File: test_asio_tcp_client.h  
+ *  File: udp_peer.h  
  *  Copyright (c) 2024-2024 scofieldzhu
  *  
  *  MIT License
@@ -26,6 +26,37 @@
  *  SOFTWARE.
  */
 
-#pragma once
+#ifndef __udp_peer_h__
+#define __udp_peer_h__
 
-void TestCase_Asio_Tcp_Client();
+#include <tuple>
+#include "ratel/asio/asio_base_type.h"
+#include "ratel/basic/notifier.hpp"
+
+RATEL_NAMESPACE_BEGIN
+
+class RATEL_ASIO_API UdpPeer final
+{
+public:
+    using RcvSignal = Notifier<ConsBytePtr, std::size_t, std::string, short>;
+    RcvSignal rcv_signal;
+    using SentSignal = Notifier<ConsBytePtr, std::size_t, std::string>;
+    SentSignal sent_signal;
+    ASIO_CTX context();
+    void startReceive();
+    int sendTo(const Byte* data, std::size_t size, const std::string& remote_ip, short port);
+    size_t syncSendTo(const Byte* data, std::size_t size, const std::string& remote_ip, short port, std::string* err = nullptr);
+    std::size_t syncRecvFrom(const std::string& remote_ip, short port);
+    std::tuple<const Byte*, std::size_t> getRcvBuffer();
+    std::tuple<std::string, short> remoteHost()const;
+    UdpPeer(ASIO_CTX ctx, short port);
+    ~UdpPeer();
+
+private:
+    struct Impl;
+    std::unique_ptr<Impl> impl_;
+};
+
+RATEL_NAMESPACE_END
+
+#endif
