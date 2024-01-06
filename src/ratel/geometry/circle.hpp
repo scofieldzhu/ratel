@@ -2,7 +2,7 @@
  *  Ratel is a application framework, which provides some convenient librarys
  *  for for those c++ developers pursuing fast-developement.
  *  
- *  File: geometry.h  
+ *  File: circle.h  
  *  Copyright (c) 2024-2024 scofieldzhu
  *  
  *  MIT License
@@ -25,40 +25,53 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *  SOFTWARE.
  */
+#ifndef __circle_hpp__
+#define __circle_hpp__
 
-#ifndef __geometry_h__
-#define __geometry_h__
-
-#include "ratel/geometry/element_proxy.hpp"
 #include "ratel/geometry/array_x.hpp"
-#include "ratel/geometry/vec_proxy.hpp"
-#include "ratel/geometry/dict_proxy.hpp"
+#include "ratel/geometry/element_proxy.hpp"
 #include "ratel/geometry/proxy_combine.hpp"
-#include "ratel/geometry/rect.hpp"
-#include "ratel/geometry/circle.hpp"
-#include "ratel/geometry/line.hpp"
-#include "ratel/geometry/geometry_export.h"
 
 RATEL_NAMESPACE_BEGIN
 
+template <typename T>
+class Circle final
+{
+public:
+    using value_type = std::enable_if_t<std::is_same_v<T, int> || std::is_same_v<T, float>, T>;
+    using point_type = ArrayX<value_type, 2>;
+    using float_proxy = ElementProxy<float>;
 
+    ByteVec serializeToBytes()const
+    {
+        ProxyCombine<point_type, float_proxy> pc;
+        pc.proxyA().mutableElement() = center_;
+        pc.proxyB().mutableElement() = radius_;
+        return pc.serializeToBytes();
+    }
 
-// using Pt2i = Vec2<int32_t>;
-// using Pt2u = Vec2<uint32_t>;
-// using Pt2f = Vec2<float>;
-// using VPPt2i = VecProxy<Pt2i>;
-// using VPPt2u = VecProxy<Pt2u>;
-// using VPPt2f = VecProxy<Pt2f>;
+    size_t loadBytes(ConsBytePtr buffer, size_t size)
+    {
+        ProxyCombine<point_type, float_proxy> pc;
+        return pc.loadBytes(buffer, size);
+    }
 
-//  using Pt3i = Vec3<int32_t>;
-// using Pt3u = Vec3<uint32_t>;
-// using Pt3f = Vec3<float>;
-// using VPPt3i = VecProxy<Pt3i>;
-// using VPPt3u = VecProxy<Pt3u>;
-// using VPPt3f = VecProxy<Pt3f>;
+    void setCenter(value_type x, value_type y){ center_ = point_type{x, y}; }
+    void setCenter(const point_type& pt){ center_ = pt; }
+    const point_type& center()const{ return center_; }
+    void setRadius(float r){ radius_ = r; }
+    auto radius()const{ return radius_; }
+
+    Circle(const point_type& pt, float r)
+        :center_(pt),
+        radius_(r)
+    {}
+
+private:
+    point_type center_{value_type(0), value_type(0)};
+    float radius_ = 0.0f;
+};
 
 RATEL_NAMESPACE_END
-
-RATEL_GEOMETRY_API void Test();
 
 #endif

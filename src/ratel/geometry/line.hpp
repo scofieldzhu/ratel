@@ -2,7 +2,7 @@
  *  Ratel is a application framework, which provides some convenient librarys
  *  for for those c++ developers pursuing fast-developement.
  *  
- *  File: geo_inst.cpp 
+ *  File: line.h  
  *  Copyright (c) 2024-2024 scofieldzhu
  *  
  *  MIT License
@@ -26,26 +26,52 @@
  *  SOFTWARE.
  */
 
-#include "geometry.h"
+#ifndef __line_hpp__
+#define __line_hpp__
 
-using namespace ratel;
+#include "ratel/geometry/point.h"
+#include "ratel/geometry/proxy_combine.hpp"
 
-void Test()
+RATEL_NAMESPACE_BEGIN
+
+template <class PointType>
+class Line 
 {
-	using Arry2f = ArrayX<float, 2>;
-	Arry2f fv2;
-	using Arry3f = ArrayX<float, 3>;
-	Arry3f fv3;
-	using Pt2f = Arry2f;
-	VecProxy<Pt2f> pt2f_vp;
-	auto byte_vec = pt2f_vp.serializeToBytes();
+public:
+    ByteVec serializeToBytes()const
+    {
+        ProxyCombine<PointType, PointType> pc;
+        pc.proxyA().mutableElement() = p1_;
+        pc.proxyB().mutableElement() = p2_;
+        return pc.serializeToBytes();
+    }
 
-	using Pt2i = ArrayX<int, 2>;
-	VecProxy<Pt2i> pt2i_vp;
+    size_t loadBytes(ConsBytePtr buffer, size_t size)
+    {
+        ProxyCombine<PointType, PointType> pc;
+        return pc.loadBytes(buffer, size);
+    }
 
-	VecProxy<int> vpi;
-	vpi.loadBytes(byte_vec.data(), byte_vec.size());
+    void setP1(const PointType& pt){ p1_ = pt; }
+    const auto& p1()const{ return p1_; }
+    void setP2(const PointType& pt){ p2_ = p2; }
+    const auto& p2()const{ return p2_; }
+    
+    Line(const PointType& p1, const PointType& p2)
+        :p1_(p1),
+        p2_(p2)
+    {}
 
-	DictProxy<int, float> dp;
+private:
+    PointType p1_;
+    PointType p2_;
+};
 
-}
+using Line2 = Line<Point2>;
+using Line2f = Line<Point2f>;
+using Line3 = Line<Point3>;
+using Line3f = Line<Point3f>;
+
+RATEL_NAMESPACE_END
+
+#endif

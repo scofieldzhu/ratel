@@ -2,7 +2,7 @@
  *  Ratel is a application framework, which provides some convenient librarys
  *  for for those c++ developers pursuing fast-developement.
  *  
- *  File: geometry.h  
+ *  File: plane.h  
  *  Copyright (c) 2024-2024 scofieldzhu
  *  
  *  MIT License
@@ -26,39 +26,35 @@
  *  SOFTWARE.
  */
 
-#ifndef __geometry_h__
-#define __geometry_h__
+#ifndef __plane_h__
+#define __plane_h__
 
-#include "ratel/geometry/element_proxy.hpp"
 #include "ratel/geometry/array_x.hpp"
-#include "ratel/geometry/vec_proxy.hpp"
-#include "ratel/geometry/dict_proxy.hpp"
-#include "ratel/geometry/proxy_combine.hpp"
-#include "ratel/geometry/rect.hpp"
-#include "ratel/geometry/circle.hpp"
-#include "ratel/geometry/line.hpp"
 #include "ratel/geometry/geometry_export.h"
+#include "ratel/geometry/proxy_combine.hpp"
 
 RATEL_NAMESPACE_BEGIN
 
+class RATEL_GEOMETRY_API Plane final
+{
+public:
+    using normal_type = ArrayX<float, 3>;
+    using normal_const_reference = const normal_type&;
+    using point_type = ArrayX<float, 3>;
+    using point_const_reference = const point_type&;
+    ByteVec serializeToBytes()const;
+    size_t loadBytes(ConsBytePtr buffer, size_t size);
+    void setNormal(normal_const_reference n){ normal_ = n; }
+    normal_const_reference normal()const{ return normal_; }
+    void setOrigin(point_const_reference o){ origin_ = o; }
+    point_const_reference origin()const{ return origin_; }
+    Plane(point_const_reference o, normal_const_reference n);
 
-
-// using Pt2i = Vec2<int32_t>;
-// using Pt2u = Vec2<uint32_t>;
-// using Pt2f = Vec2<float>;
-// using VPPt2i = VecProxy<Pt2i>;
-// using VPPt2u = VecProxy<Pt2u>;
-// using VPPt2f = VecProxy<Pt2f>;
-
-//  using Pt3i = Vec3<int32_t>;
-// using Pt3u = Vec3<uint32_t>;
-// using Pt3f = Vec3<float>;
-// using VPPt3i = VecProxy<Pt3i>;
-// using VPPt3u = VecProxy<Pt3u>;
-// using VPPt3f = VecProxy<Pt3f>;
+private:
+    point_type origin_;
+    normal_type normal_;
+};
 
 RATEL_NAMESPACE_END
-
-RATEL_GEOMETRY_API void Test();
 
 #endif
