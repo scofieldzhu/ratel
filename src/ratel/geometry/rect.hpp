@@ -72,44 +72,25 @@ public:
 		cur_buffer += kFloatSize;
         return size - left_size;
     }
+
 	void setLeftTop(const point_type& pt){ lt_ = pt; }
 	const point_type& lt()const{ return lt_; }
 	void setSize(const size_type& s){ size_ = s; }
 	const auto& size()const{ return size_; }
 	void setAngle(float a){ angle_ = a; }
 	auto angle()const{ return angle_; }
-	Rect& operator=(const Rect& other)
-	{
-		lt_ = other.lt_;
-		size_ = other.size_;
-		angle_ = other.angle_;
-		return *this;
-	}
-	Rect& operator=(Rect&& other)
-	{
-		lt_ = std::move(other.lt_);
-		size_ = std::move(other.size_);
-		angle_ = std::move(other.angle_);
-		return *this;
-	}
-	Rect(){}
+
 	Rect(const point_type& pt, const size_type& size, float a)
 		:lt_(pt),
 		size_(size),
-		angle_(a){}
+		angle_(a)
+	{}
+
 	Rect(value_type x, value_type y, value_type w, value_type h, float a)
 		:lt_({x, y}),
 		size_({w, h}),
-		angle_(a){}
-	Rect(const Rect& rt)
-		:lt_(rt.lt_),
-		size_(rt.size_),
-		angle_(rt.angle_){}
-	Rect(Rect&& rt)
-		:lt_(std::move(rt.lt_)),
-		size_(std::move(rt.size_)),
-		angle_(std::move(rt.angle_)){}
-	~Rect() = default;
+		angle_(a)
+	{}
 
 private:
 	point_type lt_{value_type(0), value_type(0)};

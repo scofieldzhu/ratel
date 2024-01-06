@@ -42,7 +42,7 @@ template <typename T, size_t S>
 class ArrayX final
 {
 public:
-    static_assert(S);
+    static_assert(S, "Size must not be zero!");
     using value_type = std::enable_if_t<std::is_arithmetic_v<T>, T>;    
     using reference = value_type&;
     using const_reference = const value_type&;
@@ -55,7 +55,7 @@ public:
     ByteVec serializeToBytes()const
     {
         ByteVec bv(ByteSize, 0);
-        memcpy(bv.data(), (void*)&arry_, ByteSize);
+        memcpy(bv.data(), (void*)&this->arry, ByteSize);
         return bv;
     }
 
@@ -63,7 +63,7 @@ public:
     {
         if(buffer == nullptr || size < ByteSize)
             return 0;
-        memcpy((void*)&arry_, buffer, ByteSize);
+        memcpy((void*)&this->arry, buffer, ByteSize);
         return ByteSize;
     }
 
@@ -71,7 +71,7 @@ public:
     {
         if(idx >= N)
             throw std::out_of_range(std::format("Invalid index value:{}, array size:{}!", idx, N));
-        return arry_[idx];
+        return this->arry[idx];
     }
 
     const_reference operator[](int idx)const
@@ -81,73 +81,21 @@ public:
 
     std::array<value_type, N> toArray()const
     {
-        return std::to_array(arry_);
+        return std::to_array(this->arry);
     }
 
     pointer data()
     {
-        return arry_;
+        return this->arry;
     }
 
     const_pointer data()const
     {
-        return arry_;
+        return this->arry;
     }
 
-    ArrayX& operator=(array_type a)
-    {
-        memcpy(arry_, a, ByteSize);
-        return *this;
-    }
-
-    ArrayX& operator=(std::initializer_list<value_type> il)
-    {
-        for(auto i = 0; i < il.size(); ++i)
-            arry_[i] = *(il.begin() + i);
-        return *this;
-    }
-
-    ArrayX& operator=(const ArrayX& other)
-    {
-        if(this != std::addressof(other))
-            memcpy(arry_, other.arry_, ByteSize);
-        return *this;
-    }
-
-    ArrayX& operator=(ArrayX&& other)
-    {
-        arry_ = std::move(other.arry_);
-        return *this;
-    }
-
-    ArrayX()
-    {}
-
-    ArrayX(value_type (&d)[N])
-    {
-        memcpy(arry_, d, ByteSize);
-    }
-
-    ArrayX(std::initializer_list<value_type> il)
-    {
-        *this = il;
-    }
-
-    ArrayX(const ArrayX& other)
-    {
-        if(this != std::addressof(other))
-            memcpy(arry_, other.arry_, ByteSize);
-    }
-
-    ArrayX(ArrayX&& other)
-    {
-        *this = other;
-    }
-
-    ~ArrayX() = default;
-
-private:
-    array_type arry_ = {value_type(0)};
+    array_type arry = {value_type(0)};
+    
 };
 
 RATEL_NAMESPACE_END

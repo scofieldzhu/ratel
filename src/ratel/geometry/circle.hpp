@@ -62,35 +62,10 @@ public:
     void setRadius(float r){ radius_ = r; }
     auto radius()const{ return radius_; }
 
-    Circle& operator=(const Circle& other)
-    {
-        if(this != &other){
-            center_ = other.center_;
-            radius_ = other.radius_;
-        }
-        return *this;
-    }
-
-    Circle& operator=(const Circle&& other)
-    {
-        center_ = std::move(other.center_);
-        radius_ = std::move(other.radius_);
-        return *this;
-    }
-
     Circle(const point_type& pt, float r)
         :center_(pt),
-        radius_(r){}
-
-    Circle(const Circle& other)
-        :center_(other.center_),
-        radius_(other.radius_){}
-
-    Circle(Circle&& other)
-        :center_(std::move(other.center_)),
-        radius_(std::move(radius_)){}
-        
-    ~Circle() = default;
+        radius_(r)
+    {}
 
 private:
     point_type center_{value_type(0), value_type(0)};

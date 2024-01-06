@@ -2,7 +2,7 @@
  *  Ratel is a application framework, which provides some convenient librarys
  *  for for those c++ developers pursuing fast-developement.
  *  
- *  File: line.h  
+ *  File: plane.cpp 
  *  Copyright (c) 2024-2024 scofieldzhu
  *  
  *  MIT License
@@ -26,52 +26,27 @@
  *  SOFTWARE.
  */
 
-#ifndef __line_hpp__
-#define __line_hpp__
-
-#include "ratel/geometry/point.h"
-#include "ratel/geometry/proxy_combine.hpp"
+#include "plane.h"
 
 RATEL_NAMESPACE_BEGIN
-
-template <class PointType>
-class Line 
-{
-public:
-    ByteVec serializeToBytes()const
-    {
-        ProxyCombine<PointType, PointType> pc;
-        pc.proxyA().mutableElement() = p1_;
-        pc.proxyB().mutableElement() = p2_;
-        return pc.serializeToBytes();
-    }
-
-    size_t loadBytes(ConsBytePtr buffer, size_t size)
-    {
-        ProxyCombine<PointType, PointType> pc;
-        return pc.loadBytes(buffer, size);
-    }
-
-    void setP1(const PointType& pt){ p1_ = pt; }
-    const auto& p1()const{ return p1_; }
-    void setP2(const PointType& pt){ p2_ = p2; }
-    const auto& p2()const{ return p2_; }
     
-    Line(const PointType& p1, const PointType& p2)
-        :p1_(p1),
-        p2_(p2)
-    {}
+Plane::Plane(point_const_reference o, normal_const_reference n)
+    :origin_(o),
+    normal_(n)
+{}
 
-private:
-    PointType p1_;
-    PointType p2_;
-};
+ByteVec Plane::serializeToBytes()const
+{
+    ProxyCombine<point_type, normal_type> pc;
+    pc.proxyA() = origin_;
+    pc.proxyB() = normal_;
+    return pc.serializeToBytes();
+}
 
-using Line2 = Line<Point2>;
-using Line2f = Line<Point2f>;
-using Line3 = Line<Point3>;
-using Line3f = Line<Point3f>;
+size_t Plane::loadBytes(ConsBytePtr buffer, size_t size)
+{
+    ProxyCombine<point_type, normal_type> pc;
+    return pc.loadBytes(buffer, size);
+}
 
 RATEL_NAMESPACE_END
-
-#endif
