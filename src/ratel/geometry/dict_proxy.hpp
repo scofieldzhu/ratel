@@ -148,10 +148,6 @@ public:
         :map_(m)
     {}
 
-    DictProxy(map_type&& m)
-        :map_(std::move(m))
-    {}
-
     ~DictProxy()
     {}
 

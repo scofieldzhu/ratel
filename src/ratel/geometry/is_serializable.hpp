@@ -35,12 +35,17 @@
 RATEL_NAMESPACE_BEGIN
 
 template <typename T, typename B, typename CB>
-concept IsSerializable = requires(T t1, T t2, const T t3, B b, CB cb, size_t s)
+concept IsSerializable = requires(T t1, const T t2, CB cb, size_t s)
+{
+    {t2.serializeToBytes()}->std::same_as<ByteVec>;
+    {t1.loadBytes(cb, s)}->std::same_as<size_t>;
+};
+
+template <typename T, typename B, typename CB>
+concept VecMemberSerializable = IsSerializable<T, B, CB> && requires(T t1, T t2)
 {
     T();
     {t1 = std::move(t2)};
-    {t3.serializeToBytes()}->std::same_as<ByteVec>;
-    {t1.loadBytes(cb, s)}->std::same_as<size_t>;
 };
 
 RATEL_NAMESPACE_END
