@@ -2,8 +2,8 @@
  *  Ratel is a application framework, which provides some convenient librarys
  *  for for those c++ developers pursuing fast-developement.
  *  
- *  File: is_serializable_type.h  
- *  Copyright (c) 2023-2023 scofieldzhu
+ *  File: dynamic_library_loader.h  
+ *  Copyright (c) 2024-2024 scofieldzhu
  *  
  *  MIT License
  *  
@@ -26,26 +26,45 @@
  *  SOFTWARE.
  */
 
-#ifndef __is_serializable_hpp__
-#define __is_serializable_hpp__
+#ifndef __dynamic_library_loader_h__
+#define __dynamic_library_loader_h__
 
-#include <concepts>
-#include "ratel/basic/base_type.h"
+#include <string>
+#include "ratel/system/ratel_system_export.h"
+
+#ifdef PLATFORM_WIN
+    #include "ratel/basic/win_header.h"
+    using DLL_HANDLE = HMODULE;
+#elif PLATFORM_LINUX
+    #include <dlfcn.h>
+    using DLL_HANDLE = void*;
+#else 
+    static_assert(false, "Error: DynamicLibraryLoader implementation not found in unsupport platform!");
+#endif
 
 RATEL_NAMESPACE_BEGIN
 
-template <typename T, typename B, typename CB>
-concept IsSerializable = requires(T t1, const T t2, CB cb, size_t s)
+class RATEL_SYSTEM_API DynamicLibraryLoader 
 {
-    {t2.serializeToBytes()}->std::same_as<ByteVec>;
-    {t1.loadBytes(cb, s)}->std::same_as<size_t>;
-};
+public:
+    bool load(const std::string& filename, std::string* err_detail = nullptr);
+    template <typename ExportFunc>
+    ExportFunc getFunction(const std::string& func_name)const
+    {
+        #ifdef PLATFORM_WIN
+            return reinterpret_cast<ExportFunc>(::GetProcAddress(handle_, func_name.c_str()));
+        #elif PLATFORM_LINUX
+            return reinterpret_cast<ExportFunc>(dlsym(handle_, func_name.c_str());
+        #endif
+        return nullptr;
+    }
+    bool isLoaded()const;
+    bool unload(std::string* err_detail = nullptr);
+    DynamicLibraryLoader();
+    ~DynamicLibraryLoader();
 
-template <typename T, typename B, typename CB>
-concept VecMemberSerializable = IsSerializable<T, B, CB> && requires(T t1, T t2)
-{
-    T();
-    {t1 = std::move(t2)};
+private:        
+    DLL_HANDLE handle_ = nullptr;
 };
 
 RATEL_NAMESPACE_END

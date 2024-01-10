@@ -37,7 +37,7 @@
 RATEL_NAMESPACE_BEGIN
 
 template <class E>
-concept VecProxyMember = IsSerializable<E, BytePtr, ConsBytePtr> || std::is_arithmetic_v<E>;
+concept VecProxyMember = VecMemberSerializable<E, BytePtr, ConsBytePtr> || std::is_arithmetic_v<E>;
 
 template <class E>
 class VecProxy
@@ -116,10 +116,6 @@ public:
 
     VecProxy(list_type& list)
         :list_(list)
-    {}
-
-    VecProxy(list_type&& list)
-        :list_(std::move(list))
     {}
 
     ~VecProxy()

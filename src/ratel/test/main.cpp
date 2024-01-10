@@ -35,6 +35,7 @@
 #include "test_asio_tcp_client.h"
 #include "test_asio_tcp_server.h"
 #include "test_asio_udp.h"
+#include "test_dll_loader.h"
 #include "ratel/basic/dbg_tracker.h"
 
 int main()
@@ -48,6 +49,7 @@ int main()
 	//TestCase_Asio_Timer();
 	//TestCase_Asio_Tcp_Client();
 	//TestCase_Asio_Tcp_Server();
-	TestCase_Asio_Udp();
+	//TestCase_Asio_Udp();
+	TestCase_Dll_Loader();
 	return 0;
 }

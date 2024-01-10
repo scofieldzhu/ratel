@@ -2,8 +2,8 @@
  *  Ratel is a application framework, which provides some convenient librarys
  *  for for those c++ developers pursuing fast-developement.
  *  
- *  File: is_serializable_type.h  
- *  Copyright (c) 2023-2023 scofieldzhu
+ *  File: defer_exec.h  
+ *  Copyright (c) 2024-2024 scofieldzhu
  *  
  *  MIT License
  *  
@@ -26,26 +26,30 @@
  *  SOFTWARE.
  */
 
-#ifndef __is_serializable_hpp__
-#define __is_serializable_hpp__
+#ifndef __defer_exec_hpp__
+#define __defer_exec_hpp__
 
-#include <concepts>
-#include "ratel/basic/base_type.h"
+#include "ratel_nsp.h"
 
 RATEL_NAMESPACE_BEGIN
 
-template <typename T, typename B, typename CB>
-concept IsSerializable = requires(T t1, const T t2, CB cb, size_t s)
+template <class Functor>
+class DeferExec 
 {
-    {t2.serializeToBytes()}->std::same_as<ByteVec>;
-    {t1.loadBytes(cb, s)}->std::same_as<size_t>;
-};
+public:
+    DeferExec(Functor f)
+        :functor_(std::move(f))
+    {
 
-template <typename T, typename B, typename CB>
-concept VecMemberSerializable = IsSerializable<T, B, CB> && requires(T t1, T t2)
-{
-    T();
-    {t1 = std::move(t2)};
+    }
+    
+    ~DeferExec()
+    {
+        functor_();
+    }
+
+private:
+    Functor functor_;
 };
 
 RATEL_NAMESPACE_END

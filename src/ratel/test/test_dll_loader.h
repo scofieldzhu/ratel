@@ -2,8 +2,8 @@
  *  Ratel is a application framework, which provides some convenient librarys
  *  for for those c++ developers pursuing fast-developement.
  *  
- *  File: is_serializable_type.h  
- *  Copyright (c) 2023-2023 scofieldzhu
+ *  File: test_dll_loader.h  
+ *  Copyright (c) 2024-2024 scofieldzhu
  *  
  *  MIT License
  *  
@@ -26,28 +26,6 @@
  *  SOFTWARE.
  */
 
-#ifndef __is_serializable_hpp__
-#define __is_serializable_hpp__
+#pragma once
 
-#include <concepts>
-#include "ratel/basic/base_type.h"
-
-RATEL_NAMESPACE_BEGIN
-
-template <typename T, typename B, typename CB>
-concept IsSerializable = requires(T t1, const T t2, CB cb, size_t s)
-{
-    {t2.serializeToBytes()}->std::same_as<ByteVec>;
-    {t1.loadBytes(cb, s)}->std::same_as<size_t>;
-};
-
-template <typename T, typename B, typename CB>
-concept VecMemberSerializable = IsSerializable<T, B, CB> && requires(T t1, T t2)
-{
-    T();
-    {t1 = std::move(t2)};
-};
-
-RATEL_NAMESPACE_END
-
-#endif
+void TestCase_Dll_Loader();

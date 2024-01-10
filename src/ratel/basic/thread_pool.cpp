@@ -33,16 +33,18 @@ RATEL_NAMESPACE_BEGIN
 ThreadPool::ThreadPool(size_t number)
 {
 	for(auto i = 0; i < number; ++i){
-		workers_.emplace_back([this]{
-			while(true){
+		workers_.emplace_back([this]
+		{
+			while(!this->stop_)
+			{
 				task_func active_task;
 				{
 					std::unique_lock lk(mutex_);
 					cv_.wait(lk, [this]{ 
 						return this->stop_ || !this->pending_tasks_.empty();
 					});
-					if(this->stop_ && this->pending_tasks_.empty())
-						return;
+					if(this->stop_)
+						break;
 					active_task = std::move(this->pending_tasks_.front());
 					this->pending_tasks_.pop();
 				}
@@ -55,7 +57,7 @@ ThreadPool::ThreadPool(size_t number)
 ThreadPool::~ThreadPool()
 {
     {
-        std::unique_lock<std::mutex> lk(mutex_);
+        std::lock_guard<std::mutex> lk(mutex_);
         stop_ = true;
     }
     cv_.notify_all();
@@ -66,7 +68,7 @@ ThreadPool::~ThreadPool()
 void ThreadPool::enqueue(task_func&& t)
 {
 	{
-		std::unique_lock<std::mutex> lk(mutex_);
+		std::lock_guard<std::mutex> lk(mutex_);
 		pending_tasks_.emplace(std::move(t));
 	}
 	cv_.notify_one();
