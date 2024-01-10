@@ -2,7 +2,7 @@
  *  Ratel is a application framework, which provides some convenient librarys
  *  for for those c++ developers pursuing fast-developement.
  *  
- *  File: main.cpp 
+ *  File: test_dll_loader.h  
  *  Copyright (c) 2024-2024 scofieldzhu
  *  
  *  MIT License
@@ -26,30 +26,6 @@
  *  SOFTWARE.
  */
 
-#include "test_logger.h"
-#include "test_string_proxy.h"
-#include "test_directed_graph.h"
-#include "test_notifier.h"
-#include "test_geometry.h"
-#include "test_asio_timer.h"
-#include "test_asio_tcp_client.h"
-#include "test_asio_tcp_server.h"
-#include "test_asio_udp.h"
-#include "test_dll_loader.h"
-#include "ratel/basic/dbg_tracker.h"
+#pragma once
 
-int main()
-{
-	TestCase_SPDLogger();
-	_AUTO_FUNC_TRACK_
-	//TestCase_StringProxy();
-	//TestCase_DirectedGraph();
-	//TestCase_Notifier();
-	//TestCase_Geometry();
-	//TestCase_Asio_Timer();
-	//TestCase_Asio_Tcp_Client();
-	//TestCase_Asio_Tcp_Server();
-	//TestCase_Asio_Udp();
-	TestCase_Dll_Loader();
-	return 0;
-}
+void TestCase_Dll_Loader();

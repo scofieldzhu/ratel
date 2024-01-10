@@ -2,7 +2,7 @@
  *  Ratel is a application framework, which provides some convenient librarys
  *  for for those c++ developers pursuing fast-developement.
  *  
- *  File: main.cpp 
+ *  File: dynamic_library_loader.h  
  *  Copyright (c) 2024-2024 scofieldzhu
  *  
  *  MIT License
@@ -26,30 +26,47 @@
  *  SOFTWARE.
  */
 
-#include "test_logger.h"
-#include "test_string_proxy.h"
-#include "test_directed_graph.h"
-#include "test_notifier.h"
-#include "test_geometry.h"
-#include "test_asio_timer.h"
-#include "test_asio_tcp_client.h"
-#include "test_asio_tcp_server.h"
-#include "test_asio_udp.h"
-#include "test_dll_loader.h"
-#include "ratel/basic/dbg_tracker.h"
+#ifndef __dynamic_library_loader_h__
+#define __dynamic_library_loader_h__
 
-int main()
+#include <string>
+#include "ratel/system/ratel_system_export.h"
+
+#ifdef PLATFORM_WIN
+    #include "ratel/basic/win_header.h"
+    using DLL_HANDLE = HMODULE;
+#elif PLATFORM_LINUX
+    #include <dlfcn.h>
+    using DLL_HANDLE = void*;
+#else 
+    static_assert(false, "Error: DynamicLibraryLoader implementation not found in unsupport platform!");
+#endif
+
+RATEL_NAMESPACE_BEGIN
+
+class RATEL_SYSTEM_API DynamicLibraryLoader 
 {
-	TestCase_SPDLogger();
-	_AUTO_FUNC_TRACK_
-	//TestCase_StringProxy();
-	//TestCase_DirectedGraph();
-	//TestCase_Notifier();
-	//TestCase_Geometry();
-	//TestCase_Asio_Timer();
-	//TestCase_Asio_Tcp_Client();
-	//TestCase_Asio_Tcp_Server();
-	//TestCase_Asio_Udp();
-	TestCase_Dll_Loader();
-	return 0;
-}
+public:
+    bool load(const std::string& filename, std::string* err_detail = nullptr);
+    template <typename ExportFunc>
+    ExportFunc getFunction(const std::string& func_name)const
+    {
+        #ifdef PLATFORM_WIN
+            return reinterpret_cast<ExportFunc>(::GetProcAddress(handle_, func_name.c_str()));
+        #elif PLATFORM_LINUX
+            return reinterpret_cast<ExportFunc>(dlsym(handle_, func_name.c_str());
+        #endif
+        return nullptr;
+    }
+    bool isLoaded()const;
+    bool unload(std::string* err_detail = nullptr);
+    DynamicLibraryLoader();
+    ~DynamicLibraryLoader();
+
+private:        
+    DLL_HANDLE handle_ = nullptr;
+};
+
+RATEL_NAMESPACE_END
+
+#endif
