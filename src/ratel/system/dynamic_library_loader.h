@@ -31,6 +31,7 @@
 
 #include <string>
 #include "ratel/system/ratel_system_export.h"
+#include "ratel/basic/ratel_nsp.h"
 
 #ifdef PLATFORM_WIN
     #include "ratel/basic/win_header.h"
