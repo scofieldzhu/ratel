@@ -34,7 +34,8 @@
 #include <thread>
 #include <mutex>
 #include <queue>
-#include "basic_export.h"
+#include "ratel/basic/basic_export.h"
+#include "ratel/basic/ratel_nsp.h"
 
 RATEL_NAMESPACE_BEGIN
 

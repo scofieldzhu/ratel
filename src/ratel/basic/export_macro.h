@@ -2,7 +2,7 @@
  *  Ratel is a application framework, which provides some convenient librarys
  *  for for those c++ developers pursuing fast-developement.
  *  
- *  File: timestamp.h  
+ *  File: export_macro.h  
  *  Copyright (c) 2024-2024 scofieldzhu
  *  
  *  MIT License
@@ -26,28 +26,22 @@
  *  SOFTWARE.
  */
 
-#ifndef __timestamp_h__
-#define __timestamp_h__
+#ifndef __export_macro_h__
+#define __export_macro_h__
 
-#include <atomic>
-#include "ratel/basic/basic_export.h"
-#include "ratel/basic/ratel_nsp.h"
+#include "ratel/basic/cross_platform.h"
 
-RATEL_NAMESPACE_BEGIN
+#ifdef __cplusplus
+    #define RATEL_EXTERN_C_BEGIN extern "C"{
+    #define RATEL_EXTERN_C_END }
+#else 
+    #define RATEL_EXTERN_C_BEGIN
+    #define RATEL_EXTERN_C_END
+#endif
 
-class RATEL_BASIC_API Timestamp
-{
-public:
-    void force(uint64_t val);
-    uint64_t next();
-    uint64_t value()const;
-    Timestamp(uint64_t init_val);
-    ~Timestamp(); 
-
-private:
-    std::atomic_uint64_t value_;
-};
-
-RATEL_NAMESPACE_END
+#ifdef PLATFORM_WIN
+    #define RATEL_WIN_DLL_EXPORT __declspec(dllexport)
+    #define RATEL_WIN_DLL_IMPORT __declspec(dllimport)
+#endif
 
 #endif

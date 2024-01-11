@@ -29,14 +29,13 @@
 #ifndef __geometry_export_h__
 #define __geometry_export_h__
 
-#include "ratel/basic/cross_platform.h"
-#include "ratel/basic/ratel_nsp.h"
+#include "ratel/basic/export_macro.h"
 
 #ifdef PLATFORM_WIN
 	#ifdef RATEL_GEOMETRY_EXPORTS
-		#define RATEL_GEOMETRY_API __declspec(dllexport)
+		#define RATEL_GEOMETRY_API RATEL_WIN_DLL_EXPORT
 	#else
-		#define RATEL_GEOMETRY_API __declspec(dllimport)
+		#define RATEL_GEOMETRY_API RATEL_WIN_DLL_IMPORT
 	#endif
 #endif
 
