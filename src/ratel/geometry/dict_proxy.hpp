@@ -44,10 +44,10 @@ class DictProxy
 {
 public:
     static_assert(ArithStringType<K>);
-    static_assert(VecProxyMember<V> || std::same_as<V, std::string>);
-    using key_type = std::conditional_t<std::is_same_v<K, std::string>, StringProxy, K>;
+    static_assert(VecProxyMember<V>);
+    using key_type = K;
     using key_vec_proxy_type = VecProxy<key_type>;
-    using value_type = std::conditional_t<std::is_same_v<V, std::string>, StringProxy, V>;;
+    using value_type = V;;
     using value_vec_proxy_type = VecProxy<value_type>;
     using map_type = std::map<K, V>;
 
@@ -56,16 +56,8 @@ public:
         key_vec_proxy_type keys;
         value_vec_proxy_type values;
         for(const auto& kv : map_){
-            if constexpr(std::same_as<K, std::string>){
-                keys.mutableData().push_back(StringProxy(kv.first));
-            }else{
-                keys.mutableData().push_back(kv.first);
-            }
-            if constexpr(std::same_as<V, std::string>){
-                values.mutableData().push_back(StringProxy(kv.second));
-            }else{
-                values.mutableData().push_back(kv.second);
-            }
+            keys.mutableData().push_back(kv.first);
+            values.mutableData().push_back(kv.second);
         }
         ByteVec bv_k = keys.serializeToBytes();
         ByteVec bv_v = values.serializeToBytes();
@@ -116,17 +108,7 @@ public:
         //restore key/value pairs' data
         map_.clear();
         for(unsigned int i = 0 ; i< number; ++i){
-            if constexpr(std::same_as<key_type, StringProxy>){
-                if constexpr(std::same_as<value_type, StringProxy>){
-                    map_.insert({keys.data().at(i).stdStr(), values.data().at(i).stdStr()});
-                }else{
-                    map_.insert({keys.data().at(i).stdStr(), values.data().at(i)});
-                }
-            }else if constexpr(std::same_as<value_type, StringProxy>){
-                map_.insert({keys.data().at(i), values.data().at(i).stdStr()});
-            }else{
-                map_.insert({keys.data().at(i), values.data().at(i)});
-            }
+            map_.insert({keys.data().at(i), values.data().at(i)});
         }
         return size - left_size;
     }

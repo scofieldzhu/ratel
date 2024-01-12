@@ -38,39 +38,31 @@ template <typename T>
 class ElementProxy
 {
 public:
-    using value_type = std::enable_if_t<(std::is_arithmetic_v<T> && sizeof(T) >= 4) || std::is_same_v<T, StringProxy>, T>;
+    using value_type = std::enable_if_t<(std::is_arithmetic_v<T> && sizeof(T) >= 4), T>;
     using reference = value_type&;
     using const_reference = const value_type&;
 
     ByteVec serializeToBytes()const
     {
-        if constexpr(std::is_arithmetic_v<value_type>){
-            ByteVec bv(sizeof(value_type), 0);
-            memcpy(bv.data(), std::addressof(element_), sizeof(value_type));
-            return bv;
-        }else{
-            return element_.serializeToBytes();
-        }
+        ByteVec bv(sizeof(value_type), 0);
+        memcpy(bv.data(), std::addressof(element_), sizeof(value_type));
+        return bv;
     }
+
     size_t loadBytes(ConsBytePtr buffer, size_t size)
     {
-        if constexpr(std::is_arithmetic_v<value_type>){
-            if(buffer == nullptr || size < sizeof(value_type))
-                return 0;
-            memcpy(std::addressof(element_), buffer, sizeof(value_type));
-            return sizeof(value_type);
-        }else{
-            return element_.loadBytes(buffer, size);
-        }
+        if(buffer == nullptr || size < sizeof(value_type))
+            return 0;
+        memcpy(std::addressof(element_), buffer, sizeof(value_type));
+        return sizeof(value_type);
     }
+
     reference mutableElement(){ return std::ref(element_); }
+
     const_reference element()const{ return std::cref(element_); }
-    ElementProxy(){}
-    ElementProxy(value_type&& e)
-        :element_(std::move(e)){}
-    ElementProxy(const value_type& e)
-        :element_(e){}
-    ~ElementProxy() = default;
+    
+    ElementProxy(value_type v)
+        :element_(v){}
 
 private:
     value_type element_;

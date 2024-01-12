@@ -15,6 +15,11 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${build_bin})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${build_bin})
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${build_bin})
 
+set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}/install")
+set(CMAKE_INSTALL_BIN "${CMAKE_INSTALL_PREFIX}/bin")
+set(CMAKE_INSTALL_LIB "${CMAKE_INSTALL_PREFIX}/lib")
+set(CMAKE_INSTALL_INCLUDE "${CMAKE_INSTALL_PREFIX}/include/${proj_name}")
+
 include_directories(
 	${CMAKE_SOURCE_DIR}/src
 	${trd_incl}
@@ -25,12 +30,6 @@ link_directories(
 )
 
 add_compile_options(/wd4996 /wd4275 /wd4251)
-
-set(CMAKE_INSTALL_PREFIX "${PROJECT_BINARY_DIR}/${proj_name}" CACHE PATH "Installation prefix")
-
-set(CMAKE_ISNTALL_INCLUDE "${CMAKE_INSTALL_PREFIX}/include/${proj_name}")
-
-set(license_file "${CMAKE_CURRENT_SOURCE_DIR}/doc/license_template.txt" )
 
 add_subdirectory(src/ratel/basic)
 
@@ -44,7 +43,7 @@ add_subdirectory(src/ratel/test)
 
 # install third-party libraries
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-	install(FILES ${trd_bin}/spdlogd.dll DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+	install(FILES ${trd_bin}/spdlogd.dll DESTINATION ${CMAKE_INSTALL_BIN})
 else()
-	install(FILES ${trd_bin}/spdlog.dll DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+	install(FILES ${trd_bin}/spdlog.dll DESTINATION ${CMAKE_INSTALL_BIN})
 endif()
