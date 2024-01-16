@@ -51,16 +51,16 @@ void TestCase_ElementProxy()
     {
         ElementProxy<int> ep(234);
         auto ibv = ep.serializeToBytes();
-        ElementProxy<int> ep_cpy;
+        ElementProxy<int> ep_cpy(0);
         ep_cpy.loadBytes(ibv.data(), ibv.size());
         cout << "ep_cpy:" << ep_cpy.element() << endl;
     }
     {
-        ElementProxy<StringProxy> ep("sfdfsdf");
+        StringProxy ep("sfdfsdf");
         auto ibv = ep.serializeToBytes();
-        ElementProxy<StringProxy> ep_cpy;
+        StringProxy ep_cpy;
         ep_cpy.loadBytes(ibv.data(), ibv.size());
-        cout << "string ep_cpy:" << ep_cpy.element().stdStr().c_str() << endl;
+        cout << "string ep_cpy:" << ep_cpy.stdStr().c_str() << endl;
 
     }
 }

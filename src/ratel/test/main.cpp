@@ -45,11 +45,11 @@ int main()
 	//TestCase_StringProxy();
 	//TestCase_DirectedGraph();
 	//TestCase_Notifier();
-	//TestCase_Geometry();
+	TestCase_Geometry();
 	//TestCase_Asio_Timer();
 	//TestCase_Asio_Tcp_Client();
 	//TestCase_Asio_Tcp_Server();
 	//TestCase_Asio_Udp();
-	TestCase_Dll_Loader();
+	//TestCase_Dll_Loader();
 	return 0;
 }

@@ -61,3 +61,4 @@ builds/win/ratel.sqlite/x64/Debug/vc140.pdb
 /CMakeSettings.json
 cmake-build-debug
 build
+install

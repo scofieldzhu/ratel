@@ -28,16 +28,17 @@
 #ifndef __vec_proxy_h__
 #define __vec_proxy_h__
 
-#include <type_traits>
-#include <algorithm>
 #include <iterator>
-#include "ratel/basic/base_type.h"
+#include <algorithm>
+#include <type_traits>
+#include "ratel/basic/string_proxy.h"
 #include "ratel/geometry/is_serializable.hpp"
+
 
 RATEL_NAMESPACE_BEGIN
 
 template <class E>
-concept VecProxyMember = VecMemberSerializable<E, BytePtr, ConsBytePtr> || std::is_arithmetic_v<E>;
+concept VecProxyMember = (VecMemberSerializable<E, BytePtr, ConsBytePtr> && !std::same_as<E, StringProxy>) || std::is_arithmetic_v<E> || std::same_as<E, std::string>;
 
 template <class E>
 class VecProxy
@@ -62,9 +63,12 @@ public:
             unsigned int element_count = (unsigned int)list_.size();
             memcpy(bv.data(), &element_count, kUIntSize);
             for(const auto& v : list_){
-                auto mbv = v.serializeToBytes();
-                if(mbv.empty())
-                    return {};
+                ByteVec mbv;
+                if constexpr(std::is_same_v<element_type, std::string>){
+                    mbv = StringProxy(v).serializeToBytes();
+                }else{
+                    mbv = v.serializeToBytes();
+                }
                 std::copy(mbv.begin(), mbv.end(), std::back_inserter(bv));
             }
             return bv;
@@ -90,7 +94,14 @@ public:
         }else{            
             for(unsigned int i = 0; i < element_count; ++i){
                 element_type e;
-                auto finish_size = e.loadBytes(byte_cursor, left_size);
+                size_t finish_size = 0;
+                if constexpr(std::is_same_v<element_type, std::string>){
+                    StringProxy strp;
+                    finish_size = strp.loadBytes(byte_cursor, left_size);
+                    e = strp.stdStr();
+                }else{
+                    finish_size = e.loadBytes(byte_cursor, left_size);
+                }
                 if(finish_size == 0)
                     return 0;
                 byte_cursor += finish_size;

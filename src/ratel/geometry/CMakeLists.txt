@@ -75,8 +75,8 @@ target_link_libraries(${proj_name} debug ${deplibs_dbg} optimized ${deplibs_opt}
 # )
 # add_dependencies(${proj_name} UpdateLicenseHeader)
 
-install(TARGETS ${proj_name} RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
-install(TARGETS ${proj_name} ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+install(TARGETS ${proj_name} RUNTIME DESTINATION ${CMAKE_INSTALL_BIN})
+install(TARGETS ${proj_name} ARCHIVE DESTINATION ${CMAKE_INSTALL_LIB})
 
 file(GLOB HEADERS "*.h" "*.hpp")
-install(FILES ${HEADERS} DESTINATION ${CMAKE_ISNTALL_INCLUDE}/geometry)
+install(FILES ${HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDE}/geometry)
