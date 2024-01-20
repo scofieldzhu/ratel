@@ -33,6 +33,7 @@
 #include <type_traits>
 #include "ratel/basic/string_proxy.h"
 #include "ratel/geometry/is_serializable.hpp"
+#include "ratel/geometry/default_creator.hpp"
 
 RATEL_NAMESPACE_BEGIN
 
@@ -53,6 +54,7 @@ public:
     using list_type = std::vector<E>;
     using list_reference = std::vector<E>&;
     using list_const_reference = const std::vector<E>&;
+    using default_creator = DefaultCreator<E>;
 
     static ByteVec SerializeToBytes(list_const_reference list)
     {
@@ -104,7 +106,7 @@ public:
             }
         }else{            
             for(unsigned int i = 0; i < element_count; ++i){
-                element_type e;
+                element_type e = default_creator::Create();
                 size_t finish_size = 0;
                 if constexpr(std::is_same_v<element_type, std::string>){
                     StringProxy strp;
@@ -166,7 +168,7 @@ public:
 
     size_t loadBytes(ConsBytePtr byte_data, size_t size)
     {
-        return VecProxy<E, false>::loadBytes(list_, byte_data, size);
+        return VecProxy<E, false>::LoadBytes(list_, byte_data, size);
     }
 
     list_reference mutableData()

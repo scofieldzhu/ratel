@@ -114,7 +114,7 @@ public:
 
     size_t loadBytes(ConsBytePtr byte_data, size_t size)
     {
-        return ProxyCombine<ProxyA, ProxyB, false>::loadBytes(pa_, pb_, byte_data, size);
+        return ProxyCombine<ProxyA, ProxyB, false>::LoadBytes(pa_, pb_, byte_data, size);
     }
 
     ProxyA& proxyA()
