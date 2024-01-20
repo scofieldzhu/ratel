@@ -44,7 +44,6 @@ concept IsSerializable = requires(T t1, const T t2, CB cb, size_t s)
 template <typename T, typename B, typename CB>
 concept VecMemberSerializable = IsSerializable<T, B, CB> && requires(T t1, T t2)
 {
-    T();
     {t1 = std::move(t2)};
 };
 

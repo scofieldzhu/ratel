@@ -47,10 +47,12 @@ template <class E>
 class VecProxy<E, false>
 {
 public:
-    static_assert(VecProxyMember<E>, "E is not allowed element type for VecProxy!");
-    static constexpr bool kRef = false;
-    using element_type = E;
+    using element_type = std::remove_pointer_t<E>;
     using element_reference = E&;
+    static constexpr bool kRef = false;
+    static constexpr bool kIsPointer = std::is_pointer_v<E>;
+    static_assert(VecProxyMember<element_type>, "E is not allowed element type for VecProxy!");
+    static_assert(!kIsPointer || !(std::is_arithmetic_v<element_type> || std::same_as<element_type, std::string>), "E is not allowed element type for VecProxy!");
     using list_type = std::vector<E>;
     using list_reference = std::vector<E>&;
     using list_const_reference = const std::vector<E>&;
@@ -73,9 +75,17 @@ public:
             for(const auto& v : list){
                 ByteVec mbv;
                 if constexpr(std::is_same_v<element_type, std::string>){
-                    mbv = StringProxy(v).serializeToBytes();
+                    if constexpr(kIsPointer){
+                        mbv = StringProxy(*v).serializeToBytes();
+                    }else{
+                        mbv = StringProxy(v).serializeToBytes();
+                    }                    
                 }else{
-                    mbv = v.serializeToBytes();
+                    if constexpr(kIsPointer){
+                        mbv = v->serializeToBytes();
+                    }else{
+                        mbv = v.serializeToBytes();
+                    }
                 }
                 std::copy(mbv.begin(), mbv.end(), std::back_inserter(bv));
             }
@@ -106,20 +116,32 @@ public:
             }
         }else{            
             for(unsigned int i = 0; i < element_count; ++i){
-                element_type e = default_creator::Create();
+                E e = default_creator::Create();
                 size_t finish_size = 0;
                 if constexpr(std::is_same_v<element_type, std::string>){
                     StringProxy strp;
                     finish_size = strp.loadBytes(byte_cursor, left_size);
-                    e = strp.stdStr();
+                    if constexpr(kIsPointer){
+                        *e = strp.stdStr();
+                    }else{
+                        e = strp.stdStr();
+                    }                    
                 }else{
-                    finish_size = e.loadBytes(byte_cursor, left_size);
+                    if constexpr(kIsPointer){
+                        finish_size = e->loadBytes(byte_cursor, left_size);
+                    }else{
+                        finish_size = e.loadBytes(byte_cursor, left_size);
+                    }
                 }
                 if(finish_size == 0)
                     return 0;
                 byte_cursor += finish_size;
                 left_size -= finish_size;
-                list.push_back(std::move(e));
+                if constexpr(kIsPointer){
+                    list.push_back(e);
+                }else{
+                    list.push_back(std::move(e));
+                }
             }
         }
         return size - left_size;
@@ -143,9 +165,6 @@ public:
     VecProxy()
     {}
 
-    ~VecProxy()
-    {}
-
 private:
     list_type list_;
 };
@@ -154,21 +173,19 @@ template <class E>
 class VecProxy<E, true>
 {
 public:
-    static_assert(VecProxyMember<E>, "E is not allowed element type for VecProxy!");
     static constexpr bool kRef = true;
-    using element_type = E;
-    using element_reference = E&;
+    using false_type = VecProxy<E, false>;
     using list_reference = std::vector<E>&;
     using list_const_reference = const std::vector<E>&;
 
     ByteVec serializeToBytes()const
     {
-        return VecProxy<E, false>::SerializeToBytes(list_);
+        return false_type::SerializeToBytes(list_);
     }
 
     size_t loadBytes(ConsBytePtr byte_data, size_t size)
     {
-        return VecProxy<E, false>::LoadBytes(list_, byte_data, size);
+        return false_type::LoadBytes(list_, byte_data, size);
     }
 
     list_reference mutableData()
