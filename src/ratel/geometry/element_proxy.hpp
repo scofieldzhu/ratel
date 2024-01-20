@@ -34,11 +34,14 @@
 
 RATEL_NAMESPACE_BEGIN
 
-template <typename T>
+template <typename T, bool Ref = false>
 class ElementProxy
 {
 public:
-    using value_type = std::enable_if_t<(std::is_arithmetic_v<T> && sizeof(T) >= 4), T>;
+    static_assert(std::is_arithmetic_v<T> && sizeof(T) >= 4, "T is not allowed element type!");
+    static constexpr bool kRef = Ref;
+    using value_type = T;
+    using member_value_type = std::conditional_t<kRef, T&, T>;
     using reference = value_type&;
     using const_reference = const value_type&;
 
@@ -57,15 +60,24 @@ public:
         return sizeof(value_type);
     }
 
-    reference mutableElement(){ return std::ref(element_); }
+    reference mutableElement()
+    { 
+        return element_;
+    }
 
-    const_reference element()const{ return std::cref(element_); }
+    const_reference element()const
+    {
+        return element_;
+    }
     
-    ElementProxy(value_type v)
+    ElementProxy(member_value_type v)
         :element_(v){}
 
+    ~ElementProxy()
+    {}
+
 private:
-    value_type element_;
+    member_value_type element_;
 };
 
 RATEL_NAMESPACE_END

@@ -34,35 +34,41 @@
 #include "ratel/basic/string_proxy.h"
 #include "ratel/geometry/is_serializable.hpp"
 
-
 RATEL_NAMESPACE_BEGIN
 
 template <class E>
 concept VecProxyMember = (VecMemberSerializable<E, BytePtr, ConsBytePtr> && !std::same_as<E, StringProxy>) || std::is_arithmetic_v<E> || std::same_as<E, std::string>;
 
+template <class E, bool Ref = false>
+class VecProxy;
+
 template <class E>
-class VecProxy
+class VecProxy<E, false>
 {
 public:
-    static_assert(VecProxyMember<E>);
+    static_assert(VecProxyMember<E>, "E is not allowed element type for VecProxy!");
+    static constexpr bool kRef = false;
     using element_type = E;
-    using list_type = std::vector<element_type>;
+    using element_reference = E&;
+    using list_type = std::vector<E>;
+    using list_reference = std::vector<E>&;
+    using list_const_reference = const std::vector<E>&;
 
-    ByteVec serializeToBytes()const
+    static ByteVec SerializeToBytes(list_const_reference list)
     {
         if constexpr(std::is_arithmetic_v<element_type>){
-            size_t calc_size = sizeof(element_type) * list_.size() + kUIntSize;
+            size_t calc_size = sizeof(element_type) * list.size() + kUIntSize;
             ByteVec bv(calc_size, 0);
-            unsigned int element_count = (unsigned int)list_.size();
+            unsigned int element_count = (unsigned int)list.size();
             memcpy(bv.data(), &element_count, kUIntSize);
             if(element_count)
-                memcpy(bv.data() + kUIntSize, (void*)list_.data(), calc_size - kUIntSize);
+                memcpy(bv.data() + kUIntSize, (void*)list.data(), calc_size - kUIntSize);
             return bv;
         }else{
             ByteVec bv(kUIntSize, 0);
-            unsigned int element_count = (unsigned int)list_.size();
+            unsigned int element_count = (unsigned int)list.size();
             memcpy(bv.data(), &element_count, kUIntSize);
-            for(const auto& v : list_){
+            for(const auto& v : list){
                 ByteVec mbv;
                 if constexpr(std::is_same_v<element_type, std::string>){
                     mbv = StringProxy(v).serializeToBytes();
@@ -75,7 +81,12 @@ public:
         }
     }
 
-    size_t loadBytes(ConsBytePtr byte_data, size_t size)
+    ByteVec serializeToBytes()const
+    {
+        return SerializeToBytes(list_);
+    }
+
+    static size_t LoadBytes(list_reference list, ConsBytePtr byte_data, size_t size)
     {
         if(byte_data == nullptr || size < kUIntSize)
             return 0;
@@ -84,11 +95,11 @@ public:
         memcpy(&element_count, byte_cursor, kUIntSize);
         byte_cursor += kUIntSize;
         size_t left_size = size - kUIntSize;
-        list_.clear();
+        list.clear();
         if constexpr(std::is_arithmetic_v<element_type>){
             if(element_count){
-                list_.resize(element_count);
-                memcpy((void*)list_.data(), byte_cursor, element_count * sizeof(element_type));
+                list.resize(element_count);
+                memcpy((void*)list.data(), byte_cursor, element_count * sizeof(element_type));
                 left_size -= element_count * sizeof(element_type);
             }
         }else{            
@@ -106,18 +117,23 @@ public:
                     return 0;
                 byte_cursor += finish_size;
                 left_size -= finish_size;
-                list_.push_back(std::move(e));
+                list.push_back(std::move(e));
             }
         }
         return size - left_size;
     }
 
-    list_type& mutableData()
+    size_t loadBytes(ConsBytePtr byte_data, size_t size)
+    {
+        return LoadBytes(list_, byte_data, size);
+    }
+
+    list_reference mutableData()
     {
         return list_;
     }
 
-    const list_type& data()const
+    list_const_reference data()const
     {
         return list_;
     }
@@ -125,7 +141,45 @@ public:
     VecProxy()
     {}
 
-    VecProxy(list_type& list)
+    ~VecProxy()
+    {}
+
+private:
+    list_type list_;
+};
+
+template <class E>
+class VecProxy<E, true>
+{
+public:
+    static_assert(VecProxyMember<E>, "E is not allowed element type for VecProxy!");
+    static constexpr bool kRef = true;
+    using element_type = E;
+    using element_reference = E&;
+    using list_reference = std::vector<E>&;
+    using list_const_reference = const std::vector<E>&;
+
+    ByteVec serializeToBytes()const
+    {
+        return VecProxy<E, false>::SerializeToBytes(list_);
+    }
+
+    size_t loadBytes(ConsBytePtr byte_data, size_t size)
+    {
+        return VecProxy<E, false>::loadBytes(list_, byte_data, size);
+    }
+
+    list_reference mutableData()
+    {
+        return list_;
+    }
+
+    list_const_reference data()const
+    {
+        return list_;
+    }
+    
+    VecProxy(list_reference list)
         :list_(list)
     {}
 
@@ -133,7 +187,7 @@ public:
     {}
 
 private:
-    list_type list_;
+    list_reference list_;
 };
 
 RATEL_NAMESPACE_END

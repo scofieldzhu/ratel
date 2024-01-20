@@ -40,13 +40,13 @@ class Circle final
 public:
     using value_type = std::enable_if_t<std::is_same_v<T, int> || std::is_same_v<T, float>, T>;
     using point_type = ArrayX<value_type, 2>;
-    using float_proxy = ElementProxy<float>;
+    using float_proxy = ElementProxy<float, false>;
 
     ByteVec serializeToBytes()const
     {
-        ProxyCombine<point_type, float_proxy> pc;
-        pc.proxyA().mutableElement() = center_;
-        pc.proxyB().mutableElement() = radius_;
+        ProxyCombine<point_type, float_proxy, true> pc(center_, radius_);
+        // pc.proxyA().mutableElement() = center_;
+        // pc.proxyB().mutableElement() = radius_;
         return pc.serializeToBytes();
     }
 
