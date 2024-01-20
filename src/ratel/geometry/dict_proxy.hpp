@@ -39,23 +39,29 @@ RATEL_NAMESPACE_BEGIN
 template <typename T>
 concept ArithStringType = std::is_arithmetic_v<T> || std::same_as<T, std::string>;
 
+template <class K, class V, bool Ref = false>
+class DictProxy;
+
 template <class K, class V>
-class DictProxy 
+class DictProxy<K, V, false>
 {
 public:
     static_assert(ArithStringType<K>);
     static_assert(VecProxyMember<V>);
+    static constexpr bool kRef = false;
     using key_type = K;
-    using key_vec_proxy_type = VecProxy<key_type>;
-    using value_type = V;;
-    using value_vec_proxy_type = VecProxy<value_type>;
+    using key_vec_proxy_type = VecProxy<key_type, false>;
+    using value_type = V;
+    using value_vec_proxy_type = VecProxy<value_type, false>;
     using map_type = std::map<K, V>;
+    using map_reference = std::map<K, V>&;
+    using const_map_reference = const std::map<K, V>&;
 
-    ByteVec serializeToBytes()const
+    static ByteVec SerializeToBytes(const_map_reference map)
     {
         key_vec_proxy_type keys;
         value_vec_proxy_type values;
-        for(const auto& kv : map_){
+        for(const auto& kv : map){
             keys.mutableData().push_back(kv.first);
             values.mutableData().push_back(kv.second);
         }
@@ -63,7 +69,7 @@ public:
         ByteVec bv_v = values.serializeToBytes();
         size_t total_size = bv_k.size() + bv_v.size() + kUIntSize * 2;
         ByteVec bv(total_size);
-        unsigned int number = (unsigned int)map_.size();
+        unsigned int number = (unsigned int)map.size();
         auto cur_data = bv.data();
         memcpy(cur_data, &number, kUIntSize);
         cur_data += kUIntSize;
@@ -76,7 +82,12 @@ public:
         return bv;
     }
 
-    size_t loadBytes(ConsBytePtr byte_data, size_t size)
+    ByteVec serializeToBytes()const
+    {
+        return SerializeToBytes(map_);
+    }
+
+    static size_t LoadBytes(map_reference map, ConsBytePtr byte_data, size_t size)
     {
         if(byte_data == nullptr || size < 2 * kUIntSize)
             return 0;        
@@ -106,19 +117,23 @@ public:
         cur_data += finish_bytes;
 
         //restore key/value pairs' data
-        map_.clear();
-        for(unsigned int i = 0 ; i< number; ++i){
-            map_.insert({keys.data().at(i), values.data().at(i)});
-        }
+        map.clear();
+        for(unsigned int i = 0 ; i< number; ++i)
+            map.insert({keys.data().at(i), values.data().at(i)});
         return size - left_size;
     }
 
-    map_type& mutableData()
+    size_t loadBytes(ConsBytePtr byte_data, size_t size)
+    {        
+        return LoadBytes(map_, byte_data, size);
+    }
+
+    map_reference mutableData()
     {
         return map_;
     }
 
-    const map_type& data()const
+    const_map_reference data()const
     {
         return map_;
     }
@@ -126,7 +141,49 @@ public:
     DictProxy()
     {}
 
-    DictProxy(map_type& m)
+    ~DictProxy()
+    {}
+
+private:
+    map_type map_;
+};
+
+template <class K, class V>
+class DictProxy<K, V, true>
+{
+public:
+    static_assert(ArithStringType<K>);
+    static_assert(VecProxyMember<V>);
+    static constexpr bool kRef = true;
+    using key_type = K;
+    using key_vec_proxy_type = VecProxy<key_type, false>;
+    using value_type = V;
+    using value_vec_proxy_type = VecProxy<value_type, false>;
+    using map_type = std::map<K, V>;
+    using map_reference = std::map<K, V>&;
+    using const_map_reference = const std::map<K, V>&;
+
+    ByteVec serializeToBytes()const
+    {
+        return DictProxy<K, V, false>::SerializeToBytes(map_);
+    }
+
+    size_t loadBytes(ConsBytePtr byte_data, size_t size)
+    {        
+        return DictProxy<K, V, false>::LoadBytes(map_, byte_data, size);
+    }
+
+    map_reference mutableData()
+    {
+        return map_;
+    }
+
+    const_map_reference data()const
+    {
+        return map_;
+    }
+    
+    DictProxy(map_reference m)
         :map_(m)
     {}
 
@@ -134,7 +191,7 @@ public:
     {}
 
 private:
-    map_type map_;
+    map_reference map_;
 };
 
 RATEL_NAMESPACE_END

@@ -35,36 +35,49 @@
 
 RATEL_NAMESPACE_BEGIN
 
+template <class ProxyA, class ProxyB, bool Ref = false>
+class ProxyCombine;
+
 template <class ProxyA, class ProxyB>
-class ProxyCombine 
+class ProxyCombine<ProxyA, ProxyB, false>
 {
 public:
     static_assert(IsSerializable<ProxyA, BytePtr, ConsBytePtr>);
     static_assert(IsSerializable<ProxyB, BytePtr, ConsBytePtr>);
 
-    ByteVec serializeToBytes()const
+    static ByteVec SerializeToBytes(const ProxyA& pa, const ProxyB& pb)
     {
-        ByteVec bv_a = pa_.serializeToBytes();
-        auto bv_b = pb_.serializeToBytes();
+        ByteVec bv_a = pa.serializeToBytes();
+        auto bv_b = pb.serializeToBytes();
         std::copy(bv_b.begin(), bv_b.end(), std::back_inserter(bv_a));
         return bv_a;
     }
 
-    size_t loadBytes(ConsBytePtr byte_data, size_t size)
+    ByteVec serializeToBytes()const
+    {
+        return SerializeToBytes(pa_, pb_);
+    }
+
+    static size_t LoadBytes(ProxyA& pa, ProxyB& pb, ConsBytePtr byte_data, size_t size)
     {
         if(byte_data == nullptr)
             return 0;
         auto cur_data = byte_data;
         auto left_size = size;
-        auto finish_bytes = pa_.loadBytes(cur_data, left_size);
+        auto finish_bytes = pa.loadBytes(cur_data, left_size);
         if(finish_bytes == 0)
             return 0;
         cur_data += finish_bytes;
         left_size -= finish_bytes;
-        finish_bytes = pb_.loadBytes(cur_data, left_size);
+        finish_bytes = pb.loadBytes(cur_data, left_size);
         if(finish_bytes == 0)
             return 0;
         return size - left_size;
+    }
+
+    size_t loadBytes(ConsBytePtr byte_data, size_t size)
+    {
+        return LoadBytes(pa_, pb_, byte_data, size);
     }
 
     ProxyA& proxyA(){ return pa_; }
@@ -88,60 +101,45 @@ private:
 };
 
 template <class ProxyA, class ProxyB>
-class ProxyCombineRef
+class ProxyCombine<ProxyA, ProxyB, true>
 {
 public:
     static_assert(IsSerializable<ProxyA, BytePtr, ConsBytePtr>);
     static_assert(IsSerializable<ProxyB, BytePtr, ConsBytePtr>);
-    using ProxyARef = ProxyA&;
-    using ProxyBRef = ProxyB&;
 
     ByteVec serializeToBytes()const
     {
-        ByteVec bv_a = pa_.serializeToBytes();
-        auto bv_b = pb_.serializeToBytes();
-        std::copy(bv_b.begin(), bv_b.end(), std::back_inserter(bv_a));
-        return bv_a;
+        return ProxyCombine<ProxyA, ProxyB, false>::SerializeToBytes(pa_, pb_);
     }
 
     size_t loadBytes(ConsBytePtr byte_data, size_t size)
     {
-        if(byte_data == nullptr)
-            return 0;
-        auto cur_data = byte_data;
-        auto left_size = size;
-        auto finish_bytes = pa_.loadBytes(cur_data, left_size);
-        if(finish_bytes == 0)
-            return 0;
-        cur_data += finish_bytes;
-        left_size -= finish_bytes;
-        finish_bytes = pb_.loadBytes(cur_data, left_size);
-        if(finish_bytes == 0)
-            return 0;
-        return size - left_size;
+        return ProxyCombine<ProxyA, ProxyB, false>::loadBytes(pa_, pb_, byte_data, size);
     }
 
-    ProxyARef proxyA(){ return pa_; }
+    ProxyA& proxyA()
+    {
+        return pa_; 
+    }
     
-    ProxyBRef proxyB(){ return pb_; }
+    ProxyB& proxyB()
+    { 
+        return pb_; 
+    }
     
-    ProxyCombineRef()
-    {};
-
-    ProxyCombineRef(ProxyARef a, ProxyBRef b)
+    ProxyCombine(ProxyA& a, ProxyB& b)
         :pa_(a),
         pb_(b)
     {}
 
-    ~ProxyCombineRef()
-    {};
+    ~ProxyCombine()
+    {}
 
 private:
-    ProxyARef pa_;
-    ProxyBRef pb_;
+    ProxyA& pa_;
+    ProxyB& pb_;
 };
 
 RATEL_NAMESPACE_END
 
 #endif
-
