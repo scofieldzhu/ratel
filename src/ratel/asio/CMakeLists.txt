@@ -17,11 +17,11 @@ set_target_properties(${proj_name} PROPERTIES
     DEBUG_POSTFIX _d
 )
 
-target_compile_definitions(${proj_name} PRIVATE 
-	SPDLOG_COMPILED_LIB
-	SPDLOG_SHARED_LIB
-	SPDLOG_USE_STD_FORMAT
-)
+# target_compile_definitions(${proj_name} PRIVATE 
+# 	SPDLOG_COMPILED_LIB
+# 	SPDLOG_SHARED_LIB
+# 	SPDLOG_USE_STD_FORMAT
+# )
 
 if(WIN32)
 	target_compile_definitions(${proj_name} PRIVATE RATEL_ASIO_EXPORTS -D_WIN32_WINNT=0x0601)
@@ -29,12 +29,17 @@ if(WIN32)
 	#
 endif()
 
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-	set(deplibs spdlogd)
-else()
-	set(deplibs spdlog)
-endif()
-target_link_libraries(${proj_name} PRIVATE ${deplibs} ratel.basic Boost::boost Boost::system)
+# if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+# 	set(deplibs spdlogd)
+# else()
+# 	set(deplibs spdlog)
+# endif()
+target_link_libraries(${proj_name} PRIVATE 
+	spdlog::spdlog 
+	ratel.basic 
+	Boost::boost 
+	Boost::system
+)
 
 # if(WIN32)
 # 	set_target_properties(${PROJECT_NAME} PROPERTIES

@@ -1,0 +1,32 @@
+{
+  "version": 6,
+  "configurePresets": [
+    {
+      "name": "local-vcpkg",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "E:/Code/vcpkg/scripts/buildsystems/vcpkg.cmake",
+        "VCPKG_TARGET_TRIPLET": "x64-windows"
+      }
+    },
+    {
+      "name": "vs2022-local",
+      "inherits": [
+        "vs2022",
+        "local-vcpkg"
+      ]
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "build-debug-local",
+      "configurePreset": "vs2022-local",
+      "configuration": "Debug"
+    },
+    {
+      "name": "build-release-local",
+      "configurePreset": "vs2022-local",
+      "configuration": "Release"
+    }
+  ]
+}

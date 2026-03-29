@@ -124,7 +124,13 @@ int UdpPeer::sendTo(const Byte* data, std::size_t size, const std::string& remot
         spdlog::error("No data or invalid buffer size passed!");
         return 1;
     }
-    EndPoint remote_endpoint(baip::address::from_string(remote_ip), port);
+    boost::system::error_code ec;
+    auto addr = baip::make_address(remote_ip, ec);
+    if (ec) {
+        spdlog::error("illegal remote ip string(\"{}\") passed!", remote_ip);
+        return 2;
+    }
+    EndPoint remote_endpoint(addr, port);
     memcpy(impl_->write_buf, data, size);
     impl_->write_bytes_size = size;
     impl_->socket.async_send_to(
@@ -143,9 +149,15 @@ size_t UdpPeer::syncSendTo(const Byte* data, std::size_t size, const std::string
 {
     if(data == nullptr || size == 0){
         spdlog::error("Invalid data passed!");
-        return 1;
+        return 0;
     }
-    EndPoint remote_endpoint(baip::address::from_string(remote_ip), port);
+    boost::system::error_code ec;
+    auto addr = baip::make_address(remote_ip, ec);
+    if(ec){
+        spdlog::error("illegal remote ip string(\"{}\") passed!", remote_ip);
+        return 0;
+    }
+    EndPoint remote_endpoint(addr, port);
     boost::system::error_code error;
     auto finish_bytes = impl_->socket.send_to(boost::asio::buffer(data, size), remote_endpoint, 0, error);
     if(err)
@@ -155,7 +167,13 @@ size_t UdpPeer::syncSendTo(const Byte* data, std::size_t size, const std::string
 
 std::size_t UdpPeer::syncRecvFrom(const std::string& remote_ip, short port)
 {
-    EndPoint remote_endpoint(baip::address::from_string(remote_ip), port);
+    boost::system::error_code ec;
+    auto addr = baip::make_address(remote_ip, ec);
+    if(ec){
+        spdlog::error("illegal remote ip string(\"{}\") passed!", remote_ip);
+        return 0;
+    }
+    EndPoint remote_endpoint(addr, port);
     impl_->read_bytes_size = impl_->socket.receive_from(boost::asio::buffer(impl_->read_buf, kMaxBufferSize), remote_endpoint);
     impl_->read_buf[impl_->read_bytes_size] = 0;
     return impl_->read_bytes_size;

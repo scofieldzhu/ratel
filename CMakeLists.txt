@@ -1,4 +1,4 @@
-﻿cmake_minimum_required (VERSION 3.8)
+﻿cmake_minimum_required (VERSION 3.20)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -7,9 +7,9 @@ set(proj_name "ratel")
 
 project (${proj_name})
 
-set(trd_incl "${CMAKE_SOURCE_DIR}/3rd/include")
-set(trd_bin "${CMAKE_SOURCE_DIR}/3rd/bin")
-set(trd_lib "${CMAKE_SOURCE_DIR}/3rd/lib")
+# set(trd_incl "${CMAKE_SOURCE_DIR}/3rd/include")
+# set(trd_bin "${CMAKE_SOURCE_DIR}/3rd/bin")
+# set(trd_lib "${CMAKE_SOURCE_DIR}/3rd/lib")
 set(build_bin "${CMAKE_BINARY_DIR}/bin")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${build_bin})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${build_bin})
@@ -20,14 +20,16 @@ set(CMAKE_INSTALL_BIN "${CMAKE_INSTALL_PREFIX}/bin")
 set(CMAKE_INSTALL_LIB "${CMAKE_INSTALL_PREFIX}/lib")
 set(CMAKE_INSTALL_INCLUDE "${CMAKE_INSTALL_PREFIX}/include/${proj_name}")
 
+find_package(spdlog CONFIG REQUIRED)
+
 include_directories(
 	${CMAKE_SOURCE_DIR}/src
-	${trd_incl}
+	#${trd_incl}
 )
 
-link_directories(
-	${trd_lib} 
-)
+# link_directories(
+# 	${trd_lib} 
+# )
 
 add_compile_options(/wd4996 /wd4275 /wd4251)
 

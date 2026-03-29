@@ -1,0 +1,57 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "CMake Configure (vs2022)",
+      "type": "shell",
+      "command": "cmake --preset vs2022",
+      "problemMatcher": []
+    },
+    {
+      "label": "CMake Build Debug (vs2022)",
+      "type": "shell",
+      "command": "cmake --build --preset build-debug",
+      "dependsOn": "CMake Configure (vs2022)",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": [
+        "$msCompile"
+      ]
+    },
+    {
+      "label": "CMake Build Release (vs2022)",
+      "type": "shell",
+      "command": "cmake --build --preset build-release",
+      "dependsOn": "CMake Configure (vs2022)",
+      "problemMatcher": [
+        "$msCompile"
+      ]
+    },
+    {
+      "label": "CMake Configure (vs2022-local)",
+      "type": "shell",
+      "command": "cmake --preset vs2022-local",
+      "problemMatcher": []
+    },
+    {
+      "label": "CMake Build Debug (vs2022-local)",
+      "type": "shell",
+      "command": "cmake --build --preset build-debug-local",
+      "dependsOn": "CMake Configure (vs2022-local)",
+      "problemMatcher": [
+        "$msCompile"
+      ]
+    },
+    {
+      "label": "CMake Build Release (vs2022-local)",
+      "type": "shell",
+      "command": "cmake --build --preset build-release-local",
+      "dependsOn": "CMake Configure (vs2022-local)",
+      "problemMatcher": [
+        "$msCompile"
+      ]
+    }
+  ]
+}
