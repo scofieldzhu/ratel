@@ -62,3 +62,4 @@ builds/win/ratel.sqlite/x64/Debug/vc140.pdb
 cmake-build-debug
 build
 install
+.workbuddy/
