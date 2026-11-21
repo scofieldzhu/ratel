@@ -1,28 +1,32 @@
-set(proj_name "ratel.basic")
-
-project(${proj_name})
-
-file(GLOB
-	 SOURCE_FILES 
-	 "*.cpp"
-	 "*.h"
-	 "*.hpp"
+file(GLOB RATEL_BASIC_SOURCES CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp"
 )
-add_library(${proj_name} SHARED ${SOURCE_FILES})
 
-set_target_properties(${proj_name} PROPERTIES
-    DEBUG_POSTFIX _d
+add_library(ratel.basic SHARED ${RATEL_BASIC_SOURCES})
+set_target_properties(ratel.basic PROPERTIES EXPORT_NAME basic)
+
+target_link_libraries(ratel.basic
+    PUBLIC ratel_build_settings
+    PRIVATE spdlog::spdlog
 )
 
 if(WIN32)
-	target_compile_definitions(${proj_name} PRIVATE BASIC_EXPORTS)
+    target_compile_definitions(ratel.basic PRIVATE RATEL_BASIC_EXPORTS)
 endif()
 
-target_link_libraries(${proj_name} PRIVATE
-	spdlog::spdlog
+file(GLOB RATEL_BASIC_HEADERS CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp"
 )
 
-install(TARGETS ${proj_name} RUNTIME DESTINATION ${CMAKE_INSTALL_BIN})
-install(TARGETS ${proj_name} ARCHIVE DESTINATION ${CMAKE_INSTALL_LIB})
-file(GLOB HEADERS "*.h" "*.hpp")
-install(FILES ${HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDE}/basic)
+install(TARGETS ratel.basic
+    EXPORT ratelTargets
+    RUNTIME DESTINATION "${RATEL_INSTALL_BINDIR}"
+    LIBRARY DESTINATION "${RATEL_INSTALL_LIBDIR}"
+    ARCHIVE DESTINATION "${RATEL_INSTALL_LIBDIR}"
+)
+install(FILES ${RATEL_BASIC_HEADERS}
+    DESTINATION "${RATEL_INSTALL_INCLUDEDIR}/basic"
+)

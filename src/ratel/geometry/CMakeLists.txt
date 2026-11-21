@@ -1,30 +1,32 @@
-set(proj_name "ratel.geometry")
-
-project(${proj_name})
-
-file(GLOB
-	 SOURCE_FILES 
-	 "*.cpp"
-	 "*.h"
-	 "*.hpp"
+file(GLOB RATEL_GEOMETRY_SOURCES CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp"
 )
-add_library(${proj_name} SHARED ${SOURCE_FILES})
 
-set_target_properties(${proj_name} PROPERTIES
-    DEBUG_POSTFIX _d
+add_library(ratel.geometry SHARED ${RATEL_GEOMETRY_SOURCES})
+set_target_properties(ratel.geometry PROPERTIES EXPORT_NAME geometry)
+
+target_link_libraries(ratel.geometry
+    PUBLIC ratel_build_settings
+    PRIVATE spdlog::spdlog
 )
 
 if(WIN32)
-	target_compile_definitions(${proj_name} PRIVATE RATEL_GEOMETRY_EXPORTS)
-	#
+    target_compile_definitions(ratel.geometry PRIVATE RATEL_GEOMETRY_EXPORTS)
 endif()
 
-target_link_libraries(${proj_name} PRIVATE
-	spdlog::spdlog
+file(GLOB RATEL_GEOMETRY_HEADERS CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp"
 )
 
-install(TARGETS ${proj_name} RUNTIME DESTINATION ${CMAKE_INSTALL_BIN})
-install(TARGETS ${proj_name} ARCHIVE DESTINATION ${CMAKE_INSTALL_LIB})
-
-file(GLOB HEADERS "*.h" "*.hpp")
-install(FILES ${HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDE}/geometry)
+install(TARGETS ratel.geometry
+    EXPORT ratelTargets
+    RUNTIME DESTINATION "${RATEL_INSTALL_BINDIR}"
+    LIBRARY DESTINATION "${RATEL_INSTALL_LIBDIR}"
+    ARCHIVE DESTINATION "${RATEL_INSTALL_LIBDIR}"
+)
+install(FILES ${RATEL_GEOMETRY_HEADERS}
+    DESTINATION "${RATEL_INSTALL_INCLUDEDIR}/geometry"
+)
