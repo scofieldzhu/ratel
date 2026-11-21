@@ -2,7 +2,7 @@
  *  Ratel is a application framework, which provides some convenient librarys
  *  for for those c++ developers pursuing fast-developement.
  *  
- *  File: asio_export.h  
+ *  File: ratel_basic_typedef.h  
  *  Copyright (c) 2024-2024 scofieldzhu
  *  
  *  MIT License
@@ -26,17 +26,26 @@
  *  SOFTWARE.
  */
 
-#ifndef __asio_export_h__
-#define __asio_export_h__
+#ifndef __ratel_basic_typedef_h__
+#define __ratel_basic_typedef_h__
 
-#include "ratel/basic/cross_platform.h"
+#include <cstdint>
+#include <cassert>
+#include <vector>
+#include <memory>
+#include "ratel/basic/ratel_nsp.h"
 
-#ifdef PLATFORM_WIN
-    #ifdef RATEL_ASIO_EXPORTS
-        #define RATEL_ASIO_API __declspec(dllexport)
-    #else
-        #define RATEL_ASIO_API __declspec(dllimport)
-    #endif
-#endif
+RATEL_NAMESPACE_BEGIN
 
-#endif
+using Byte = char;
+using BytePtr = Byte*;
+using ConsBytePtr = const Byte*;
+using ByteVec = std::vector<Byte>;
+
+constexpr size_t kIntSize = sizeof(int);
+constexpr size_t kUIntSize = sizeof(unsigned int);
+constexpr size_t kFloatSize = sizeof(float);
+
+RATEL_NAMESPACE_END
+
+#endif // ratel_basic_typedef_h

@@ -54,7 +54,7 @@ public:
 
     void setP1(const PointType& pt){ p1_ = pt; }
     const auto& p1()const{ return p1_; }
-    void setP2(const PointType& pt){ p2_ = p2; }
+    void setP2(const PointType& pt){ p2_ = pt; }
     const auto& p2()const{ return p2_; }
     
     Line(const PointType& p1, const PointType& p2)

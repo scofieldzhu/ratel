@@ -26,6 +26,9 @@
  *  SOFTWARE.
  */
 
-#pragma once
+#ifndef __test_dll_loader_h__
+#define __test_dll_loader_h__
 
 void TestCase_Dll_Loader();
+
+#endif

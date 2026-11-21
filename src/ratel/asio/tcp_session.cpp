@@ -27,10 +27,10 @@
  */
 
 #include "tcp_session.h"
+#include "ratel/basic/dbg_tracker.h"
 #include <boost/asio.hpp>
 #include <boost/bind/bind.hpp>
 #include "spdlog/spdlog.h"
-#include "ratel/basic/dbg_tracker.h"
 
 namespace baip = boost::asio::ip;
 using IoContext = boost::asio::io_context;
@@ -79,17 +79,17 @@ struct TcpSession::Impl
         read_bytes_size = len;
         read_buf[len] = '\0';
         if(!ec){ //no error
-            self->rcv_signal.invoke(self.get(), read_buf, len);
+            self->rcv_signal_.invoke(self.get(), read_buf, len);
             if(!getIoContext()->stopped() && socket.is_open()) //trigger next read if not stopped            
                 postNextRead();            
         }else if(ec == boost::asio::error::eof) {
             // ther other party close connection!
-            self->close_signal.invoke(self.get(), false);
+            self->close_signal_.invoke(self.get(), false);
         }else{
             //other error occur
             auto msg = ec.message();
             spdlog::error("Error occur:{}", msg);
-            self->err_signal.invoke(self.get(), msg);
+            self->err_signal_.invoke(self.get(), msg);
         }
     }
 
@@ -97,24 +97,31 @@ struct TcpSession::Impl
     {
         auto self(owner->shared_from_this());
         write_buf[write_bytes_size] = '\0';
-        boost::asio::async_write(socket, 
-                                 boost::asio::buffer(write_buf, write_bytes_size),
-                                 boost::bind(&TcpSession::Impl::onWriteFinished, this, self, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred)
+        boost::asio::async_write(
+            socket,
+            boost::asio::buffer(write_buf, write_bytes_size),
+            boost::bind(
+                &TcpSession::Impl::onWriteFinished,
+                this,
+                self,
+                boost::asio::placeholders::error,
+                boost::asio::placeholders::bytes_transferred
+            )
         );
     }
 
     void onWriteFinished(TcpSessionPtr self, const boost::system::error_code& ec, std::size_t len)
     {
         if(!ec){
-            self->sent_signal.invoke(self.get(), len);
+            self->sent_signal_.invoke(self.get(), len);
         }else if(ec == boost::asio::error::eof){
             // ther other party close connection!
-            self->close_signal.invoke(self.get(), false);
+            self->close_signal_.invoke(self.get(), false);
         }else{
             //other error occur
             auto msg = ec.message();
             spdlog::error("Error occur:{}", msg);
-            self->err_signal.invoke(self.get(), msg);
+            self->err_signal_.invoke(self.get(), msg);
         }
     }
 
@@ -124,12 +131,16 @@ struct TcpSession::Impl
         std::size_t len = socket.read_some(boost::asio::buffer(read_buf, kMaxBufferSize), error);
         if(error == boost::asio::error::eof){ // Connection closed cleanly by peer
             if(detail_err)
+            {
                 *detail_err = "connection closed by peer";
+            }
             return 0;
         }
         if(error){
             if(detail_err)
+            {
                 *detail_err = error.message();
+            }
             return 0;
         }
         return len;
@@ -145,7 +156,9 @@ struct TcpSession::Impl
         );
         if(ec){
             if(detail_err)
+            {
                 *detail_err = ec.message();
+            }
             spdlog::error("sync write buffer data to socket stream failed! err:{}", ec.message());
             return 0;
         }
@@ -168,7 +181,9 @@ TcpSession::~TcpSession()
 TcpSessionPtr TcpSession::Create(ASIO_CTX ctx)
 {
     if(ctx == nullptr)
+    {
         return nullptr;
+    }
     return TcpSessionPtr(new TcpSession(ctx));
 }
 
@@ -210,7 +225,7 @@ std::size_t TcpSession::syncSend(const Byte* data, std::size_t size, std::string
     return impl_->syncSend(data, size, detail_err);
 }
 
-std::size_t TcpSession::GetMaxSendRcvSize()
+std::size_t TcpSession::getMaxSendRcvSize()
 {
     return kMaxBufferSize;
 }
@@ -252,7 +267,7 @@ void TcpSession::close()
 {
     if(impl_->socket.is_open()){
         impl_->socket.close();
-        close_signal.invoke(this, true);
+        close_signal_.invoke(this, true);
     }
 }
 

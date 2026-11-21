@@ -55,7 +55,7 @@ struct Timer::Impl
 
     void onTimeOut(const boost::system::error_code& ec)
     {
-        owner->timeout_signal.invoke(owner, ec.value());
+        owner->timeout_signal_.invoke(owner, ec.value());
         if(!owner->isStarted()) //stop at once
             return;
         timer.expires_at(timer.expiry() + interval);

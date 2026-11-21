@@ -26,6 +26,9 @@
  *  SOFTWARE.
  */
 
-#pragma once
+#ifndef __test_geometry_h__
+#define __test_geometry_h__
 
 void TestCase_Geometry();
+
+#endif

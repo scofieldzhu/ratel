@@ -54,8 +54,8 @@
  *  SOFTWARE.
  */
 #include "test_asio_udp.h"
-#include "ratel/asio/udp_peer.h"
 #include "ratel/asio/context_driver.h"
+#include "ratel/asio/udp_peer.h"
 #include "ratel/basic/dbg_tracker.h"
 #include "spdlog/spdlog.h"
 using namespace ratel;
@@ -84,8 +84,8 @@ void TestCase_Asio_Udp_Async()
     _AUTO_FUNC_TRACK_
     auto ctx = CreateAsioContext();
     auto udp_peer = std::make_unique<UdpPeer>(ctx, 2334);
-    udp_peer->rcv_signal.bind(&OnRecv);
-    udp_peer->sent_signal.bind(&OnSent);
+    udp_peer->rcv_signal_.bind(&OnRecv);
+    udp_peer->sent_signal_.bind(&OnSent);
     udp_peer->startReceive();
     std::string msg = "Welcome udp peer";
     udp_peer->sendTo(msg.data(), msg.size(), "127.0.0.1", 5555);

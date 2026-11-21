@@ -25,8 +25,8 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *  SOFTWARE.
  */
-#ifndef __notifier_h__
-#define __notifier_h__
+#ifndef __notifier_hpp__
+#define __notifier_hpp__
 
 #include <map>
 #include <mutex>
@@ -40,60 +40,60 @@ template <class... Ts>
 class Notifier
 {
 public:
-	using callback_type = std::function<void(Ts...)>;
+    using callback_type = std::function<void(Ts...)>;
 
-	uint32_t bind(callback_type cb)
-	{
-		std::lock_guard auto_lock(lock_);
-		uint32_t id = next_slot_id_.next();
-		callback_map_[id] = cb;
-		return id;
-	}
+    uint32_t bind(callback_type cb)
+    {
+        std::lock_guard auto_lock(lock_);
+        uint32_t id = next_slot_id_.next();
+        callback_map_[id] = cb;
+        return id;
+    }
 
-	void unbind(uint32_t slot_id)
-	{
-		std::lock_guard auto_lock(lock_);
-		callback_map_.erase(slot_id);
-	}
+    void unbind(uint32_t slot_id)
+    {
+        std::lock_guard auto_lock(lock_);
+        callback_map_.erase(slot_id);
+    }
 
-	void clear()
-	{
-		std::lock_guard auto_lock(lock_);
-		callback_map_.clear();
-		next_slot_id_.force(0);
-	}
+    void clear()
+    {
+        std::lock_guard auto_lock(lock_);
+        callback_map_.clear();
+        next_slot_id_.force(0);
+    }
 
-	template <class... Args>
-	void invoke(Args&&... args)
-	{
-		std::lock_guard auto_lock(lock_);
-		for(const auto& kv : callback_map_){
-			(kv.second)(std::forward<Ts>(args)...);
-		}
+    template <class... Args>
+    void invoke(Args&&... args)
+    {
+        std::lock_guard auto_lock(lock_);
+        for(const auto& kv : callback_map_){
+            (kv.second)(std::forward<Ts>(args)...);
+        }
 
-	}
+    }
 
-	template <class... Ts>
-	void invokeR(Ts&... args)
-	{
-		std::lock_guard auto_lock(lock_);
-		for(const auto& kv : callback_map_){
-			(kv.second)(std::forward<Ts>(args)...);
-		}
-	}
+    template <class... Ts>
+    void invokeR(Ts&... args)
+    {
+        std::lock_guard auto_lock(lock_);
+        for(const auto& kv : callback_map_){
+            (kv.second)(std::forward<Ts>(args)...);
+        }
+    }
 
-	Notifier& operator=(const Notifier&) = delete;	
-	Notifier& operator=(Notifier&&) = delete;
-	
-	Notifier() = default;
-	Notifier(Notifier&&) = delete;
-	Notifier(const Notifier&) = delete;
-	~Notifier() = default;
+    Notifier& operator=(const Notifier&) = delete;  
+    Notifier& operator=(Notifier&&) = delete;
+    
+    Notifier() = default;
+    Notifier(Notifier&&) = delete;
+    Notifier(const Notifier&) = delete;
+    ~Notifier() = default;
 
 private:
-	std::map<uint32_t, callback_type> callback_map_;
-	IdSeed<uint32_t> next_slot_id_{0};
-	std::mutex lock_;
+    std::map<uint32_t, callback_type> callback_map_;
+    IdSeed<uint32_t> next_slot_id_{0};
+    std::mutex lock_;
 };
 
 RATEL_NAMESPACE_END

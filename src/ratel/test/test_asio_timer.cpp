@@ -54,8 +54,8 @@
  *  SOFTWARE.
  */
 #include "test_asio_timer.h"
-#include "ratel/asio/timer.h"
 #include "ratel/asio/context_driver.h"
+#include "ratel/asio/timer.h"
 #include "ratel/basic/dbg_tracker.h"
 #include "spdlog/spdlog.h"
 using namespace ratel;
@@ -67,7 +67,9 @@ void Timeout(Timer* t, int)
 {
     spdlog::trace("Timeout... {}", sTimeCount++);
     if(sTimeCount == 20)
+    {
         t->stop();
+    }
 }
 
 void TestCase_SyncOneShot()
@@ -86,7 +88,7 @@ void TestCase_Timer_Loop()
     auto ctx =  CreateAsioContext();
     auto timer = std::make_unique<Timer>(ctx);
     sTimeCount = 0;
-    timer->timeout_signal.bind(&Timeout);
+    timer->timeout_signal_.bind(&Timeout);
     timer->start(500ms);
     RunAsioContext(ctx);
     timer = nullptr;

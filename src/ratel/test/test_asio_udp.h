@@ -26,6 +26,9 @@
  *  SOFTWARE.
  */
 
-#pragma once
+#ifndef __test_asio_udp_h__
+#define __test_asio_udp_h__
 
 void TestCase_Asio_Udp();
+
+#endif

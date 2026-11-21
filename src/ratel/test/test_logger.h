@@ -26,7 +26,10 @@
  *  SOFTWARE.
  */
 
-#pragma once
+#ifndef __test_logger_h__
+#define __test_logger_h__
 
 
 void TestCase_SPDLogger();
+
+#endif

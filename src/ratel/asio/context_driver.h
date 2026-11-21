@@ -29,7 +29,7 @@
 #ifndef __context_driver_h__
 #define __context_driver_h__
 
-#include "ratel/asio/asio_base_type.h"
+#include "ratel/asio/ratel_asio_typedef.h"
 
 RATEL_NAMESPACE_BEGIN
 

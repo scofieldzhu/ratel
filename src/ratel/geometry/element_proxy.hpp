@@ -55,7 +55,9 @@ public:
     size_t loadBytes(ConsBytePtr buffer, size_t size)
     {
         if(buffer == nullptr || size < sizeof(value_type))
+        {
             return 0;
+        }
         memcpy(std::addressof(element_), buffer, sizeof(value_type));
         return sizeof(value_type);
     }

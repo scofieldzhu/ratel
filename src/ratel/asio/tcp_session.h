@@ -30,7 +30,7 @@
 #define __tcp_session_h__
 
 #include <tuple>
-#include "ratel/asio/asio_base_type.h"
+#include "ratel/asio/ratel_asio_typedef.h"
 #include "ratel/basic/notifier.hpp"
 
 RATEL_NAMESPACE_BEGIN
@@ -39,18 +39,18 @@ class RATEL_ASIO_API TcpSession final : public std::enable_shared_from_this<TcpS
 {
 public:
     using ErrSignal = Notifier<TcpSession*, std::string>;
-    ErrSignal err_signal;
+    ErrSignal err_signal_;
     using SentSignal = Notifier<TcpSession*, std::size_t>;
-    SentSignal sent_signal;
+    SentSignal sent_signal_;
     using RcvSignal = Notifier<TcpSession*, ConsBytePtr, std::size_t>;
-    RcvSignal rcv_signal;
+    RcvSignal rcv_signal_;
     using CloseSignal = Notifier<TcpSession*, bool>;
-    CloseSignal close_signal;
+    CloseSignal close_signal_;
     static TcpSessionPtr Create(ASIO_CTX);    
     int send(const Byte* data, std::size_t size);
     std::size_t syncSend(const Byte* data, std::size_t size, std::string* detail_err = nullptr);
     std::size_t syncRead(std::string* detail_err = nullptr);
-    static std::size_t GetMaxSendRcvSize();
+    static std::size_t getMaxSendRcvSize();
     std::tuple<const Byte*, std::size_t> getRcvBuffer();
     void close();
     bool isOpened()const;

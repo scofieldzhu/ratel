@@ -30,11 +30,11 @@
 #define __cross_platform_h__
 
 #if defined(WIN32) || defined(_WIN32) || defined(WIN64) || defined(_WIN64) || defined(_MSC_VER) || defined(WINDOW) || defined(_WINDOWS)
-	#define PLATFORM_WIN
+    #define PLATFORM_WIN
 #elif defined(__linux__)
-	#define PLATFORM_LINUX
+    #define PLATFORM_LINUX
 #else
-	#define PLATFORM_UNK
+    #define PLATFORM_UNK
 #endif
 
 #endif

@@ -41,7 +41,9 @@ namespace
     #ifdef PLATFORM_WIN
         DWORD err_id = ::GetLastError();
         if(err_id == 0)
+        {
             return "no error!";
+        }
         LPSTR msg_buffer = nullptr;
         size_t size = ::FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
                                        NULL, 
@@ -55,7 +57,9 @@ namespace
     #elif PLATFORM_LINUX
         std::string err_msg;
         if(const char* msg = dlerror())
+        {
             err_msg = msg;
+        }
     #else
         std::string err_msg("cannot get error from unsupport platform");
     #endif
@@ -83,7 +87,9 @@ bool DynamicLibraryLoader::load(const std::string& filename, std::string* err_de
         THROW_EXCEPTION_OF_METHOD_NOT_IMPL()
     #endif
     if(handle_ == nullptr && err_detail)
+    {
         *err_detail = GetLastErrorMsg();
+    }
     return handle_ != nullptr;
 }
 
@@ -95,7 +101,9 @@ bool DynamicLibraryLoader::isLoaded() const
 bool DynamicLibraryLoader::unload(std::string *err_detail)
 {
     if(!isLoaded())
+    {
         return true;
+    }
     #ifdef PLATFORM_WIN
     {
         if(::FreeLibrary(handle_)){
@@ -116,7 +124,9 @@ bool DynamicLibraryLoader::unload(std::string *err_detail)
     }
     #endif
     if(err_detail)
+    {
         *err_detail = GetLastErrorMsg();
+    }
     return false;
 }
 

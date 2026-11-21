@@ -26,6 +26,9 @@
  *  SOFTWARE.
  */
 
-#pragma once
+#ifndef __test_directed_graph_h__
+#define __test_directed_graph_h__
 
 void TestCase_DirectedGraph();
+
+#endif

@@ -30,8 +30,8 @@
 #define __time_util_h__
 
 #include <chrono>
-#include "ratel/basic/base_type.h"
-#include "ratel/basic/basic_export.h"
+#include "ratel/basic/ratel_basic_typedef.h"
+#include "ratel/basic/ratel_basic_export.h"
 
 RATEL_NAMESPACE_BEGIN
 

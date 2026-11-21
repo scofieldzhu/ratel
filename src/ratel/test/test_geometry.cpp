@@ -27,8 +27,8 @@
  */
 
 #include "test_geometry.h"
-#include "ratel/geometry/geometry.h"
 #include "ratel/basic/dbg_tracker.h"
+#include "ratel/geometry/geometry.h"
 #include <iostream>
 #include <iterator>
 

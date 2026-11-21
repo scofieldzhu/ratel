@@ -26,11 +26,11 @@
  *  SOFTWARE.
  */
 
-#ifndef __tpc_client_h__
-#define __tpc_client_h__
+#ifndef __tcp_client_h__
+#define __tcp_client_h__
 
 #include <string>
-#include "ratel/asio/asio_base_type.h"
+#include "ratel/asio/ratel_asio_typedef.h"
 #include "ratel/basic/notifier.hpp"
 
 RATEL_NAMESPACE_BEGIN
@@ -39,7 +39,7 @@ class RATEL_ASIO_API TcpClient final
 {
 public:    
     using ConnectSignal = Notifier<TcpSessionPtr, std::string>;
-    ConnectSignal conn_signal;
+    ConnectSignal conn_signal_;
     void connect(const std::string& server, short port);
     ASIO_CTX context();
     TcpSessionPtr syncConnect(const std::string& server, short port, std::string* detail_err = nullptr);

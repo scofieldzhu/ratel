@@ -2,7 +2,7 @@
  *  Ratel is a application framework, which provides some convenient librarys
  *  for for those c++ developers pursuing fast-developement.
  *  
- *  File: asio_base_type.h  
+ *  File: ratel_geometry_export.h  
  *  Copyright (c) 2024-2024 scofieldzhu
  *  
  *  MIT License
@@ -26,23 +26,17 @@
  *  SOFTWARE.
  */
 
-#ifndef __asio_base_type_h__
-#define __asio_base_type_h__
+#ifndef __ratel_geometry_export_h__
+#define __ratel_geometry_export_h__
 
-#include "ratel/basic/base_type.h"
-#include "ratel/asio/asio_export.h"
+#include "ratel/basic/export_macro.h"
 
-RATEL_NAMESPACE_BEGIN
-
-using ASIO_CTX = void*;
-using SCK_HANDLE = void*;
-
-class TcpSession;
-using TcpSessionPtr = std::shared_ptr<TcpSession>;
-
-class TcpClient;
-class TcpServer;
-
-RATEL_NAMESPACE_END
+#ifdef PLATFORM_WIN
+    #ifdef RATEL_GEOMETRY_EXPORTS
+        #define RATEL_GEOMETRY_API RATEL_WIN_DLL_EXPORT
+    #else
+        #define RATEL_GEOMETRY_API RATEL_WIN_DLL_IMPORT
+    #endif
+#endif
 
 #endif

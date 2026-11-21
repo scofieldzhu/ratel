@@ -27,9 +27,9 @@
  */
 
 #include "test_asio_tcp_client.h"
+#include "ratel/asio/context_driver.h"
 #include "ratel/asio/tcp_client.h"
 #include "ratel/asio/tcp_session.h"
-#include "ratel/asio/context_driver.h"
 #include "ratel/basic/dbg_tracker.h"
 #include "spdlog/spdlog.h"
 using namespace ratel;
@@ -60,9 +60,9 @@ static void OnConnected(TcpSessionPtr session, std::string err)
 {
     _AUTO_FUNC_TRACK_
     spdlog::trace("OnConnected: msg:{}", err);
-    session->sent_signal.bind(&OnMsgSent);
-    session->rcv_signal.bind(&OnRcvMsg);
-    session->close_signal.bind(&OnClosed);
+    session->sent_signal_.bind(&OnMsgSent);
+    session->rcv_signal_.bind(&OnRcvMsg);
+    session->close_signal_.bind(&OnClosed);
     std::string msg("wopappa");
     session->send(msg.data(), msg.size());
 }
@@ -72,7 +72,7 @@ void TestCase_Asio_Tcp_Client_Async()
     _AUTO_FUNC_TRACK_
     auto ctx = CreateAsioContext();
     auto client = std::make_unique<TcpClient>(ctx);
-    client->conn_signal.bind(&OnConnected);
+    client->conn_signal_.bind(&OnConnected);
     client->connect("127.0.0.1", 1102);
     RunAsioContext(ctx);
     client = nullptr;
@@ -84,7 +84,7 @@ void TestCase_Asio_Tcp_Client_Sync()
     _AUTO_FUNC_TRACK_
     auto ctx = CreateAsioContext();
     auto client = std::make_unique<TcpClient>(ctx);
-    client->conn_signal.bind(&OnConnected);
+    client->conn_signal_.bind(&OnConnected);
     auto session = client->syncConnect("127.0.0.1", 1102);
     auto len = session->syncRead();
     auto tuple = session->getRcvBuffer();

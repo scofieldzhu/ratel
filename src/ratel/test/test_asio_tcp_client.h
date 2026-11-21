@@ -26,6 +26,9 @@
  *  SOFTWARE.
  */
 
-#pragma once
+#ifndef __test_asio_tcp_client_h__
+#define __test_asio_tcp_client_h__
 
 void TestCase_Asio_Tcp_Client();
+
+#endif

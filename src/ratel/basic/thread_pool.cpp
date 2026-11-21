@@ -32,26 +32,28 @@ RATEL_NAMESPACE_BEGIN
 
 ThreadPool::ThreadPool(size_t number)
 {
-	for(auto i = 0; i < number; ++i){
-		workers_.emplace_back([this]
-		{
-			while(!this->stop_)
-			{
-				task_func active_task;
-				{
-					std::unique_lock lk(mutex_);
-					cv_.wait(lk, [this]{ 
-						return this->stop_ || !this->pending_tasks_.empty();
-					});
-					if(this->stop_)
-						break;
-					active_task = std::move(this->pending_tasks_.front());
-					this->pending_tasks_.pop();
-				}
-				active_task();
-			};
-		});
-	}
+    for(auto i = 0; i < number; ++i){
+        workers_.emplace_back([this]
+        {
+            while(!this->stop_)
+            {
+            task_func active_task;
+            {
+                std::unique_lock lk(mutex_);
+                cv_.wait(lk, [this]{ 
+                    return this->stop_ || !this->pending_tasks_.empty();
+                });
+                if(this->stop_)
+                {
+                    break;
+                }
+                active_task = std::move(this->pending_tasks_.front());
+                this->pending_tasks_.pop();
+            }
+            active_task();
+            };
+        });
+    }
 }
 
 ThreadPool::~ThreadPool()
@@ -62,16 +64,18 @@ ThreadPool::~ThreadPool()
     }
     cv_.notify_all();
     for(std::thread& w : workers_)
+    {
         w.join();
+    }
 }
 
 void ThreadPool::enqueue(task_func&& t)
 {
-	{
-		std::lock_guard<std::mutex> lk(mutex_);
-		pending_tasks_.emplace(std::move(t));
-	}
-	cv_.notify_one();
+    {
+        std::lock_guard<std::mutex> lk(mutex_);
+        pending_tasks_.emplace(std::move(t));
+    }
+    cv_.notify_one();
 }
 
 RATEL_NAMESPACE_END

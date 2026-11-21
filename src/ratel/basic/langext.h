@@ -71,7 +71,7 @@ void Ignore(T&&)
 
 RATEL_NAMESPACE_END
 
-#define rtdelete(p) RATEL::CheckedDelete(p)
+#define RTDELETE(p) RATEL::CheckedDelete(p)
 #define rtarrydelete(parry) RATEL::CheckedArrayDelete(parry)
 
 #endif

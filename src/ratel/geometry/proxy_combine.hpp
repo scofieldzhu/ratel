@@ -30,7 +30,7 @@
 
 #include <iterator>
 #include <algorithm>
-#include "ratel/basic/base_type.h"
+#include "ratel/basic/ratel_basic_typedef.h"
 #include "ratel/geometry/is_serializable.hpp"
 
 RATEL_NAMESPACE_BEGIN
@@ -61,17 +61,23 @@ public:
     static size_t LoadBytes(ProxyA& pa, ProxyB& pb, ConsBytePtr byte_data, size_t size)
     {
         if(byte_data == nullptr)
+        {
             return 0;
+        }
         auto cur_data = byte_data;
         auto left_size = size;
         auto finish_bytes = pa.loadBytes(cur_data, left_size);
         if(finish_bytes == 0)
+        {
             return 0;
+        }
         cur_data += finish_bytes;
         left_size -= finish_bytes;
         finish_bytes = pb.loadBytes(cur_data, left_size);
         if(finish_bytes == 0)
+        {
             return 0;
+        }
         return size - left_size;
     }
 

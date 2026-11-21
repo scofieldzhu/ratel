@@ -77,9 +77,11 @@ struct UdpPeer::Impl
         read_bytes_size = bytes_transferred;
         read_buf[read_bytes_size] = 0;
         if(!error){
-            owner->rcv_signal.invoke(owner, read_buf, read_bytes_size, remote_endpoint.address().to_string(), remote_endpoint.port());
+            owner->rcv_signal_.invoke(owner, read_buf, read_bytes_size, remote_endpoint.address().to_string(), remote_endpoint.port());
             if(!getIoContext()->stopped())
+            {
                 owner->startReceive();
+            }
         }else{
             spdlog::error("Receive error:{}", error.message());
         }
@@ -87,7 +89,7 @@ struct UdpPeer::Impl
 
     void handleSent(const Byte* data, const boost::system::error_code& ec, std::size_t size)
     {
-        owner->sent_signal.invoke(data, size, ec.message());
+        owner->sent_signal_.invoke(data, size, ec.message());
     }
 };
 
@@ -126,7 +128,7 @@ int UdpPeer::sendTo(const Byte* data, std::size_t size, const std::string& remot
     }
     boost::system::error_code ec;
     auto addr = baip::make_address(remote_ip, ec);
-    if (ec) {
+    if(ec) {
         spdlog::error("illegal remote ip string(\"{}\") passed!", remote_ip);
         return 2;
     }
@@ -161,7 +163,9 @@ size_t UdpPeer::syncSendTo(const Byte* data, std::size_t size, const std::string
     boost::system::error_code error;
     auto finish_bytes = impl_->socket.send_to(boost::asio::buffer(data, size), remote_endpoint, 0, error);
     if(err)
+    {
         *err = error.message();
+    }
     return finish_bytes;
 }
 

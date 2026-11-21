@@ -31,16 +31,13 @@
 
 #include <string>
 #include "ratel/system/ratel_system_export.h"
+#include "ratel/system/ratel_system_typedef.h"
 #include "ratel/basic/ratel_nsp.h"
 
 #ifdef PLATFORM_WIN
     #include "ratel/basic/win_header.h"
-    using DLL_HANDLE = HMODULE;
 #elif PLATFORM_LINUX
     #include <dlfcn.h>
-    using DLL_HANDLE = void*;
-#else 
-    static_assert(false, "Error: DynamicLibraryLoader implementation not found in unsupport platform!");
 #endif
 
 RATEL_NAMESPACE_BEGIN

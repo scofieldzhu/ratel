@@ -2,7 +2,7 @@
  *  Ratel is a application framework, which provides some convenient librarys
  *  for for those c++ developers pursuing fast-developement.
  *  
- *  File: geometry_export.h  
+ *  File: ratel_asio_export.h  
  *  Copyright (c) 2024-2024 scofieldzhu
  *  
  *  MIT License
@@ -26,17 +26,17 @@
  *  SOFTWARE.
  */
 
-#ifndef __geometry_export_h__
-#define __geometry_export_h__
+#ifndef __ratel_asio_export_h__
+#define __ratel_asio_export_h__
 
 #include "ratel/basic/export_macro.h"
 
 #ifdef PLATFORM_WIN
-	#ifdef RATEL_GEOMETRY_EXPORTS
-		#define RATEL_GEOMETRY_API RATEL_WIN_DLL_EXPORT
-	#else
-		#define RATEL_GEOMETRY_API RATEL_WIN_DLL_IMPORT
-	#endif
+    #ifdef RATEL_ASIO_EXPORTS
+        #define RATEL_ASIO_API RATEL_WIN_DLL_EXPORT
+    #else
+        #define RATEL_ASIO_API RATEL_WIN_DLL_IMPORT
+    #endif
 #endif
 
 #endif

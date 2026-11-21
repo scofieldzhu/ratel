@@ -30,7 +30,7 @@
 #define __is_serializable_hpp__
 
 #include <concepts>
-#include "ratel/basic/base_type.h"
+#include "ratel/basic/ratel_basic_typedef.h"
 
 RATEL_NAMESPACE_BEGIN
 

@@ -2,7 +2,7 @@
  *  Ratel is a application framework, which provides some convenient librarys
  *  for for those c++ developers pursuing fast-developement.
  *  
- *  File: base_type.h  
+ *  File: ratel_test_export.h  
  *  Copyright (c) 2024-2024 scofieldzhu
  *  
  *  MIT License
@@ -26,26 +26,10 @@
  *  SOFTWARE.
  */
 
-#ifndef __base_type_h__
-#define __base_type_h__
+#ifndef __ratel_test_export_h__
+#define __ratel_test_export_h__
 
-#include <cstdint>
-#include <cassert>
-#include <vector>
-#include <memory>
-#include "ratel/basic/ratel_nsp.h"
+// test 为可执行目标，不产生对外导出符号；此头用于保持模块文件结构一致。
+#define RATEL_TEST_API
 
-RATEL_NAMESPACE_BEGIN
-
-using Byte = char;
-using BytePtr = Byte*;
-using ConsBytePtr = const Byte*;
-using ByteVec = std::vector<Byte>;
-
-constexpr size_t kIntSize = sizeof(int);
-constexpr size_t kUIntSize = sizeof(unsigned int);
-constexpr size_t kFloatSize = sizeof(float);
-
-RATEL_NAMESPACE_END
-
-#endif // base_type_h
+#endif // ratel_test_export_h

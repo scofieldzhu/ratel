@@ -29,7 +29,7 @@
 #ifndef __tcp_server_h__
 #define __tcp_server_h__
 
-#include "ratel/asio/asio_base_type.h"
+#include "ratel/asio/ratel_asio_typedef.h"
 #include "ratel/basic/notifier.hpp"
 
 RATEL_NAMESPACE_BEGIN
@@ -38,7 +38,7 @@ class RATEL_ASIO_API TcpServer final
 {
 public:
     using ConnectSignal = Notifier<TcpSessionPtr>;
-    ConnectSignal conn_signal;
+    ConnectSignal conn_signal_;
     ASIO_CTX context();
     TcpServer(ASIO_CTX ctx, short port);
     ~TcpServer();

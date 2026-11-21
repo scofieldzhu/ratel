@@ -30,7 +30,7 @@
 #define __plane_h__
 
 #include "ratel/geometry/array_x.hpp"
-#include "ratel/geometry/geometry_export.h"
+#include "ratel/geometry/ratel_geometry_export.h"
 #include "ratel/geometry/proxy_combine.hpp"
 
 RATEL_NAMESPACE_BEGIN

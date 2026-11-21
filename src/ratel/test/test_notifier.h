@@ -26,6 +26,9 @@
  *  SOFTWARE.
  */
 
-#pragma once
+#ifndef __test_notifier_h__
+#define __test_notifier_h__
 
 void TestCase_Notifier();
+
+#endif

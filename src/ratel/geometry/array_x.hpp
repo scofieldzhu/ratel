@@ -34,7 +34,7 @@
 #include <array>
 #include <stdexcept>
 #include <initializer_list>
-#include "ratel/basic/base_type.h"
+#include "ratel/basic/ratel_basic_typedef.h"
 
 RATEL_NAMESPACE_BEGIN
 
@@ -62,7 +62,9 @@ public:
     size_t loadBytes(ConsBytePtr buffer, size_t size)
     {
         if(buffer == nullptr || size < ByteSize)
+        {
             return 0;
+        }
         memcpy((void*)&this->arry, buffer, ByteSize);
         return ByteSize;
     }
@@ -70,7 +72,9 @@ public:
     reference operator[](int idx)
     {
         if(idx >= N)
+        {
             throw std::out_of_range(std::format("Invalid index value:{}, array size:{}!", idx, N));
+        }
         return this->arry[idx];
     }
 

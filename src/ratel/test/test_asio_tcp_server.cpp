@@ -27,9 +27,9 @@
  */
 
 #include "test_asio_tcp_server.h"
+#include "ratel/asio/context_driver.h"
 #include "ratel/asio/tcp_server.h"
 #include "ratel/asio/tcp_session.h"
-#include "ratel/asio/context_driver.h"
 #include "ratel/basic/dbg_tracker.h"
 #include "spdlog/spdlog.h"
 using namespace ratel;
@@ -51,14 +51,16 @@ static void OnRcvMsg(TcpSession* session, ConsBytePtr data, std::size_t len)
     session->send(echo_msg.c_str(), echo_msg.size());
     sTalkCnt[session]++;
     if(sTalkCnt[session] == 2)
+    {
         session->close();
+    }
 }
 
 static void OnConnected(TcpSessionPtr session)
 {
     _AUTO_FUNC_TRACK_
-    session->rcv_signal.bind(&OnRcvMsg);
-    session->close_signal.bind(&OnClosed);
+    session->rcv_signal_.bind(&OnRcvMsg);
+    session->close_signal_.bind(&OnClosed);
     std::string welcome_msg = "Welcome you, buddy!";
     session->send(welcome_msg.c_str(), welcome_msg.size());
     sTalkCnt[session.get()] = 0;
@@ -69,7 +71,7 @@ void TestCase_Asio_Tcp_Server_Async()
     _AUTO_FUNC_TRACK_
     auto ctx = CreateAsioContext();
     auto server = std::make_unique<TcpServer>(ctx, 1102);
-    server->conn_signal.bind(&OnConnected);
+    server->conn_signal_.bind(&OnConnected);
     RunAsioContext(ctx);
     server = nullptr;
     DestroyAsioContext(ctx);

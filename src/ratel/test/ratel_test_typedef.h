@@ -2,7 +2,7 @@
  *  Ratel is a application framework, which provides some convenient librarys
  *  for for those c++ developers pursuing fast-developement.
  *  
- *  File: basic_export.h  
+ *  File: ratel_test_typedef.h  
  *  Copyright (c) 2024-2024 scofieldzhu
  *  
  *  MIT License
@@ -26,17 +26,15 @@
  *  SOFTWARE.
  */
 
-#ifndef __basic_export_h__
-#define __basic_export_h__
+#ifndef __ratel_test_typedef_h__
+#define __ratel_test_typedef_h__
 
-#include "ratel/basic/export_macro.h"
+#include "ratel/basic/ratel_basic_typedef.h"
 
-#ifdef PLATFORM_WIN
-    #ifdef BASIC_EXPORTS
-        #define RATEL_BASIC_API RATEL_WIN_DLL_EXPORT
-    #else
-        #define RATEL_BASIC_API RATEL_WIN_DLL_IMPORT
-    #endif
-#endif
+RATEL_NAMESPACE_BEGIN
 
-#endif
+using TestBuffer = ByteVec;
+
+RATEL_NAMESPACE_END
+
+#endif // ratel_test_typedef_h

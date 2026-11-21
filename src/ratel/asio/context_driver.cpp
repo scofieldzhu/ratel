@@ -46,46 +46,62 @@ ASIO_CTX CreateAsioContext()
 void RunAsioContext(ASIO_CTX ctx)
 {
     if(ctx == nullptr)
+    {
         return;
+    }
     auto it = std::find_if(sContextVec.begin(), sContextVec.end(), [&ctx](auto item){
         return item.get() == ctx;
     });
     if(it != sContextVec.end())
+    {
         (*it)->run();
+    }
 }
 
 bool IsAsioContextStopped(ASIO_CTX ctx)
 {
     if(ctx == nullptr)
+    {
         return true;
+    }
     auto it = std::find_if(sContextVec.begin(), sContextVec.end(), [&ctx](auto item){
         return item.get() == ctx;
     });
     if(it != sContextVec.end())
+    {
         return (*it)->stopped();
+    }
     return true;
 }
 
 void StopAsioContext(ASIO_CTX ctx)
 {
     if(ctx == nullptr)
+    {
         return;
+    }
     auto it = std::find_if(sContextVec.begin(), sContextVec.end(), [&ctx](auto item){
         return item.get() == ctx;
     });
     if(it != sContextVec.end())
+    {
         return (*it)->stop();
+    }
 }
 
 void DestroyAsioContext(ASIO_CTX ctx)
 {
     if(ctx == nullptr)
+    {
         return;
+    }
     auto it = std::find_if(sContextVec.begin(), sContextVec.end(), [&ctx](auto item){
         return item.get() == ctx;
     });
     if(it != sContextVec.end())
+    {
         sContextVec.erase(it);
+    }
 }
 
 RATEL_NAMESPACE_END

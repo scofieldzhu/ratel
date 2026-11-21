@@ -29,16 +29,6 @@
 #ifndef __point_h__
 #define __point_h__
 
-#include "ratel/geometry/array_x.hpp"
+#include "ratel/geometry/ratel_geometry_typedef.h"
 
-RATEL_NAMESPACE_BEGIN
-
-using Point2 = ArrayX<int, 2>;
-using Point2f = ArrayX<float, 2>;
-
-using Point3 = ArrayX<int, 3>;
-using Point3f = ArrayX<float, 3>;
-
-RATEL_NAMESPACE_END
-
-#endif 
+#endif // point_h

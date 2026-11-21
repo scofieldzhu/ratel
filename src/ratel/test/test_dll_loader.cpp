@@ -27,8 +27,8 @@
  */
 
 #include "test_dll_loader.h"
-#include "ratel/system/dynamic_library_loader.h"
 #include "ratel/basic/dbg_tracker.h"
+#include "ratel/system/dynamic_library_loader.h"
 #include "spdlog/spdlog.h"
 
 using namespace ratel;

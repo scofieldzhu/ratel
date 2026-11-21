@@ -31,11 +31,11 @@
 
 void TestCase_SPDLogger()
 {
-	//[%H:%M:%S %z] [thread %t] [%l] %v (%s:%# %!)
-	spdlog::set_pattern("[%Y-%m-%d %H:%M:%S][%P:%t][%l] %v");
-	spdlog::set_level(spdlog::level::trace);
-	spdlog::info("Welcome to spdlog version {}.{}.{}  !", SPDLOG_VER_MAJOR, SPDLOG_VER_MINOR,
-		SPDLOG_VER_PATCH);
+    //[%H:%M:%S %z] [thread %t] [%l] %v (%s:%# %!)
+    spdlog::set_pattern("[%Y-%m-%d %H:%M:%S][%P:%t][%l] %v");
+    spdlog::set_level(spdlog::level::trace);
+    spdlog::info("Welcome to spdlog version {}.{}.{}  !", SPDLOG_VER_MAJOR, SPDLOG_VER_MINOR,
+        SPDLOG_VER_PATCH);
 
 }
 

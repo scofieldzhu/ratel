@@ -30,7 +30,7 @@
 #define __udp_peer_h__
 
 #include <tuple>
-#include "ratel/asio/asio_base_type.h"
+#include "ratel/asio/ratel_asio_typedef.h"
 #include "ratel/basic/notifier.hpp"
 
 RATEL_NAMESPACE_BEGIN
@@ -39,9 +39,9 @@ class RATEL_ASIO_API UdpPeer final
 {
 public:
     using RcvSignal = Notifier<UdpPeer*, ConsBytePtr, std::size_t, std::string, short>;
-    RcvSignal rcv_signal;
+    RcvSignal rcv_signal_;
     using SentSignal = Notifier<ConsBytePtr, std::size_t, std::string>;
-    SentSignal sent_signal;
+    SentSignal sent_signal_;
     ASIO_CTX context();
     void startReceive();
     int sendTo(const Byte* data, std::size_t size, const std::string& remote_ip, short port);

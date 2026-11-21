@@ -38,38 +38,38 @@ template <typename T>
 class IdSeed
 {
 public:
-	using id_type = typename std::enable_if<std::is_integral_v<T> && std::is_unsigned_v<T>, T>::type;
-	
-	id_type next()
-	{
-		if(seed_ == std::numeric_limits<id_type>::max()){
-			seed_ = init_value_;
-		}else{
-			++seed_;
-		}
-		return seed_;
-	}
+    using id_type = typename std::enable_if<std::is_integral_v<T> && std::is_unsigned_v<T>, T>::type;
+    
+    id_type next()
+    {
+        if(seed_ == std::numeric_limits<id_type>::max()){
+            seed_ = init_value_;
+        }else{
+            ++seed_;
+        }
+        return seed_;
+    }
 
-	void force(id_type value)
-	{
-		seed_ = value;
-	}
+    void force(id_type value)
+    {
+        seed_ = value;
+    }
 
-	id_type init_value()const
-	{
-		return init_value_;
-	}
+    id_type init_value()const
+    {
+        return init_value_;
+    }
 
-	explicit IdSeed(id_type init_value = id_type(0))
-		:seed_(init_value),
-		init_value_(init_value)
-	{}
+    explicit IdSeed(id_type init_value = id_type(0))
+        :seed_(init_value),
+        init_value_(init_value)
+    {}
 
-	~IdSeed() = default;
+    ~IdSeed() = default;
 
 private:
-	id_type seed_;
-	id_type init_value_;
+    id_type seed_;
+    id_type init_value_;
 };
 
 

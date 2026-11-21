@@ -90,7 +90,9 @@ public:
     static size_t LoadBytes(map_reference map, ConsBytePtr byte_data, size_t size)
     {
         if(byte_data == nullptr || size < 2 * kUIntSize)
+        {
             return 0;        
+        }
         auto cur_data = byte_data;
         auto number = *(const unsigned int*)(cur_data);
         cur_data += kUIntSize;
@@ -104,7 +106,9 @@ public:
         key_vec_proxy_type keys;
         auto finish_bytes = keys.loadBytes(cur_data, key_byte_size);
         if(finish_bytes == 0)
+        {
             return 0;
+        }
         assert(finish_bytes == key_byte_size);
         left_size -= finish_bytes;
         cur_data += finish_bytes;
@@ -112,14 +116,18 @@ public:
         value_vec_proxy_type values;
         finish_bytes = values.loadBytes(cur_data, left_size);
         if(finish_bytes == 0)
+        {
             return 0;
+        }
         left_size -= finish_bytes;
         cur_data += finish_bytes;
 
         //restore key/value pairs' data
         map.clear();
         for(unsigned int i = 0 ; i< number; ++i)
+        {
             map.insert({keys.data().at(i), values.data().at(i)});
+        }
         return size - left_size;
     }
 

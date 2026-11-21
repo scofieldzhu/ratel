@@ -30,7 +30,7 @@
 #define __timestamp_h__
 
 #include <atomic>
-#include "ratel/basic/basic_export.h"
+#include "ratel/basic/ratel_basic_export.h"
 #include "ratel/basic/ratel_nsp.h"
 
 RATEL_NAMESPACE_BEGIN

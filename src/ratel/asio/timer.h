@@ -30,7 +30,7 @@
 #define __timer_h__
 
 #include <chrono>
-#include "ratel/asio/asio_base_type.h"
+#include "ratel/asio/ratel_asio_typedef.h"
 #include "ratel/basic/notifier.hpp"
 
 RATEL_NAMESPACE_BEGIN
@@ -39,7 +39,7 @@ class RATEL_ASIO_API Timer final
 {
 public:
     using TimeoutSignal = Notifier<Timer*, int>;
-    TimeoutSignal timeout_signal;
+    TimeoutSignal timeout_signal_;
     bool start(std::chrono::milliseconds interval);
     std::chrono::milliseconds interval()const;
     bool isStarted()const;

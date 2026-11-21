@@ -27,10 +27,10 @@
  */
 
 #include "tcp_client.h"
+#include "tcp_session.h"
 #include <boost/asio.hpp>
 #include <boost/bind/bind.hpp>
 #include "spdlog/spdlog.h"
-#include "tcp_session.h"
 
 namespace ba = boost::asio;
 namespace ba_ip = boost::asio::ip;
@@ -65,10 +65,10 @@ struct TcpClient::Impl
     {
         if(!error) {
             new_session->start(); //avoid io_context exit for no job!
-            owner->conn_signal.invoke(new_session, "no error");
+            owner->conn_signal_.invoke(new_session, "no error");
         }else{
             spdlog::error("Connect failed, error:{}", error.message());
-            owner->conn_signal.invoke(new_session, error.message());
+            owner->conn_signal_.invoke(new_session, error.message());
         }
     }
 
@@ -81,11 +81,15 @@ struct TcpClient::Impl
             ba::connect(*reinterpret_cast<tcp_socket*>(new_session->socket()), endpoints);
         }catch(const boost::system::error_code& ec){
             if(detail_err)
+            {
                 *detail_err = ec.message();
+            }
             return TcpSessionPtr();
         }
         if(detail_err)
+        {
             *detail_err = "no error";
+        }
         return new_session;        
     }
 };

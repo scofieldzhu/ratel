@@ -25,8 +25,8 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *  SOFTWARE.
  */
-#ifndef __vec_proxy_h__
-#define __vec_proxy_h__
+#ifndef __vec_proxy_hpp__
+#define __vec_proxy_hpp__
 
 #include <iterator>
 #include <algorithm>
@@ -38,7 +38,10 @@
 RATEL_NAMESPACE_BEGIN
 
 template <class E>
-concept VecProxyMember = (VecMemberSerializable<E, BytePtr, ConsBytePtr> && !std::same_as<E, StringProxy>) || std::is_arithmetic_v<E> || std::same_as<E, std::string>;
+concept VecProxySerializableMember = VecMemberSerializable<E, BytePtr, ConsBytePtr> && !std::same_as<E, StringProxy>;
+
+template <class E>
+concept VecProxyMember = VecProxySerializableMember<E> || std::is_arithmetic_v<E> || std::same_as<E, std::string>;
 
 template <class E, bool Ref = false>
 class VecProxy;
@@ -51,8 +54,9 @@ public:
     using element_reference = E&;
     static constexpr bool kRef = false;
     static constexpr bool kIsPointer = std::is_pointer_v<E>;
+    static constexpr bool kPlainElement = !std::is_arithmetic_v<element_type> && !std::same_as<element_type, std::string>;
     static_assert(VecProxyMember<element_type>, "E is not allowed element type for VecProxy!");
-    static_assert(!kIsPointer || !(std::is_arithmetic_v<element_type> || std::same_as<element_type, std::string>), "E is not allowed element type for VecProxy!");
+    static_assert(!kIsPointer || kPlainElement, "E is not allowed element type for VecProxy!");
     using list_type = std::vector<E>;
     using list_reference = std::vector<E>&;
     using list_const_reference = const std::vector<E>&;
@@ -66,7 +70,9 @@ public:
             unsigned int element_count = (unsigned int)list.size();
             memcpy(bv.data(), &element_count, kUIntSize);
             if(element_count)
+            {
                 memcpy(bv.data() + kUIntSize, (void*)list.data(), calc_size - kUIntSize);
+            }
             return bv;
         }else{
             ByteVec bv(kUIntSize, 0);
@@ -101,7 +107,9 @@ public:
     static size_t LoadBytes(list_reference list, ConsBytePtr byte_data, size_t size)
     {
         if(byte_data == nullptr || size < kUIntSize)
+        {
             return 0;
+        }
         auto byte_cursor = byte_data;
         unsigned int element_count = 0;
         memcpy(&element_count, byte_cursor, kUIntSize);
@@ -134,7 +142,9 @@ public:
                     }
                 }
                 if(finish_size == 0)
+                {
                     return 0;
+                }
                 byte_cursor += finish_size;
                 left_size -= finish_size;
                 if constexpr(kIsPointer){
@@ -211,4 +221,4 @@ private:
 
 RATEL_NAMESPACE_END
 
-#endif // __vec_proxy_h__
+#endif // __vec_proxy_hpp__
